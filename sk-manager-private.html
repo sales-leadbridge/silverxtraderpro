@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+    PROJECT: SILVER X — ADMIN PANEL
+    BUILD: 22.0 SECURE PRODUCTION
+    DATE: February 3, 2026
+
+    ✅ V22.0 ADMIN CHANGES:
+    - Dashboard: Total Users, Free Users, VIP Users, Pending Withdrawals, Pending Deposits, Complete Transactions
+    - Free Users tab: Name, Email, Phone, Balance, VIP Status
+    - VIP Users tab: Name, Email, Phone, Balance, VIP Days Left, Recovery Sessions (edit/update)
+    - Pending Deposits: Name, Email, Phone, Method, Amount, TID — Approve/Reject with reason
+    - Pending Withdrawals: Approve/Reject + reason input → user sees reason + refund option
+    - EmailJS REMOVED
+    - All balance ops: Firebase FieldValue ONLY
+    - Admin email lock: ska75470@gmail.com
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SILVER X | ADMIN PANEL</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        * { font-family:'Plus Jakarta Sans',sans-serif; }
+        .outfit { font-family:'Space Grotesk',sans-serif; }
+        .badge-pending  { background:#FFF7ED; color:#EA580C; border:1px solid #FFEDD5; padding:4px 12px; border-radius:8px; font-size:10px; font-weight:800; text-transform:uppercase; }
+        .badge-success  { background:#ECFDF5; color:#10B981; border:1px solid #D1FAE5; padding:4px 12px; border-radius:8px; font-size:10px; font-weight:800; text-transform:uppercase; }
+        .badge-rejected { background:#FEF2F2; color:#EF4444; border:1px solid #FEE2E2; padding:4px 12px; border-radius:8px; font-size:10px; font-weight:800; text-transform:uppercase; }
+        .stat-card { background:#fff; border-radius:16px; padding:22px; box-shadow:0 4px 20px rgba(0,0,0,0.05); border:1px solid #E2E8F0; }
+        .tab-btn { padding:10px 20px; font-weight:700; font-size:13px; text-transform:uppercase; cursor:pointer; border-bottom:3px solid transparent; color:#94a3b8; transition:0.2s; white-space:nowrap; }
+        .tab-btn.active { color:#0ea5e9; border-bottom-color:#0ea5e9; }
+        .tab-btn:hover { color:#0ea5e9; }
+
+        /* Reject Reason Modal */
+        .reason-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; display:flex; align-items:center; justify-content:center; padding:20px; }
+        .reason-box { background:#fff; border-radius:20px; padding:28px; max-width:440px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.25); }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<!-- ─── LOGIN SCREEN ──────────────────────────────────── -->
+<div id="admin-login" class="min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl border border-slate-200">
+        <h1 class="text-4xl font-black outfit text-center mb-1 text-sky-600">ADMIN PANEL</h1>
+        <p class="text-center text-slate-400 text-xs font-bold uppercase mb-1">Silver X Terminal</p>
+        <p class="text-center text-red-600 text-[10px] font-bold uppercase mb-8">⚠️ RESTRICTED ACCESS</p>
+        <input type="email" id="admin-email" placeholder="Admin Email" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-2xl mb-3 outline-none focus:border-sky-500 font-bold">
+        <input type="password" id="admin-password" placeholder="Admin Password" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-2xl mb-6 outline-none focus:border-sky-500 font-bold">
+        <button onclick="adminLogin()" class="w-full bg-sky-600 text-white py-4 rounded-2xl font-bold uppercase text-sm shadow-lg">Login</button>
+    </div>
+</div>
+
+<!-- ─── DASHBOARD ─────────────────────────────────────── -->
+<div id="admin-dashboard" class="hidden min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 p-4 sm:p-6 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-black outfit text-sky-600">ADMIN CONTROL</h1>
+                <p class="text-xs text-slate-400 font-bold" id="admin-email-display"></p>
+            </div>
+            <button onclick="adminLogout()" class="bg-red-600 text-white px-5 py-2 rounded-xl font-bold text-sm">Logout</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 sm:p-6">
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 mb-6">
+            <div class="stat-card"><p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Total Users</p><h2 class="text-3xl font-black outfit" id="stat-total">0</h2></div>
+            <div class="stat-card"><p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Free Users</p><h2 class="text-3xl font-black outfit text-slate-600" id="stat-free">0</h2></div>
+            <div class="stat-card"><p class="text-slate-400 text-[10px] font-bold uppercase mb-1">VIP Users</p><h2 class="text-3xl font-black outfit text-green-600" id="stat-vip">0</h2></div>
+            <div class="stat-card"><p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Pending Deposits</p><h2 class="text-3xl font-black outfit text-orange-600" id="stat-pend-dep">0</h2></div>
+            <div class="stat-card"><p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Pending Withdrawals</p><h2 class="text-3xl font-black outfit text-red-600" id="stat-pend-wd">0</h2></div>
+            <div class="stat-card"><p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Complete Txns</p><h2 class="text-3xl font-black outfit text-sky-600" id="stat-complete">0</h2></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="bg-white rounded-2xl border border-slate-200 mb-4">
+            <div class="flex border-b border-slate-200 overflow-x-auto">
+                <button onclick="switchAdminTab('deposits')"   id="tab-deposits"   class="tab-btn active">Deposits</button>
+                <button onclick="switchAdminTab('withdrawals')" id="tab-withdrawals" class="tab-btn">Withdrawals</button>
+                <button onclick="switchAdminTab('free-users')"  id="tab-free-users"  class="tab-btn">Free Users</button>
+                <button onclick="switchAdminTab('vip-users')"   id="tab-vip-users"   class="tab-btn">VIP Users</button>
+            </div>
+        </div>
+
+        <!-- Pending Deposits -->
+        <div id="section-deposits" class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+            <h3 class="text-lg font-black outfit mb-4">Pending Deposits</h3>
+            <div id="list-deposits" class="space-y-4"></div>
+        </div>
+
+        <!-- Pending Withdrawals -->
+        <div id="section-withdrawals" class="hidden bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+            <h3 class="text-lg font-black outfit mb-4">Pending Withdrawals</h3>
+            <div id="list-withdrawals" class="space-y-4"></div>
+        </div>
+
+        <!-- Free Users -->
+        <div id="section-free-users" class="hidden bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+            <h3 class="text-lg font-black outfit mb-4">Free Users</h3>
+            <div id="list-free-users" class="space-y-4"></div>
+        </div>
+
+        <!-- VIP Users -->
+        <div id="section-vip-users" class="hidden bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+            <h3 class="text-lg font-black outfit mb-4">VIP Users</h3>
+            <div id="list-vip-users" class="space-y-4"></div>
+        </div>
+    </main>
+</div>
+
+<!-- ─── REJECT REASON MODAL ──────────────────────────── -->
+<div id="reason-modal" class="reason-overlay hidden">
+    <div class="reason-box">
+        <h3 class="text-lg font-black outfit mb-2" id="reason-modal-title">Rejection Reason</h3>
+        <p class="text-xs text-slate-500 mb-4">Enter a clear reason. The user will see this.</p>
+        <textarea id="reason-input" placeholder="Type reason here..." class="w-full border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-sky-500 resize-none" rows="3"></textarea>
+        <div class="flex gap-3 mt-4">
+            <button onclick="closeReasonModal()" class="flex-1 bg-slate-100 text-slate-600 py-3 rounded-xl font-bold text-sm">Cancel</button>
+            <button onclick="submitRejection()" class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold text-sm">Reject</button>
+        </div>
+    </div>
+</div>
+
+<!-- ─── SCRIPTS ────────────────────────────────────────── -->
+<script src="firebase-config.js"></script>
+<script>
+const ADMIN_EMAIL = "ska75470@gmail.com";
+let adminUser = null;
+let allUsers = []; // cache
+let pendingDeposits = [];
+let pendingWithdrawals = [];
+
+// Rejection flow state
+let _rejectTxId   = null;
+let _rejectUserId = null;
+let _rejectAmount = null;
+let _rejectType   = null; // 'DEPOSIT' or 'WITHDRAWAL'
+
+// ─── AUTH CHECK ──────────────────────────────────────────
+firebase.auth().onAuthStateChanged((user)=>{
+    if(user){
+        if(user.email !== ADMIN_EMAIL){
+            alert("ACCESS DENIED");
+            firebase.auth().signOut();
+            return;
+        }
+        adminUser = user;
+        document.getElementById('admin-email-display').innerText = user.email;
+        document.getElementById('admin-login').classList.add('hidden');
+        document.getElementById('admin-dashboard').classList.remove('hidden');
+        loadAllData();
+    }
+});
+
+async function adminLogin(){
+    const email = document.getElementById('admin-email').value.trim();
+    const pass  = document.getElementById('admin-password').value;
+    if(!email || !pass) return alert('Fill all fields');
+    if(email !== ADMIN_EMAIL) return alert('ACCESS DENIED');
+    try {
+        await firebase.auth().signInWithEmailAndPassword(email, pass);
+    } catch(e){ alert('Login failed: ' + e.message); }
+}
+
+function adminLogout(){
+    firebase.auth().signOut().then(()=> location.reload());
+}
+
+// ─── LOAD ALL DATA ───────────────────────────────────────
+async function loadAllData(){
+    // Users (real-time)
+    db.collection('users').orderBy('created_at','desc').onSnapshot((snap)=>{
+        allUsers = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+        updateStats();
+        renderFreeUsers();
+        renderVIPUsers();
+    });
+
+    // Pending Deposits (real-time)
+    db.collection('transactions').where('transaction_type','==','DEPOSIT').where('status','==','pending').orderBy('created_at','desc').onSnapshot((snap)=>{
+        pendingDeposits = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+        document.getElementById('stat-pend-dep').innerText = pendingDeposits.length;
+        renderPendingDeposits();
+    });
+
+    // Pending Withdrawals (real-time)
+    db.collection('transactions').where('transaction_type','==','WITHDRAWAL').where('status','==','pending').orderBy('created_at','desc').onSnapshot((snap)=>{
+        pendingWithdrawals = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+        document.getElementById('stat-pend-wd').innerText = pendingWithdrawals.length;
+        renderPendingWithdrawals();
+    });
+
+    // Complete transactions count
+    db.collection('transactions').where('status','==','success').onSnapshot((snap)=>{
+        document.getElementById('stat-complete').innerText = snap.size;
+    });
+}
+
+// ─── STATS ───────────────────────────────────────────────
+function updateStats(){
+    const total = allUsers.length;
+    const vip   = allUsers.filter(u=> u.is_vip && u.vip_expiry > Date.now()).length;
+    const free  = total - vip;
+    document.getElementById('stat-total').innerText = total;
+    document.getElementById('stat-vip').innerText   = vip;
+    document.getElementById('stat-free').innerText  = free;
+}
+
+// Helper: find user info by id
+function getUserInfo(uid){
+    return allUsers.find(u=> u.id === uid) || null;
+}
+
+// ─── RENDER PENDING DEPOSITS ─────────────────────────────
+function renderPendingDeposits(){
+    const list = document.getElementById('list-deposits');
+    if(pendingDeposits.length === 0){ list.innerHTML='<p class="text-center text-slate-400 py-6">No pending deposits</p>'; return; }
+    list.innerHTML = pendingDeposits.map(tx=>{
+        const user = getUserInfo(tx.user_id);
+        const name  = user ? (user.first_name||'')+' '+(user.last_name||'') : '—';
+        const email = user ? user.email : tx.user_email || '—';
+        const phone = user ? (user.phone||'—') : '—';
+        const method= (tx.payment_method||'—').toUpperCase();
+        const date  = tx.created_at ? new Date(tx.created_at.toDate()).toLocaleString() : '—';
+        return `
+            <div class="border border-slate-200 rounded-xl p-4">
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <p class="text-sm font-bold text-black">${name}</p>
+                        <p class="text-xs text-slate-400">${email}</p>
+                        <p class="text-xs text-slate-400">Phone: ${phone}</p>
+                        <p class="text-xs text-slate-400">${date}</p>
+                    </div>
+                    <span class="badge-pending">Pending</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center mb-3">
+                    <div class="bg-slate-50 p-2 rounded-lg"><p class="text-xs text-slate-400">Amount</p><p class="text-sm font-black text-green-600">$${(tx.amount||0).toFixed(2)}</p></div>
+                    <div class="bg-slate-50 p-2 rounded-lg"><p class="text-xs text-slate-400">Method</p><p class="text-sm font-black text-sky-600">${method}</p></div>
+                    <div class="bg-slate-50 p-2 rounded-lg"><p class="text-xs text-slate-400">TID</p><p class="text-[9px] font-black text-slate-700 break-all">${tx.txid||'—'}</p></div>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="approveTransaction('${tx.id}','${tx.user_id}',${tx.amount},'DEPOSIT')" class="flex-1 bg-green-600 text-white py-2 rounded-xl font-bold text-xs">✅ Approve</button>
+                    <button onclick="openReasonModal('${tx.id}','${tx.user_id}',${tx.amount},'DEPOSIT')" class="flex-1 bg-red-600 text-white py-2 rounded-xl font-bold text-xs">❌ Reject</button>
+                </div>
+            </div>`;
+    }).join('');
+}
+
+// ─── RENDER PENDING WITHDRAWALS ──────────────────────────
+function renderPendingWithdrawals(){
+    const list = document.getElementById('list-withdrawals');
+    if(pendingWithdrawals.length === 0){ list.innerHTML='<p class="text-center text-slate-400 py-6">No pending withdrawals</p>'; return; }
+    list.innerHTML = pendingWithdrawals.map(tx=>{
+        const user = getUserInfo(tx.user_id);
+        const name  = user ? (user.first_name||'')+' '+(user.last_name||'') : '—';
+        const email = user ? user.email : tx.user_email || '—';
+        const phone = user ? (user.phone||'—') : '—';
+        const addr  = tx.wallet_address || '—';
+        const method= (tx.payment_method||'trc20').toUpperCase();
+        const date  = tx.created_at ? new Date(tx.created_at.toDate()).toLocaleString() : '—';
+        return `
+            <div class="border border-slate-200 rounded-xl p-4">
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <p class="text-sm font-bold text-black">${name}</p>
+                        <p class="text-xs text-slate-400">${email}</p>
+                        <p class="text-xs text-slate-400">Phone: ${phone}</p>
+                        <p class="text-xs text-slate-400">${date}</p>
+                    </div>
+                    <span class="badge-pending">Pending</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-center mb-2">
+                    <div class="bg-slate-50 p-2 rounded-lg"><p class="text-xs text-slate-400">Amount</p><p class="text-sm font-black text-red-600">$${(tx.amount||0).toFixed(2)}</p></div>
+                    <div class="bg-slate-50 p-2 rounded-lg"><p class="text-xs text-slate-400">Method</p><p class="text-sm font-black text-sky-600">${method}</p></div>
+                </div>
+                <div class="bg-slate-50 p-2 rounded-lg mb-3"><p class="text-xs text-slate-400">${method==='BINANCE'?'Binance Pay ID':'TRC20 Address'}</p><p class="text-[10px] font-black text-slate-700 break-all">${addr}</p></div>
+                <div class="flex gap-2">
+                    <button onclick="approveTransaction('${tx.id}','${tx.user_id}',${tx.amount},'WITHDRAWAL')" class="flex-1 bg-green-600 text-white py-2 rounded-xl font-bold text-xs">✅ Approve</button>
+                    <button onclick="openReasonModal('${tx.id}','${tx.user_id}',${tx.amount},'WITHDRAWAL')" class="flex-1 bg-red-600 text-white py-2 rounded-xl font-bold text-xs">❌ Reject</button>
+                </div>
+            </div>`;
+    }).join('');
+}
+
+// ─── APPROVE ─────────────────────────────────────────────
+async function approveTransaction(txId, userId, amount, type){
+    if(!confirm(`Approve ${type} of $${amount}?`)) return;
+    try {
+        const batch = db.batch();
+        batch.update(db.collection('transactions').doc(txId), { status:'success' });
+
+        if(type === 'DEPOSIT'){
+            // Add to balance
+            batch.update(db.collection('users').doc(userId), {
+                balance: firebase.firestore.FieldValue.increment(amount)
+            });
+        }
+        // For WITHDRAWAL: amount ALREADY cut from user balance when they submitted
+        // So NO balance change needed here on approval
+
+        await batch.commit();
+        alert('Approved!');
+    } catch(e){ alert('Error: ' + e.message); }
+}
+
+// ─── REJECT (open reason modal) ──────────────────────────
+function openReasonModal(txId, userId, amount, type){
+    _rejectTxId   = txId;
+    _rejectUserId = userId;
+    _rejectAmount = amount;
+    _rejectType   = type;
+    document.getElementById('reason-input').value = '';
+    document.getElementById('reason-modal-title').innerText = `Reject ${type} ($${amount})`;
+    document.getElementById('reason-modal').classList.remove('hidden');
+}
+
+function closeReasonModal(){
+    document.getElementById('reason-modal').classList.add('hidden');
+}
+
+async function submitRejection(){
+    const reason = document.getElementById('reason-input').value.trim();
+    if(!reason) return alert('Enter a reason');
+    
+    // Store reason temporarily
+    window._pendingReason = reason;
+    
+    // Show refund choice modal ONLY for withdrawals
+    if(_rejectType === 'WITHDRAWAL'){
+        document.getElementById('reason-modal').classList.add('hidden');
+        showRefundChoiceModal();
+    } else {
+        // For deposits, just reject without refund option
+        await finalizeRejection(false);
+    }
+}
+
+function showRefundChoiceModal(){
+    const modal = document.createElement('div');
+    modal.id = 'refund-choice-modal';
+    modal.className = 'reason-overlay';
+    modal.innerHTML = `
+        <div class="reason-box">
+            <h3 class="text-lg font-black outfit mb-2">Refund Decision</h3>
+            <p class="text-xs text-slate-500 mb-4">Choose whether to refund the amount to user's balance:</p>
+            <div class="flex gap-3">
+                <button onclick="finalizeRejection(true)" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold text-sm">✅ Refund & Reject</button>
+                <button onclick="finalizeRejection(false)" class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold text-sm">❌ No Refund & Reject</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+}
+
+async function finalizeRejection(shouldRefund){
+    // Remove refund choice modal if exists
+    const refModal = document.getElementById('refund-choice-modal');
+    if(refModal) refModal.remove();
+    
+    try {
+        const batch = db.batch();
+        
+        // Update transaction with rejection
+        batch.update(db.collection('transactions').doc(_rejectTxId), {
+            status: 'rejected',
+            rejection_reason: window._pendingReason,
+            refunded: shouldRefund
+        });
+        
+        // If refund chosen, add amount back to balance
+        if(shouldRefund && _rejectType === 'WITHDRAWAL'){
+            batch.update(db.collection('users').doc(_rejectUserId), {
+                balance: firebase.firestore.FieldValue.increment(_rejectAmount)
+            });
+        }
+        
+        await batch.commit();
+        
+        closeReasonModal();
+        alert(`${_rejectType} rejected. ${shouldRefund ? 'Amount refunded to user.' : 'No refund given.'}`);
+    } catch(e){ 
+        alert('Error: ' + e.message); 
+    }
+}
+
+// ─── RENDER FREE USERS ───────────────────────────────────
+function renderFreeUsers(){
+    const list = document.getElementById('list-free-users');
+    const freeUsers = allUsers.filter(u=> !(u.is_vip && u.vip_expiry > Date.now()));
+    if(freeUsers.length === 0){ list.innerHTML='<p class="text-center text-slate-400 py-6">No free users</p>'; return; }
+    list.innerHTML = freeUsers.map(u=>{
+        const joinDate = u.created_at ? new Date(u.created_at.toDate()).toLocaleDateString() : '—';
+        return `
+            <div class="border border-slate-200 rounded-xl p-4">
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <p class="text-sm font-bold text-black">${(u.first_name||'')+' '+(u.last_name||'')}</p>
+                        <p class="text-xs text-slate-400">${u.email}</p>
+                        <p class="text-xs text-slate-400">Phone: ${u.phone||'—'}</p>
+                        <p class="text-xs text-slate-400">Joined: ${joinDate}</p>
+                    </div>
+                    <span class="badge-pending">FREE</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <div class="bg-slate-50 p-2 rounded-lg"><p class="text-xs text-slate-400">Balance</p><p class="text-sm font-black text-green-600">$${(u.balance||0).toFixed(2)}</p></div>
+                    <div class="bg-slate-50 p-2 rounded-lg"><p class="text-xs text-slate-400">Referrals</p><p class="text-sm font-black text-sky-600">${u.referrals||0}</p></div>
+                    <div class="bg-slate-50 p-2 rounded-lg"><p class="text-xs text-slate-400">Ref Code</p><p class="text-sm font-black text-slate-700">${u.ref_code||'—'}</p></div>
+                </div>
+            </div>`;
+    }).join('');
+}
+
+// ─── RENDER VIP USERS ────────────────────────────────────
+function renderVIPUsers(){
+    const list = document.getElementById('list-vip-users');
+    const vipUsers = allUsers.filter(u=> u.is_vip && u.vip_expiry > Date.now());
+    if(vipUsers.length === 0){ list.innerHTML='<p class="text-center text-slate-400 py-6">No VIP users</p>'; return; }
+    list.innerHTML = vipUsers.map(u=>{
+        const daysLeft  = Math.ceil((u.vip_expiry - Date.now())/(1000*60*60*24));
+        const r1 = u.recovery_session_1;
+        const r2 = u.recovery_session_2;
+        return `
+            <div class="border-2 border-green-500 rounded-xl p-4 bg-green-50">
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <p class="text-sm font-bold text-black">${(u.first_name||'')+' '+(u.last_name||'')}</p>
+                        <p class="text-xs text-slate-600">${u.email}</p>
+                        <p class="text-xs text-slate-600">Phone: ${u.phone||'—'}</p>
+                    </div>
+                    <span class="badge-success">VIP ACTIVE</span>
+                </div>
+                <div class="grid grid-cols-4 gap-2 text-center mb-3">
+                    <div class="bg-white p-2 rounded-lg"><p class="text-xs text-slate-400">Balance</p><p class="text-sm font-black text-green-600">$${(u.balance||0).toFixed(2)}</p></div>
+                    <div class="bg-white p-2 rounded-lg"><p class="text-xs text-slate-400">Referrals</p><p class="text-sm font-black text-sky-600">${u.referrals||0}</p></div>
+                    <div class="bg-white p-2 rounded-lg"><p class="text-xs text-slate-400">Days Left</p><p class="text-sm font-black text-orange-600">${daysLeft}</p></div>
+                    <div class="bg-white p-2 rounded-lg"><p class="text-xs text-slate-400">Recovery</p><p class="text-sm font-black text-green-600">${[r1,r2].filter(s=>s).length}/2</p></div>
+                </div>
+                <!-- Recovery Edit Buttons -->
+                <div class="flex gap-2">
+                    <button onclick="toggleRecovery('${u.id}', 1, ${r1})" class="flex-1 py-2 rounded-xl font-bold text-xs ${r1?'bg-green-100 text-green-700':'bg-slate-100 text-slate-600'}">S1: ${r1?'Active':'Used'}</button>
+                    <button onclick="toggleRecovery('${u.id}', 2, ${r2})" class="flex-1 py-2 rounded-xl font-bold text-xs ${r2?'bg-green-100 text-green-700':'bg-slate-100 text-slate-600'}">S2: ${r2?'Active':'Used'}</button>
+                </div>
+            </div>`;
+    }).join('');
+}
+
+// ─── TOGGLE RECOVERY SESSION (Admin) ─────────────────────
+async function toggleRecovery(userId, session, currentVal){
+    const newVal = !currentVal;
+    const field  = 'recovery_session_' + session;
+    try {
+        await db.collection('users').doc(userId).update({ [field]: newVal });
+        alert(`Recovery Session ${session} set to: ${newVal ? 'Active' : 'Used'}`);
+    } catch(e){ alert('Error: ' + e.message); }
+}
+
+// ─── TAB SWITCHER ────────────────────────────────────────
+function switchAdminTab(tab){
+    ['deposits','withdrawals','free-users','vip-users'].forEach(t=>{
+        document.getElementById('section-'+t).classList.add('hidden');
+        document.getElementById('tab-'+t).classList.remove('active');
+    });
+    document.getElementById('section-'+tab).classList.remove('hidden');
+    document.getElementById('tab-'+tab).classList.add('active');
+}
+</script>
+</body>
+</html>

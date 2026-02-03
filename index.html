@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+    PROJECT: SILVER X SUPREME TERMINAL
+    BUILD: 23.0 — CELEBRATION + SIDEBAR REBUILD
+    OWNER: KING TRADER OFFICIAL
+    DATE: February 3, 2026
+
+    ✅ V23.0 CHANGES (on top of v22):
+    - ALL italic fonts removed → normal everywhere
+    - sky-text: subtle black stroke + light sky shadow added (crystal clear)
+    - VIP popup: X close button on EVERY step
+    - Plan popup: X close button on EVERY step
+    - VIP Unlock → Full celebration screen (confetti + animated benefits)
+    - Join Quotex + Join Pocket buttons added (2 buttons top)
+    - Sidebar rebuilt per spec:
+        Info: Name, Email, Balance, Referrals, Status, Recovery (VIP only)
+        Nav:  YouTube, TikTok, WhatsApp (VIP), Privacy Policy, About Silver X, Logout
+    - About Silver X modal added
+    - All previous v22 features preserved 100%
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SILVER X | SUPREME ELITE TERMINAL</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <!-- FIREBASE SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root { --primary:#0ea5e9; --bg:#F8FAFC; --black:#0F172A; --card:#FFFFFF; --buy:#10B981; --sell:#EF4444; }
+        * { -webkit-tap-highlight-color:transparent; outline:none; box-sizing:border-box; }
+        body { background:var(--bg); color:var(--black); font-family:'Plus Jakarta Sans',sans-serif; overflow-x:hidden; user-select:none; -webkit-user-select:none; }
+        .outfit { font-family:'Space Grotesk',sans-serif; }
+
+        /* ── SKY TEXT: subtle black stroke + light sky glow ── */
+        .sky-text {
+            color: var(--primary);
+            font-weight: 800;
+            -webkit-text-stroke: 0.35px rgba(15,23,42,0.2);
+            text-shadow: 0 0 10px rgba(14,165,233,0.2);
+        }
+
+        .glass-card { background:var(--card); border:1px solid #E2E8F0; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,0.04); }
+        .btn-supreme { background:var(--primary); color:#fff; font-weight:700; border-radius:16px; box-shadow:0 6px 18px rgba(14,165,233,0.3); transition:transform 0.15s; }
+        .btn-supreme:active { transform:scale(0.96); }
+        .btn-supreme:disabled { opacity:0.5; cursor:not-allowed; }
+        .loader { border:3px solid #e5e7eb; border-top:3px solid var(--primary); border-radius:50%; width:18px; height:18px; animation:spin 0.7s linear infinite; display:inline-block; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+
+        /* AI Chip */
+        .ai-chip-hub { width:72px; height:72px; display:flex; align-items:center; justify-content:center; position:relative; }
+        .chorus-rings { position:absolute; inset:0; border:2.5px solid transparent; border-top-color:var(--primary); border-bottom-color:var(--primary); border-radius:50%; animation:spin 3.5s linear infinite; }
+        .ai-core-unit { width:40px; height:40px; background:#000; border-radius:12px; display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-weight:900; color:var(--primary); font-size:11px; box-shadow:0 0 20px rgba(14,165,233,0.4); z-index:10; border:2px solid var(--primary); animation:aiP 2s infinite; }
+        @keyframes aiP { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+
+        /* Ad Gate */
+        #ad-gate-master { position:fixed; inset:0; z-index:99999; background:#FFF; display:none; flex-direction:column; }
+        .ad-timer-label { position:absolute; top:24px; right:16px; background:#000; color:#FFF; padding:8px 16px; border-radius:12px; font-weight:800; font-size:12px; font-family:'Space Grotesk'; z-index:100000; }
+        .ad-terminate-btn { position:absolute; top:24px; left:16px; background:#EF4444; color:#FFF; padding:8px 16px; border-radius:12px; font-weight:800; font-size:11px; display:none; z-index:100000; cursor:pointer; }
+
+        /* Sidebar */
+        .sidebar { position:fixed; inset-y:0; left:0; width:min(320px,85vw); background:#fff; z-index:80000; transform:translateX(-100%); transition:0.4s cubic-bezier(.4,0,.2,1); box-shadow:30px 0 80px rgba(0,0,0,0.12); overflow-y:auto; }
+        .sidebar.active { transform:translateX(0); }
+        .sidebar-dim { position:fixed; inset:0; background:rgba(0,0,0,0.55); backdrop-filter:blur(6px); z-index:75000; display:none; }
+        .hidden { display:none !important; }
+        .nav-active { color:var(--primary) !important; }
+
+        /* Badges */
+        .badge-pending { background:#FFF7ED; color:#EA580C; border:1px solid #FFEDD5; padding:3px 10px; border-radius:8px; font-size:9px; font-weight:800; text-transform:uppercase; }
+        .badge-success { background:#ECFDF5; color:#10B981; border:1px solid #D1FAE5; padding:3px 10px; border-radius:8px; font-size:9px; font-weight:800; text-transform:uppercase; }
+        .badge-rejected { background:#FEF2F2; color:#EF4444; border:1px solid #FEE2E2; padding:3px 10px; border-radius:8px; font-size:9px; font-weight:800; text-transform:uppercase; }
+
+        .box-call { border-color:var(--buy) !important; background:#ECFDF5 !important; }
+        .box-put  { border-color:var(--sell) !important; background:#FEF2F2 !important; }
+
+        .recovery-badge { background:linear-gradient(135deg,#10B981,#059669); color:#fff; padding:3px 10px; border-radius:10px; font-size:9px; font-weight:800; text-transform:uppercase; }
+        .recovery-locked { background:linear-gradient(135deg,#64748B,#475569); color:#fff; padding:3px 10px; border-radius:10px; font-size:9px; font-weight:800; text-transform:uppercase; }
+
+        .leaderboard-rank { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:13px; }
+        .rank-1 { background:linear-gradient(135deg,#FFD700,#FFA500); color:#000; }
+        .rank-2 { background:linear-gradient(135deg,#C0C0C0,#808080); color:#000; }
+        .rank-3 { background:linear-gradient(135deg,#CD7F32,#8B4513); color:#FFF; }
+        .rank-other { background:#E2E8F0; color:#64748B; }
+
+        /* Popups */
+        .popup-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(6px); z-index:100000; display:flex; align-items:center; justify-content:center; padding:16px; }
+        .popup-box { background:#fff; border-radius:22px; padding:28px 24px 24px; max-width:420px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:popUp 0.25s ease-out; max-height:90vh; overflow-y:auto; position:relative; }
+        @keyframes popUp { from{transform:scale(0.88);opacity:0} to{transform:scale(1);opacity:1} }
+
+        /* X close button on popups */
+        .popup-x-btn { position:absolute; top:12px; right:14px; width:28px; height:28px; border-radius:50%; background:#f1f5f9; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:5; transition:background 0.15s; }
+        .popup-x-btn:hover { background:#e2e8f0; }
+        .popup-x-btn:active { transform:scale(0.92); }
+
+        .popup-progress { display:flex; gap:8px; margin-bottom:20px; }
+        .popup-progress-dot { width:11px; height:11px; border-radius:50%; background:#E2E8F0; transition:0.3s; }
+        .popup-progress-dot.active { background:var(--primary); transform:scale(1.2); }
+        .popup-btn-primary { width:100%; background:var(--primary); color:#fff; font-weight:700; border-radius:14px; padding:14px; font-size:13px; text-transform:uppercase; letter-spacing:1px; margin-top:4px; cursor:pointer; border:none; transition:transform 0.15s; }
+        .popup-btn-primary:active { transform:scale(0.96); }
+        .popup-btn-secondary { width:100%; background:#F1F5F9; color:#475569; font-weight:700; border-radius:14px; padding:14px; font-size:13px; text-transform:uppercase; cursor:pointer; border:none; }
+
+        .vip-benefit-item { display:flex; align-items:flex-start; gap:12px; padding:11px 12px; background:#f8fafc; border-radius:13px; border:1px solid #eef2f7; }
+        .vip-benefit-icon { width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,var(--primary),#38bdf8); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+        .plan-calc-row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed #e2e8f0; font-size:11px; }
+        .plan-calc-day { font-weight:800; color:#64748b; }
+        .plan-calc-amount { font-weight:800; color:#10B981; }
+
+        /* Auth input */
+        .auth-input { width:100%; background:#f8fafc; border:1.5px solid #E2E8F0; padding:14px 16px; border-radius:14px; font-weight:700; font-size:13px; color:#0F172A; transition:0.2s; }
+        .auth-input:focus { border-color:var(--primary); background:#fff; }
+        .auth-input::placeholder { color:#94a3b8; }
+
+        /* Method pill */
+        .method-pill { padding:10px 18px; border-radius:12px; border:2px solid #E2E8F0; background:#fff; font-weight:700; font-size:12px; cursor:pointer; transition:0.2s; text-align:center; }
+        .method-pill.active { border-color:var(--primary); background:#eff6ff; color:var(--primary); }
+        .method-pill:active { transform:scale(0.96); }
+
+        /* Milestone claim */
+        .milestone-row { display:flex; align-items:center; justify-content:space-between; background:#f8fafc; padding:12px 14px; border-radius:14px; border:1px solid #eef2f7; }
+        .milestone-claimed { background:#ecfdf5; border-color:#bbf7d0; }
+        .claim-btn { background:var(--primary); color:#fff; padding:6px 16px; border-radius:10px; font-weight:800; font-size:11px; text-transform:uppercase; cursor:pointer; border:none; }
+        .claim-btn:active { transform:scale(0.95); }
+
+        /* Tab pills */
+        .tx-tab { padding:8px 14px; border-radius:10px; font-weight:700; font-size:11px; text-transform:uppercase; color:#94a3b8; cursor:pointer; transition:0.2s; border:none; background:transparent; }
+        .tx-tab.active { background:var(--primary); color:#fff; }
+
+        /* Sidebar nav link */
+        .sb-nav-link { display:flex; align-items:center; gap:11px; padding:11px 13px; border-radius:13px; font-size:13px; font-weight:700; color:#1e293b; cursor:pointer; transition:background 0.15s; border:none; background:transparent; width:100%; text-align:left; }
+        .sb-nav-link:hover { background:#f1f5f9; }
+        .sb-nav-link:active { background:#e2e8f0; }
+        .sb-nav-link .vip-lock { font-size:9px; background:#0ea5e9; color:#fff; padding:2px 7px; border-radius:6px; font-weight:800; margin-left:auto; text-transform:uppercase; }
+        .sb-nav-link .sb-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        
+        /* Body scroll lock */
+        body.modal-open { overflow:hidden; }
+
+        /* Join Buttons */
+        .join-btn { display:flex; align-items:center; justify-content:center; gap:7px; padding:12px 10px; border-radius:16px; font-weight:800; font-size:11px; text-transform:uppercase; color:#fff; text-decoration:none; box-shadow:0 4px 14px rgba(0,0,0,0.2); transition:transform 0.15s; letter-spacing:0.5px; }
+        .join-btn:active { transform:scale(0.94); }
+        .join-btn-quotex { background:linear-gradient(135deg,#2563eb,#3b82f6); }
+        .join-btn-pocket  { background:linear-gradient(135deg,#dc2626,#ef4444); }
+
+        /* ── VIP CELEBRATION ── */
+        .vip-cel-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px); z-index:200000; display:flex; align-items:center; justify-content:center; padding:20px; animation:celFade 0.35s ease; }
+        @keyframes celFade { from{opacity:0} to{opacity:1} }
+        .vip-cel-box { background:linear-gradient(160deg,#0f172a 0%,#1e293b 60%,#0f172a 100%); border-radius:28px; padding:30px 22px 26px; max-width:400px; width:100%; text-align:center; position:relative; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,0.5); }
+        .vip-cel-box::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% -10%,rgba(14,165,233,0.18) 0%,transparent 65%); pointer-events:none; }
+
+        .vip-glow-ring { width:96px; height:96px; border-radius:50%; margin:0 auto 18px; display:flex; align-items:center; justify-content:center; background:conic-gradient(from 0deg,var(--primary),#38bdf8,#7dd3fc,var(--primary)); padding:4px; animation:ringSpin 3s linear infinite; position:relative; z-index:1; }
+        @keyframes ringSpin { to{transform:rotate(360deg)} }
+        .vip-glow-inner { width:100%; height:100%; border-radius:50%; background:#0f172a; display:flex; align-items:center; justify-content:center; }
+
+        .cel-benefit { display:flex; align-items:center; gap:12px; padding:9px 0; position:relative; z-index:1; opacity:0; transform:translateX(-24px); animation:celSlide 0.45s ease forwards; }
+        @keyframes celSlide { to{opacity:1;transform:translateX(0)} }
+        .cel-ben-icon { width:34px; height:34px; border-radius:9px; background:rgba(14,165,233,0.12); border:1px solid rgba(14,165,233,0.22); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .cel-ben-text { text-align:left; }
+        .cel-ben-text .cel-title { color:#fff; font-weight:700; font-size:13px; }
+        .cel-ben-text .cel-sub { color:#7dd3fc; font-size:11px; font-weight:600; }
+
+        /* Confetti */
+        .confetti-piece { position:absolute; width:8px; height:8px; opacity:0; animation:confDrop 2.8s ease-in forwards; z-index:0; }
+        @keyframes confDrop { 0%{opacity:1;transform:translateY(0) rotate(0deg)} 100%{opacity:0;transform:translateY(300px) rotate(900deg)} }
+    </style>
+</head>
+<body>
+
+<!-- ════════════ [1] SPLASH ════════════ -->
+<div id="splash" class="fixed inset-0 z-[100000] bg-white flex flex-col items-center justify-center">
+    <div class="w-14 h-14 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
+    <h1 class="mt-6 text-3xl font-black outfit sky-text uppercase tracking-tight">Silver X</h1>
+    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-4">Initializing...</p>
+</div>
+
+<!-- ════════════ [2] AUTH ════════════ -->
+<div id="auth-screen" class="hidden fixed inset-0 z-[90000] bg-white flex items-center justify-center p-5 overflow-y-auto">
+    <div class="w-full max-w-sm glass-card p-6 sm:p-8 text-center border shadow-xl my-8">
+        <h2 id="auth-title" class="text-3xl font-black outfit mb-1 sky-text uppercase">LOGIN</h2>
+        <p id="auth-subtitle" class="text-[10px] text-slate-400 font-bold uppercase mb-6 tracking-wide">Secure Terminal Access</p>
+
+        <!-- LOGIN -->
+        <div id="login-block" class="space-y-3">
+            <input type="email" id="login-email" placeholder="Email" class="auth-input">
+            <input type="password" id="login-pass" placeholder="Password" class="auth-input">
+            <button onclick="handleLogin()" class="w-full btn-supreme py-4 text-[12px] mt-2 tracking-widest uppercase flex items-center justify-center gap-2" id="login-btn">
+                <span id="login-btn-text">Login Now</span>
+                <div id="login-btn-loader" class="loader hidden"></div>
+            </button>
+            <button onclick="showForgotPassword()" class="sky-text text-[10px] font-bold uppercase tracking-wide">Forgot Password?</button>
+            <p class="text-[11px] font-bold mt-4 text-black"><span class="text-slate-400">New here?</span> <button onclick="showSignup()" class="sky-text underline">Create Account</button></p>
+        </div>
+
+        <!-- SIGNUP -->
+        <div id="signup-block" class="hidden space-y-3">
+            <div class="grid grid-cols-2 gap-3">
+                <input type="text" id="su-fname" placeholder="First Name" class="auth-input">
+                <input type="text" id="su-lname" placeholder="Last Name" class="auth-input">
+            </div>
+            <input type="tel" id="su-phone" placeholder="Phone Number" class="auth-input">
+            <input type="email" id="su-email" placeholder="Email" class="auth-input">
+            <input type="password" id="su-pass" placeholder="Password" class="auth-input">
+            <input type="password" id="su-cpass" placeholder="Confirm Password" class="auth-input">
+            <input type="text" id="su-ref" placeholder="Referral Code (Optional)" class="auth-input" style="border-color:#bae6fd; color:var(--primary);">
+            <div class="flex items-start gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200 text-left">
+                <input type="checkbox" id="su-privacy" class="mt-0.5 w-4 h-4 accent-sky-500 flex-shrink-0">
+                <p class="text-[10px] text-slate-600 font-bold">I have read and accept the <button onclick="openPrivacyPolicy()" class="sky-text underline">Privacy Policy & Terms</button></p>
+            </div>
+            <button onclick="handleSignup()" class="w-full btn-supreme py-4 text-[12px] mt-2 tracking-widest uppercase flex items-center justify-center gap-2" id="signup-btn">
+                <span id="signup-btn-text">Signup Now</span>
+                <div id="signup-btn-loader" class="loader hidden"></div>
+            </button>
+            <p class="text-[11px] font-bold mt-2 text-black"><span class="text-slate-400">Already have account?</span> <button onclick="showLogin()" class="sky-text underline">Login</button></p>
+        </div>
+    </div>
+</div>
+
+<!-- ════════════ [3] AD GATE ════════════ -->
+<div id="ad-gate-master">
+    <div class="ad-timer-label" id="ad-timer-val">15s REMAINING</div>
+    <button onclick="terminateAdStream()" class="ad-terminate-btn flex items-center gap-2"><i data-lucide="power" class="w-3 h-3"></i> EXIT</button>
+    <iframe id="ad-frame" src="" class="w-full h-full border-none bg-white" allow="autoplay"></iframe>
+</div>
+
+<!-- ════════════ [4] MAIN LAYOUT ════════════ -->
+<div id="main-layout" class="hidden min-h-screen pb-24">
+
+    <!-- Sidebar Dim -->
+    <div id="sb-overlay" class="sidebar-dim" onclick="toggleSidebar()"></div>
+
+    <!-- ═══════ SIDEBAR ═══════ -->
+    <aside id="sidebar-main" class="sidebar" style="padding:18px;">
+        <!-- Title + Close -->
+        <div class="flex items-center justify-between mb-5">
+            <h2 class="text-xl font-black outfit sky-text uppercase tracking-tight">Silver X</h2>
+            <button onclick="toggleSidebar()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+
+        <!-- ── USER INFO CARD (6 items + Logout inside) ── -->
+        <div class="glass-card p-4 mb-4 border border-sky-100">
+            <!-- Avatar + Name + Email -->
+            <div class="flex items-center gap-3 mb-3 pb-3" style="border-bottom:1px solid #eef2f7;">
+                <div class="w-11 h-11 rounded-full bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-white flex-shrink-0">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                    <p id="sidebar-name" class="text-[13px] font-black text-black truncate">Loading...</p>
+                    <p id="sidebar-email" class="text-[10px] text-slate-400 font-bold truncate">—</p>
+                </div>
+            </div>
+            <!-- Balance + Referrals -->
+            <div class="grid grid-cols-2 gap-2 mb-3">
+                <div class="bg-slate-50 rounded-xl p-2.5 text-center border border-slate-100">
+                    <p class="text-[8px] text-slate-400 font-bold uppercase">Balance</p>
+                    <p id="sidebar-balance" class="text-[13px] font-black text-green-600 mt-0.5">$0.00</p>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-2.5 text-center border border-slate-100">
+                    <p class="text-[8px] text-slate-400 font-bold uppercase">Referrals</p>
+                    <p id="sidebar-refs" class="text-[13px] font-black sky-text mt-0.5">0</p>
+                </div>
+            </div>
+            <!-- Status + Recovery -->
+            <div class="grid grid-cols-2 gap-2 mb-3">
+                <div class="bg-slate-50 rounded-xl p-2.5 text-center border border-slate-100">
+                    <p class="text-[8px] text-slate-400 font-bold uppercase">Status</p>
+                    <p id="sidebar-vip-status" class="text-[11px] font-black text-slate-400 mt-0.5">FREE</p>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-2.5 text-center border border-slate-100">
+                    <p class="text-[8px] text-slate-400 font-bold uppercase">Recovery</p>
+                    <p id="sidebar-recovery-txt" class="text-[10px] font-black text-slate-400 mt-0.5">VIP Only</p>
+                </div>
+            </div>
+            <!-- Logout Button Inside Box -->
+            <button onclick="handleLogout()" class="w-full bg-red-50 text-red-600 py-2.5 rounded-xl font-bold text-[11px] uppercase flex items-center justify-center gap-2 border border-red-200 hover:bg-red-100 transition-colors">
+                <i data-lucide="log-out" class="w-4 h-4"></i> Logout
+            </button>
+        </div>
+
+        <!-- ── NAV LINKS (6 buttons exactly) ── -->
+        <nav class="space-y-1 mb-2">
+            <a href="https://www.youtube.com/@kingtraderofficial45" target="_blank" class="sb-nav-link">
+                <div class="sb-icon" style="background:#fef2f2;"><i data-lucide="youtube" class="w-4 h-4 text-red-600"></i></div>
+                YouTube
+            </a>
+            <a href="https://www.tiktok.com/@kingtraderofficail" target="_blank" class="sb-nav-link">
+                <div class="sb-icon" style="background:#f1f5f9;"><i data-lucide="music-2" class="w-4 h-4 text-slate-700"></i></div>
+                TikTok
+            </a>
+            <button onclick="openSupport()" class="sb-nav-link">
+                <div class="sb-icon" style="background:#ecfdf5;"><i data-lucide="message-circle" class="w-4 h-4 text-green-600"></i></div>
+                WhatsApp Support
+                <span class="vip-lock">VIP</span>
+            </button>
+            <button onclick="contactForRecovery()" class="sb-nav-link">
+                <div class="sb-icon" style="background:#fef3c7;"><i data-lucide="shield-check" class="w-4 h-4 text-yellow-600"></i></div>
+                Recovery Session
+                <span class="vip-lock">VIP</span>
+            </button>
+            <button onclick="openPrivacyPolicy()" class="sb-nav-link">
+                <div class="sb-icon" style="background:#eff6ff;"><i data-lucide="shield" class="w-4 h-4 text-sky-600"></i></div>
+                Privacy Policy
+            </button>
+            <button onclick="openAboutModal()" class="sb-nav-link">
+                <div class="sb-icon" style="background:#eff6ff;"><i data-lucide="info" class="w-4 h-4 text-sky-600"></i></div>
+                About Silver X
+            </button>
+        </nav>
+    </aside>
+
+    <!-- ═══════ TOP HEADER ═══════ -->
+    <header class="bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-[5000] px-4 py-3 flex items-center justify-between">
+        <button onclick="toggleSidebar()" class="text-slate-500"><i data-lucide="menu" class="w-5 h-5"></i></button>
+        <h1 class="text-base font-black outfit sky-text uppercase tracking-tight">Silver X</h1>
+        <div class="flex items-center gap-2">
+            <span id="header-bal" class="text-[12px] font-black text-green-600">$0.00</span>
+            <button onclick="handleVipClick()" id="vip-main-btn" class="px-3 py-1.5 rounded-xl text-[9px] shadow-md btn-supreme uppercase font-bold">GET VIP</button>
+        </div>
+    </header>
+
+    <!-- ═══════ JOIN BUTTONS (Quotex + Pocket) ═══════ -->
+    <div class="px-4 pt-4">
+        <div class="grid grid-cols-2 gap-3">
+            <a href="https://broker-qx.pro/sign-up/?lid=1696715" target="_blank" class="join-btn join-btn-quotex">
+                <i data-lucide="link" class="w-3.5 h-3.5"></i> Join Quotex
+            </a>
+            <a href="https://po-ru4.click/register?utm_campaign=835777&utm_source=affiliate&utm_medium=sr&a=JbsX5mZ1ZchgeZ&ac=pak_users_2026" target="_blank" class="join-btn join-btn-pocket">
+                <i data-lucide="link" class="w-3.5 h-3.5"></i> Join Pocket
+            </a>
+        </div>
+    </div>
+
+    <!-- ═══════ MAIN CONTENT ═══════ -->
+    <main class="px-4 pt-4">
+
+        <!-- BOT -->
+        <div id="sec-bot">
+            <div id="sec-bot-grid" class="grid grid-cols-2 gap-3"></div>
+        </div>
+
+        <!-- WALLET -->
+        <div id="sec-wallet" class="hidden">
+            <div class="glass-card p-5 mb-4 text-center border-2 border-sky-500">
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mb-1">Available Balance</p>
+                <h2 class="text-4xl font-black outfit sky-text" id="wallet-balance">$0.00</h2>
+                <div class="grid grid-cols-2 gap-3 mt-4">
+                    <button onclick="showDepositModal()" class="bg-green-600 text-white py-3 rounded-2xl font-bold uppercase text-[11px] shadow-lg">Deposit</button>
+                    <button onclick="showWithdrawModal()" class="bg-red-600 text-white py-3 rounded-2xl font-bold uppercase text-[11px] shadow-lg">Withdraw</button>
+                </div>
+            </div>
+            <!-- Tx History -->
+            <div class="glass-card p-4 mb-4">
+                <h3 class="outfit text-base font-black sky-text uppercase tracking-tight mb-3">History</h3>
+                <div class="flex gap-2 mb-3 flex-wrap">
+                    <button onclick="switchTxTab('all')" id="txtab-all" class="tx-tab active">All</button>
+                    <button onclick="switchTxTab('deposit')" id="txtab-deposit" class="tx-tab">Deposit</button>
+                    <button onclick="switchTxTab('withdraw')" id="txtab-withdraw" class="tx-tab">Withdraw</button>
+                    <button onclick="switchTxTab('plan')" id="txtab-plan" class="tx-tab">Plan</button>
+                    <button onclick="switchTxTab('referral')" id="txtab-referral" class="tx-tab">Referral</button>
+                </div>
+                <div id="tx-list" class="space-y-3"></div>
+            </div>
+        </div>
+
+        <!-- INVEST -->
+        <div id="sec-invest" class="hidden">
+            <div id="sec-invest-grid" class="space-y-4"></div>
+        </div>
+
+        <!-- INVITE -->
+        <div id="sec-invite" class="hidden">
+            <div class="grid grid-cols-2 gap-3 mb-4 text-center">
+                <div class="glass-card p-4"><p class="text-slate-400 text-[9px] font-bold uppercase">Invited</p><h2 class="text-2xl font-black mt-1 outfit" id="ref-count">0</h2></div>
+                <div class="glass-card p-4"><p class="text-slate-400 text-[9px] font-bold uppercase">Earnings</p><h2 class="text-2xl font-black mt-1 text-green-600 outfit" id="ref-earnings">$0.00</h2></div>
+            </div>
+            <div class="glass-card p-4 mb-4 text-center border-dashed border-2 border-slate-200">
+                <p class="text-slate-400 text-[9px] font-bold uppercase mb-1">Your Referral Code</p>
+                <h2 class="text-xl font-black sky-text outfit tracking-widest" id="my-ref-code">—</h2>
+                <p class="text-[9px] text-slate-400 mt-2">Free: $0.10/invite | VIP: $0.20/invite</p>
+                <button onclick="copyReferralLink()" class="w-full btn-supreme py-3 rounded-2xl text-[11px] uppercase mt-3">Copy Referral Link</button>
+            </div>
+            <div class="glass-card p-4 mb-4">
+                <h3 class="text-[11px] font-black text-black uppercase tracking-wide mb-3">Milestone Rewards</h3>
+                <div id="milestone-list" class="space-y-2"></div>
+            </div>
+            <div class="glass-card p-4">
+                <h3 class="text-[11px] font-black text-black uppercase tracking-wide mb-3 flex items-center gap-2">
+                    <i data-lucide="trophy" class="w-4 h-4 text-yellow-500"></i> Top Referrers
+                </h3>
+                <div id="leaderboard-list" class="space-y-2"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Nav -->
+    <nav class="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-slate-100 flex justify-around items-center z-[5000] px-4" style="height:72px;">
+        <button onclick="switchTab('bot')" id="nav-bot" class="nav-active flex flex-col items-center gap-0.5 text-sky-600 transition-all"><i data-lucide="cpu" class="w-5 h-5"></i><span class="text-[8px] font-bold uppercase">Bot</span></button>
+        <button onclick="switchTab('wallet')" id="nav-wallet" class="flex flex-col items-center gap-0.5 text-slate-300 transition-all"><i data-lucide="wallet" class="w-5 h-5"></i><span class="text-[8px] font-bold uppercase">Wallet</span></button>
+        <button onclick="switchTab('invest')" id="nav-invest" class="flex flex-col items-center gap-0.5 text-slate-300 transition-all"><i data-lucide="vault" class="w-5 h-5"></i><span class="text-[8px] font-bold uppercase">Invest</span></button>
+        <button onclick="switchTab('invite')" id="nav-invite" class="flex flex-col items-center gap-0.5 text-slate-300 transition-all"><i data-lucide="users" class="w-5 h-5"></i><span class="text-[8px] font-bold uppercase">Earn</span></button>
+    </nav>
+</div>
+
+<!-- ═══ MODAL (deposit / withdraw / privacy / about) ═══ -->
+<div id="modal-overlay" class="hidden fixed inset-0 z-[95000] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="modal-container" class="w-full max-w-md glass-card p-5 sm:p-7 relative bg-white max-h-[90vh] overflow-y-auto" style="border-radius:22px;">
+        <button onclick="closeModal()" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 cursor-pointer"><i data-lucide="x" class="w-4 h-4"></i></button>
+        <div id="modal-body"></div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="fixed top-10 left-1/2 -translate-x-1/2 bg-black text-white px-6 py-3 rounded-full font-bold uppercase text-[10px] tracking-widest shadow-2xl -translate-y-40 transition-all duration-500 z-[99999] border border-slate-800">Alert</div>
+
+<!-- ════════════════════════════════════════════
+     SCRIPTS
+     ════════════════════════════════════════════ -->
+<script src="firebase-config.js"></script>
+<script>
+// ─── CONFIG ──────────────────────────────────────────────────
+const adsCollection = [
+    "https://www.effectivegatecpm.com/zu9fwwufi?key=5c01f6e26f4b9943913f0d36bfa48f6d",
+    "https://www.effectivegatecpm.com/m3re02atee?key=cebdb997452acac01a6d39d48dcb0e68",
+    "https://www.effectivegatecpm.com/njujpaga3n?key=2636c1fb3975328fd5e16e532dda0482",
+    "https://www.effectivegatecpm.com/u03w5rk4?key=d5c708947384bde96b27f42a724b41d9",
+    "https://www.effectivegatecpm.com/szh2badub?key=8aef9f0adbfa95686459aaeeea7db26a",
+    "https://www.effectivegatecpm.com/wzb0ven1?key=87866ac53935e941e61c53d03338eb0a",
+    "https://www.effectivegatecpm.com/d29maviwb?key=f03e146f78029f3a63200d7d63db6e42",
+    "https://www.effectivegatecpm.com/p85rfz3v8?key=b50205713bdb8a8e9b85dc14013c31f7"
+];
+const WALLETS = { binance:"403009858", trc20:"TGzsm8guzbaBsbNa9JLPR3WTRzFRy6B6FG" };
+const VIP_PRICE = 250;
+const PLANS = [
+    {name:"STARTER",price:50,roi:2},{name:"BASIC",price:100,roi:3},{name:"PRO",price:200,roi:4},
+    {name:"ELITE",price:350,roi:5},{name:"MASTER",price:500,roi:6},{name:"SUPREME",price:750,roi:7},
+    {name:"ULTIMATE",price:1000,roi:8}
+];
+const MILESTONES = [{count:100,bonus:5},{count:250,bonus:10},{count:500,bonus:15},{count:1000,bonus:30},{count:5000,bonus:60}];
+const PAIRS = ["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD","USD/CAD","BTC/USDT","ETH/USDT","EUR/GBP","GBP/JPY","EUR/JPY","AUD/CAD","NZD/USD","EUR/AUD","SOL/USDT","BNB/USDT"];
+
+// ─── STATE ───────────────────────────────────────────────────
+let currentUser=null, userData=null, unsubscribeUser=null, unsubscribeTx=null;
+let isProcessing=false, currentTxFilter='all', claimedMilestones=[];
+let state={isVIP:false,vipExpiry:0,adIdx:0,activePair:null,balance:0,plans:{},refCode:'',referrals:0,recoverySessions:[true,true],transactions:[],leaderboard:[]};
+
+// ─── OBFUSCATED SIGNAL ENGINE ────────────────────────────────
+const _SIG=(function(){
+    let _s=(Date.now()^0xDEADBEEF)|1;
+    function _x(){_s^=_s<<13;_s^=_s>>17;_s^=_s<<5;return(_s>>>0);}
+    function _gen(pairIdx){
+        _s=((pairIdx*0x5DEECE66D)^Date.now()^0xCAFEBABE)|1;
+        for(let i=0;i<(pairIdx+3);i++)_x();
+        const r=_x();
+        return{isCall:(r%2)===0, accRaw:(_x()%500)};
+    }
+    return{generate:_gen};
+})();
+
+// ─── URL PARAM ───────────────────────────────────────────────
+function getUrlParam(n){const r=new RegExp('[\\?&]'+n+'=([^&#]*)');const m=r.exec(location.search);return m?decodeURIComponent(m[1].replace(/\+/g,' ')):''}
+
+// ─── INIT ────────────────────────────────────────────────────
+window.addEventListener('load',async()=>{
+    lucide.createIcons();
+    const urlRef=getUrlParam('ref');
+    if(urlRef){showSignup();setTimeout(()=>{document.getElementById('su-ref').value=urlRef;},300);}
+
+    firebase.auth().onAuthStateChanged(async(user)=>{
+        if(user){
+            currentUser=user;
+            await loadUserData();
+            document.getElementById('splash').classList.add('hidden');
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('main-layout').classList.remove('hidden');
+            renderBotCards();renderPlans();renderMilestones();
+        } else {
+            setTimeout(()=>{document.getElementById('splash').classList.add('hidden');document.getElementById('auth-screen').classList.remove('hidden');},1200);
+        }
+    });
+    setInterval(checkVipExpiry,60000);
+});
+
+// ─── AUTH SWITCHERS ──────────────────────────────────────────
+function showLogin(){document.getElementById('login-block').classList.remove('hidden');document.getElementById('signup-block').classList.add('hidden');document.getElementById('auth-title').innerText='LOGIN';document.getElementById('auth-subtitle').innerText='Secure Terminal Access';}
+function showSignup(){document.getElementById('login-block').classList.add('hidden');document.getElementById('signup-block').classList.remove('hidden');document.getElementById('auth-title').innerText='CREATE';document.getElementById('auth-subtitle').innerText='Join Silver X Elite';}
+
+// ─── LOGIN ───────────────────────────────────────────────────
+async function handleLogin(){
+    if(isProcessing)return;
+    const email=document.getElementById('login-email').value.trim();
+    const pass=document.getElementById('login-pass').value;
+    if(!email||!pass)return toast('Fill all fields');
+    isProcessing=true;setBtn('login-btn','login-btn-text','login-btn-loader',false);
+    try{await firebase.auth().signInWithEmailAndPassword(email,pass);toast('Login Successful');}
+    catch(e){toast('Login failed');isProcessing=false;setBtn('login-btn','login-btn-text','login-btn-loader',true);}
+}
+
+// ─── SIGNUP ──────────────────────────────────────────────────
+async function handleSignup(){
+    if(isProcessing)return;
+    const fname=document.getElementById('su-fname').value.trim();
+    const lname=document.getElementById('su-lname').value.trim();
+    const phone=document.getElementById('su-phone').value.trim();
+    const email=document.getElementById('su-email').value.trim();
+    const pass=document.getElementById('su-pass').value;
+    const cpass=document.getElementById('su-cpass').value;
+    const ref=document.getElementById('su-ref').value.trim();
+    const privacy=document.getElementById('su-privacy').checked;
+    if(!fname||!lname)return toast('Enter first & last name');
+    if(!phone||phone.length<7)return toast('Valid phone required');
+    if(!email)return toast('Enter email');
+    if(!pass||pass.length<6)return toast('Password min 6 chars');
+    if(pass!==cpass)return toast('Passwords do not match');
+    if(!privacy)return toast('Accept Privacy Policy');
+    isProcessing=true;setBtn('signup-btn','signup-btn-text','signup-btn-loader',false);
+    try{
+        const result=await firebase.auth().createUserWithEmailAndPassword(email,pass);
+        currentUser=result.user;
+        const refCode="SX-"+Math.floor(1000+Math.random()*9000);
+        await db.collection('users').doc(currentUser.uid).set({
+            email,first_name:fname,last_name:lname,phone,ref_code:refCode,referred_by:ref||null,
+            balance:0,referrals:0,is_vip:false,vip_expiry:0,
+            recovery_session_1:true,recovery_session_2:true,
+            created_at:firebase.firestore.FieldValue.serverTimestamp()
+        });
+        if(ref&&ref.length>3)await processReferralBonus(ref);
+        toast('Account Created!');
+    }catch(e){toast('Error: '+(e.message||'Unknown'));isProcessing=false;setBtn('signup-btn','signup-btn-text','signup-btn-loader',true);}
+}
+
+// ─── FORGOT PASSWORD ─────────────────────────────────────────
+function showForgotPassword(){
+    const email=document.getElementById('login-email').value.trim();
+    if(!email)return toast('Enter email first');
+    firebase.auth().sendPasswordResetEmail(email).then(()=>toast('Reset email sent!')).catch(e=>toast('Error: '+e.message));
+}
+
+// ─── LOAD USER DATA ──────────────────────────────────────────
+async function loadUserData(){
+    if(!currentUser)return;
+    if(unsubscribeUser)unsubscribeUser();
+    if(unsubscribeTx)unsubscribeTx();
+
+    unsubscribeUser=db.collection('users').doc(currentUser.uid).onSnapshot(async(doc)=>{
+        if(!doc.exists)return;
+        userData={id:doc.id,...doc.data()};
+        state.refCode=userData.ref_code;
+        state.balance=parseFloat(userData.balance)||0;
+        state.referrals=userData.referrals||0;
+        state.isVIP=userData.is_vip||false;
+        state.vipExpiry=userData.vip_expiry||0;
+        state.recoverySessions=[userData.recovery_session_1,userData.recovery_session_2];
+        updateBalanceUI();updateVIPUI();updateSidebarInfo();
+        await loadPlans();await loadLeaderboard();await loadClaimedMilestones();
+        renderPlans();renderMilestones();
+    });
+
+    unsubscribeTx=db.collection('transactions').where('user_id','==',currentUser.uid).orderBy('created_at','desc').limit(30).onSnapshot((snap)=>{
+        state.transactions=snap.docs.map(d=>({id:d.id,...d.data()}));
+        renderTransactions();
+    });
+}
+
+// ─── LOAD PLANS / LEADERBOARD / MILESTONES ──────────────────
+async function loadPlans(){
+    const snap=await db.collection('plans').where('user_id','==',currentUser.uid).where('status','==','active').get();
+    state.plans={};
+    snap.forEach(doc=>{const p=doc.data();state.plans[p.plan_index]={docId:doc.id,status:p.status,startedAt:p.started_at,withdrawAt:p.withdraw_available_at,totalReturn:p.total_return};});
+    renderPlans();
+}
+async function loadLeaderboard(){
+    const snap=await db.collection('users').orderBy('referrals','desc').limit(10).get();
+    state.leaderboard=snap.docs.map((d,i)=>({rank:i+1,ref_code:d.data().ref_code,name:(d.data().first_name||'')+' '+(d.data().last_name||''),total_referrals:d.data().referrals||0}));
+    renderLeaderboard();
+}
+async function loadClaimedMilestones(){
+    const snap=await db.collection('referral_bonuses').where('user_id','==',currentUser.uid).get();
+    claimedMilestones=snap.docs.map(d=>d.data().milestone);
+}
+
+// ─── REFERRAL BONUS ──────────────────────────────────────────
+async function processReferralBonus(code){
+    try{
+        const snap=await db.collection('users').where('ref_code','==',code).limit(1).get();
+        if(snap.empty)return;
+        const refDoc=snap.docs[0],refData=refDoc.data();
+        const isVIP=refData.is_vip&&refData.vip_expiry>Date.now();
+        const reward=isVIP?0.20:0.10;
+        await db.collection('users').doc(refDoc.id).update({
+            referrals:firebase.firestore.FieldValue.increment(1),
+            balance:firebase.firestore.FieldValue.increment(reward)
+        });
+    }catch(e){console.error('Ref error:',e);}
+}
+
+// ─── CLAIM MILESTONE ─────────────────────────────────────────
+async function claimMilestone(count,bonus){
+    if(isProcessing)return;
+    if(state.referrals<count)return toast('Not enough referrals');
+    if(claimedMilestones.includes(count))return toast('Already claimed');
+    isProcessing=true;
+    try{
+        await db.collection('users').doc(currentUser.uid).update({balance:firebase.firestore.FieldValue.increment(bonus)});
+        await db.collection('referral_bonuses').add({user_id:currentUser.uid,milestone:count,bonus_amount:bonus,claimed_at:firebase.firestore.FieldValue.serverTimestamp()});
+        claimedMilestones.push(count);isProcessing=false;
+        toast('$'+bonus+' Bonus Claimed!');renderMilestones();
+    }catch(e){isProcessing=false;toast('Error: '+e.message);}
+}
+
+// ─── BOT CARDS ───────────────────────────────────────────────
+function renderBotCards(){
+    document.getElementById('sec-bot-grid').innerHTML=PAIRS.map((p,i)=>{
+        const isVip=i>=8;
+        return`<div onclick="launchAdGate(${i},${isVip})" id="card-${i}" class="glass-card p-3 flex flex-col items-center text-center cursor-pointer ${isVip&&!state.isVIP?'opacity-50 grayscale':''}" style="transition:0.15s;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">
+            <div class="ai-chip-hub mb-1" style="width:60px;height:60px;"><div class="chorus-rings"></div><div class="ai-core-unit" style="width:34px;height:34px;font-size:10px;">AI</div></div>
+            <h3 class="font-black text-black text-[13px] uppercase tracking-wider outfit">${p}</h3>
+            <div id="status-${i}" class="text-[8px] text-slate-400 font-bold uppercase mt-0.5 tracking-widest">${isVip&&!state.isVIP?'LOCKED':'SYNC'}</div>
+            <div id="sig-box-${i}" class="hidden mt-1"><span id="sig-txt-${i}" class="text-xl font-black outfit tracking-tighter">---</span><p class="text-[8px] sky-text font-bold mt-0.5">Acc: <span id="acc-${i}">0</span>%</p></div>
+        </div>`;
+    }).join('');
+}
+
+// ─── PLAN CARDS ──────────────────────────────────────────────
+function renderPlans(){
+    document.getElementById('sec-invest-grid').innerHTML=PLANS.map((pl,idx)=>{
+        const totalReturn=(pl.price+(pl.price*pl.roi/100*7)).toFixed(2);
+        const ap=state.plans[idx];
+        let btnHtml='';
+        if(ap){
+            const now=Date.now();
+            if(now>=ap.withdrawAt){
+                btnHtml=`<button onclick="withdrawPlanReturns(${idx})" class="w-full py-3 rounded-2xl font-bold uppercase text-[11px] shadow-lg text-white" style="background:#22C55E;">Withdraw $${parseFloat(ap.totalReturn).toFixed(2)}</button>`;
+            } else {
+                const d=Math.ceil((ap.withdrawAt-now)/(1000*60*60*24));
+                btnHtml=`<button onclick="toast('Mining: ${d} Days Left')" class="w-full py-3 rounded-2xl font-bold uppercase text-[11px] shadow-lg text-white" style="background:#22C55E;">Mining (${d}d Left)</button>`;
+            }
+        } else {
+            btnHtml=`<button onclick="handlePlanClick(${idx})" class="w-full bg-black text-white py-3 rounded-2xl font-bold uppercase text-[11px] shadow-lg">Activate Plan</button>`;
+        }
+        return`<div class="glass-card p-4 border-b-4 border-sky-500">
+            <div class="flex justify-between items-start mb-3">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${pl.name} Plan</span>
+                <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded font-bold text-black">7 Days</span>
+            </div>
+            <p class="text-3xl font-black outfit sky-text tracking-tight">$${pl.price}</p>
+            <p class="text-green-600 font-bold text-[10px] mt-0.5 uppercase tracking-widest">${pl.roi}% Daily ROI</p>
+            <p class="text-[9px] text-slate-400 leading-relaxed my-3">Total return: <strong>$${totalReturn}</strong></p>
+            ${btnHtml}</div>`;
+    }).join('');
+}
+
+// ─── PLAN POPUP FLOW (3 steps, each with X) ─────────────────
+async function handlePlanClick(idx){
+    if(isProcessing)return;
+    const pl=PLANS[idx];
+    if(state.balance<pl.price)return toast('Insufficient balance! Need $'+pl.price);
+    if(state.plans[idx])return toast('Plan already active');
+    const dp=(pl.price*pl.roi/100).toFixed(2);
+    const tr=(pl.price+(pl.price*pl.roi/100*7)).toFixed(2);
+    const np=(pl.price*pl.roi/100*7).toFixed(2);
+    let db2='';for(let d=1;d<=7;d++)db2+=`<div class="plan-calc-row"><span class="plan-calc-day">Day ${d}</span><span class="plan-calc-amount">+$${dp} → $${(parseFloat(pl.price)+(parseFloat(dp)*d)).toFixed(2)}</span></div>`;
+    showPopupGeneric(`
+        <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
+        <div class="popup-progress"><div class="popup-progress-dot active"></div><div class="popup-progress-dot"></div><div class="popup-progress-dot"></div></div>
+        <h3 class="text-xl font-black outfit mb-3 text-center">${pl.name} PLAN</h3>
+        <div class="space-y-2 mb-3">
+            <div class="flex justify-between p-3 bg-sky-50 rounded-xl border border-sky-200"><span class="text-xs font-bold text-sky-700 uppercase">Investment</span><span class="text-lg font-black">$${pl.price}</span></div>
+            <div class="flex justify-between p-3 bg-green-50 rounded-xl border border-green-200"><span class="text-xs font-bold text-green-700 uppercase">Daily ROI</span><span class="text-lg font-black text-green-600">${pl.roi}%</span></div>
+            <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span class="text-xs font-bold text-slate-600 uppercase">Duration</span><span class="text-sm font-black">7 Days</span></div>
+        </div>
+        <h4 class="text-xs font-black text-black uppercase mb-2 text-center">📊 Daily Breakdown</h4>
+        ${db2}
+        <div class="bg-green-50 p-3 rounded-xl border-2 border-green-500 mt-3 mb-3 text-center"><p class="text-xs text-green-700 font-bold uppercase">Total Return</p><p class="text-3xl font-black text-green-600">$${tr}</p><p class="text-xs text-green-600 font-bold mt-1">Net Profit: $${np}</p></div>
+        <div class="flex gap-3"><button onclick="closePopupGeneric()" class="popup-btn-secondary flex-1">Cancel</button><button onclick="closePopupGeneric();handlePlanClick2(${idx})" class="popup-btn-primary flex-1">Continue →</button></div>`);
+}
+async function handlePlanClick2(idx){
+    const pl=PLANS[idx];
+    showPopupGeneric(`
+        <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
+        <div class="popup-progress"><div class="popup-progress-dot active"></div><div class="popup-progress-dot active"></div><div class="popup-progress-dot"></div></div>
+        <h3 class="text-xl font-black outfit mb-3 text-center">📋 Requirements</h3>
+        <div class="space-y-3 mb-3">
+            <div class="p-3 bg-slate-50 rounded-xl"><p class="text-xs text-slate-500 font-bold uppercase">Your Balance</p><p class="text-2xl font-black">$${state.balance.toFixed(2)}</p></div>
+            <div class="p-3 bg-orange-50 rounded-xl border-2 border-orange-500"><p class="text-xs text-orange-600 font-bold uppercase">Required</p><p class="text-2xl font-black text-orange-600">$${pl.price}</p></div>
+            <div class="p-3 bg-green-50 rounded-xl border-2 border-green-500"><p class="text-xs text-green-700 font-bold uppercase">After</p><p class="text-2xl font-black text-green-600">$${(state.balance-pl.price).toFixed(2)}</p></div>
+        </div>
+        <div class="flex gap-3"><button onclick="closePopupGeneric();handlePlanClick(${idx})" class="popup-btn-secondary flex-1">← Back</button><button onclick="closePopupGeneric();handlePlanClick3(${idx})" class="popup-btn-primary flex-1">Activate →</button></div>`);
+}
+async function handlePlanClick3(idx){
+    if(isProcessing)return;isProcessing=true;
+    const pl=PLANS[idx];
+    const totalReturn=pl.price+(pl.price*pl.roi/100*7);
+    showPopupGeneric(`
+        <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
+        <div class="popup-progress"><div class="popup-progress-dot active"></div><div class="popup-progress-dot active"></div><div class="popup-progress-dot active"></div></div>
+        <h3 class="text-xl font-black outfit mb-3 text-center">⚡ Activating...</h3>
+        <div class="flex flex-col items-center py-6"><div class="w-14 h-14 border-4 border-sky-500 border-t-transparent rounded-full animate-spin mb-3"></div><p class="text-sm text-slate-600 font-bold">Processing...</p></div>`);
+    try{
+        await new Promise(r=>setTimeout(r,3000));
+        const now=Date.now(),withdrawAt=now+(7*24*60*60*1000);
+        const batch=db.batch();
+        batch.update(db.collection('users').doc(currentUser.uid),{balance:firebase.firestore.FieldValue.increment(-pl.price)});
+        const planRef=db.collection('plans').doc();
+        batch.set(planRef,{user_id:currentUser.uid,plan_index:idx,plan_name:pl.name,plan_price:pl.price,plan_roi:pl.roi,total_return:totalReturn,status:'active',started_at:now,withdraw_available_at:withdrawAt,created_at:firebase.firestore.FieldValue.serverTimestamp()});
+        await batch.commit();
+        isProcessing=false;closePopupGeneric();await loadPlans();toast(pl.name+' Plan Activated!');
+    }catch(e){isProcessing=false;closePopupGeneric();toast('Error: '+e.message);}
+}
+
+// ─── WITHDRAW PLAN ───────────────────────────────────────────
+async function withdrawPlanReturns(idx){
+    if(isProcessing)return;isProcessing=true;
+    try{
+        const snap=await db.collection('plans').where('user_id','==',currentUser.uid).where('plan_index','==',idx).where('status','==','active').limit(1).get();
+        if(snap.empty){isProcessing=false;return toast('Plan not found');}
+        const planDoc=snap.docs[0],planData=planDoc.data();
+        if(Date.now()<planData.withdraw_available_at){isProcessing=false;return toast('Not ready yet');}
+        await db.collection('users').doc(currentUser.uid).update({balance:firebase.firestore.FieldValue.increment(planData.total_return)});
+        await db.collection('plans').doc(planDoc.id).update({status:'completed'});
+        isProcessing=false;await loadPlans();toast('$'+planData.total_return.toFixed(2)+' added!');
+    }catch(e){isProcessing=false;toast('Error: '+e.message);}
+}
+
+// ─── VIP POPUP FLOW (3 steps + X on each) ───────────────────
+async function handleVipClick(){
+    if(isProcessing)return;
+    if(state.isVIP&&state.vipExpiry>Date.now()){const d=Math.ceil((state.vipExpiry-Date.now())/(1000*60*60*24));return toast('VIP Active: '+d+' Days Left');}
+    showPopupGeneric(`
+        <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
+        <div class="popup-progress"><div class="popup-progress-dot active"></div><div class="popup-progress-dot"></div><div class="popup-progress-dot"></div></div>
+        <h3 class="text-xl font-black outfit mb-3 text-center">✨ VIP ELITE ACCESS</h3>
+        <div class="space-y-2 mb-3">
+            ${[['sparkles','AD-FREE Experience','No interruptions at all'],['target','16 Premium Pairs','All exclusive pairs unlocked'],['trending-up','95–98% Accuracy','Premium signal accuracy'],['shield-check','2 Recovery Sessions','Protect your trades'],['message-circle','WhatsApp Support','Direct premium support'],['dollar-sign','$0.20 per Referral','Double the reward'],['zap','Fast Withdraw','15 min – 3 hours']].map(b=>`
+                <div class="vip-benefit-item">
+                    <div class="vip-benefit-icon"><i data-lucide="${b[0]}" class="w-4 h-4 text-white"></i></div>
+                    <div><p class="font-bold text-sm text-black">${b[1]}</p><p class="text-xs text-slate-500">${b[2]}</p></div>
+                </div>`).join('')}
+        </div>
+        <div class="bg-sky-50 p-3 rounded-xl border-2 border-sky-500 text-center mb-3">
+            <p class="text-xs text-sky-700 font-bold uppercase">Price</p>
+            <p class="text-3xl font-black sky-text">$${VIP_PRICE}</p>
+            <p class="text-xs text-slate-500">30 Days Full Access</p>
+        </div>
+        <button onclick="closePopupGeneric();handleVipClick2()" class="popup-btn-primary">Continue →</button>`);
+}
+
+async function handleVipClick2(){
+    const can=state.balance>=VIP_PRICE;
+    showPopupGeneric(`
+        <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
+        <div class="popup-progress"><div class="popup-progress-dot active"></div><div class="popup-progress-dot active"></div><div class="popup-progress-dot"></div></div>
+        <h3 class="text-xl font-black outfit mb-3 text-center">✅ Confirm VIP</h3>
+        <div class="space-y-3 mb-3">
+            <div class="p-3 bg-slate-50 rounded-xl"><p class="text-xs text-slate-500 font-bold uppercase">Balance</p><p class="text-2xl font-black">$${state.balance.toFixed(2)}</p></div>
+            <div class="p-3 bg-red-50 rounded-xl border-2 border-red-500"><p class="text-xs text-red-600 font-bold uppercase">VIP Cost</p><p class="text-2xl font-black text-red-600">-$${VIP_PRICE}</p></div>
+            <div class="p-3 rounded-xl border-2 ${can?'bg-green-50 border-green-500':'bg-red-50 border-red-500'}"><p class="text-xs font-bold uppercase ${can?'text-green-700':'text-red-700'}">After</p><p class="text-2xl font-black ${can?'text-green-600':'text-red-600'}">${can?'$'+(state.balance-VIP_PRICE).toFixed(2):'Insufficient'}</p></div>
+        </div>
+        <div class="bg-orange-50 p-3 rounded-xl border-l-4 border-orange-500 mb-3">
+            <p class="text-xs text-orange-700 font-bold">⚠️ $${VIP_PRICE} deducted immediately. 30 days, no auto-renewal.</p>
+        </div>
+        ${can
+            ? `<button onclick="activateVipNow()" id="vip-act-btn" class="popup-btn-primary flex items-center justify-center gap-2"><span id="vip-act-txt">ACTIVATE VIP</span><div id="vip-act-ldr" class="loader hidden"></div></button>`
+            : `<button class="popup-btn-primary opacity-50" disabled>Insufficient Balance</button>
+               <button onclick="closePopupGeneric();switchTab('wallet');showDepositModal();" class="popup-btn-primary mt-2" style="background:#16a34a;">Go Deposit</button>`
+        }`);
+}
+
+async function activateVipNow(){
+    if(isProcessing)return;isProcessing=true;
+    document.getElementById('vip-act-btn').disabled=true;
+    document.getElementById('vip-act-txt').classList.add('hidden');
+    document.getElementById('vip-act-ldr').classList.remove('hidden');
+    await new Promise(r=>setTimeout(r,3000));
+    try{
+        const vipExpiry=Date.now()+(30*24*60*60*1000);
+        await db.collection('users').doc(currentUser.uid).update({
+            balance:firebase.firestore.FieldValue.increment(-VIP_PRICE),
+            is_vip:true,
+            vip_expiry:vipExpiry
+        });
+        isProcessing=false;
+        closePopupGeneric();
+        // Show VIP Celebration!
+        showVipCelebration();
+    }catch(e){
+        isProcessing=false;
+        document.getElementById('vip-act-btn').disabled=false;
+        document.getElementById('vip-act-txt').classList.remove('hidden');
+        document.getElementById('vip-act-ldr').classList.add('hidden');
+        toast('Error: '+e.message);
+    }
+}
+
+// ─── VIP CELEBRATION SCREEN ──────────────────────────────────
+function showVipCelebration(){
+    const benefits=[
+        ['sparkles','Ad-Free Experience','All ads removed instantly'],
+        ['target','16 Trading Pairs','Premium pairs now unlocked'],
+        ['trending-up','95–98% Accuracy','Signal accuracy upgraded'],
+        ['shield-check','2 Recovery Sessions','Now available for you'],
+        ['message-circle','WhatsApp Support','Direct line opened'],
+        ['dollar-sign','$0.20 Referral Reward','Reward doubled'],
+        ['zap','Fast Withdrawals','Priority processing active']
+    ];
+    const colors=['#0ea5e9','#38bdf8','#fbbf24','#fb923c','#f472b6','#a78bfa','#34d399','#60a5fa','#fcd34d'];
+    let confettiHtml='';
+    for(let i=0;i<22;i++){
+        const l=Math.random()*90+3;
+        const delay=(Math.random()*1.4).toFixed(2);
+        const sz=Math.random()*7+5;
+        const isRound=Math.random()>0.4;
+        confettiHtml+=`<div class="confetti-piece" style="left:${l}%;top:${-sz}px;width:${sz}px;height:${isRound?sz:sz*0.6}px;background:${colors[i%colors.length]};animation-delay:${delay}s;border-radius:${isRound?'50%':'3px'};"></div>`;
+    }
+
+    const overlay=document.createElement('div');
+    overlay.className='vip-cel-overlay';
+    overlay.id='vip-celebrate';
+    overlay.innerHTML=`
+        <div class="vip-cel-box">
+            ${confettiHtml}
+            <!-- Glow Ring Crown -->
+            <div class="vip-glow-ring">
+                <div class="vip-glow-inner">
+                    <i data-lucide="crown" class="w-11 h-11 text-yellow-400"></i>
+                </div>
+            </div>
+            <h2 class="text-2xl font-black text-white mb-1" style="position:relative;z-index:1;">VIP UNLOCKED!</h2>
+            <p class="text-sky-300 text-sm font-bold mb-4" style="position:relative;z-index:1;">Welcome to the Elite</p>
+            <!-- Benefits list -->
+            <div style="position:relative;z-index:1;">
+                ${benefits.map((b,i)=>`
+                    <div class="cel-benefit" style="animation-delay:${0.2+i*0.12}s;">
+                        <div class="cel-ben-icon"><i data-lucide="${b[0]}" class="w-4 h-4 text-sky-400"></i></div>
+                        <div class="cel-ben-text"><p class="cel-title">${b[1]}</p><p class="cel-sub">${b[2]}</p></div>
+                    </div>`).join('')}
+            </div>
+            <!-- Continue Button -->
+            <button onclick="closeVipCelebration()" class="w-full mt-5 py-3.5 rounded-2xl font-bold text-white uppercase text-sm" style="position:relative;z-index:1;background:linear-gradient(135deg,#0ea5e9,#38bdf8);box-shadow:0 6px 22px rgba(14,165,233,0.4);">Continue</button>
+        </div>`;
+    document.body.appendChild(overlay);
+    lucide.createIcons();
+}
+function closeVipCelebration(){
+    const el=document.getElementById('vip-celebrate');
+    if(el)el.remove();
+    updateVIPUI();updateSidebarInfo();renderBotCards();
+    toast('🎉 VIP is Active!');
+}
+
+// ─── DEPOSIT MODAL ───────────────────────────────────────────
+let selectedMethod='binance';
+function showDepositModal(){
+    document.getElementById('modal-overlay').classList.remove('hidden');
+    document.body.classList.add('modal-open');
+    document.getElementById('modal-body').innerHTML=`
+        <h2 class="text-xl font-black mb-3 outfit sky-text uppercase">Deposit Funds</h2>
+        <p class="text-[9px] text-slate-400 font-bold uppercase mb-3 text-center">Min: $10 | Max: $10,000</p>
+        <input type="number" id="dep-amount" placeholder="Amount ($)" min="10" max="10000" class="auth-input text-center mb-3">
+        <p class="text-[9px] text-slate-500 font-bold uppercase mb-2 text-center">Select Method</p>
+        <div class="flex gap-3 mb-3">
+            <div onclick="selectDepositMethod('binance')" id="pill-binance" class="method-pill active flex-1">💛 Binance</div>
+            <div onclick="selectDepositMethod('trc20')" id="pill-trc20" class="method-pill flex-1">💚 USDT TRC20</div>
+        </div>
+        <div id="dep-binance-info">
+            <p class="text-[9px] text-slate-400 font-bold uppercase mb-1 text-center">Binance Pay ID</p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 sky-text font-bold text-center text-sm mb-2 select-all">${WALLETS.binance}</div>
+            <img src="binance-qr.jpg" alt="Binance QR" class="w-40 h-40 mx-auto rounded-xl border-2 border-slate-200">
+        </div>
+        <div id="dep-trc20-info" class="hidden">
+            <p class="text-[9px] text-slate-400 font-bold uppercase mb-1 text-center">USDT TRC20 Address</p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 sky-text font-bold text-center text-[10px] mb-2 select-all break-all">${WALLETS.trc20}</div>
+            <img src="usdt-qr.jpg" alt="USDT QR" class="w-40 h-40 mx-auto rounded-xl border-2 border-slate-200">
+        </div>
+        <input type="text" id="dep-txid" placeholder="Transaction Hash / TXID" class="auth-input text-center text-xs mt-3 mb-3" style="color:var(--primary);">
+        <button onclick="submitDeposit()" id="dep-btn" class="w-full btn-supreme py-4 text-[11px] uppercase flex items-center justify-center gap-2">
+            <span id="dep-btn-txt">Submit Deposit</span><div id="dep-btn-ldr" class="loader hidden"></div></button>`;
+    lucide.createIcons();
+}
+function selectDepositMethod(m){
+    selectedMethod=m;
+    document.getElementById('pill-binance').className='method-pill flex-1'+(m==='binance'?' active':'');
+    document.getElementById('pill-trc20').className='method-pill flex-1'+(m==='trc20'?' active':'');
+    document.getElementById('dep-binance-info').classList.toggle('hidden',m!=='binance');
+    document.getElementById('dep-trc20-info').classList.toggle('hidden',m!=='trc20');
+}
+async function submitDeposit(){
+    if(isProcessing)return;
+    const amount=parseFloat(document.getElementById('dep-amount').value);
+    const txid=document.getElementById('dep-txid').value.trim();
+    if(!amount||amount<10)return toast('Min deposit $10');
+    if(amount>10000)return toast('Max deposit $10,000');
+    if(!txid||txid.length<6)return toast('Enter valid TXID');
+    isProcessing=true;setBtn('dep-btn','dep-btn-txt','dep-btn-ldr',false);
+    try{
+        await db.collection('transactions').add({user_id:currentUser.uid,user_email:currentUser.email,transaction_type:'DEPOSIT',amount,status:'pending',txid,payment_method:selectedMethod,created_at:firebase.firestore.FieldValue.serverTimestamp()});
+        isProcessing=false;closeModal();toast('Deposit submitted! Awaiting approval.');
+    }catch(e){isProcessing=false;setBtn('dep-btn','dep-btn-txt','dep-btn-ldr',true);toast('Error: '+e.message);}
+}
+
+// ─── WITHDRAW MODAL ──────────────────────────────────────────
+let selectedWithdrawMethod='trc20'; // default for withdraw
+function showWithdrawModal(){
+    if(state.balance<50)return toast('Min withdrawal $50');
+    document.getElementById('modal-overlay').classList.remove('hidden');
+    document.body.classList.add('modal-open');
+    document.getElementById('modal-body').innerHTML=`
+        <h2 class="text-xl font-black mb-3 outfit sky-text uppercase">Withdraw Funds</h2>
+        <div class="bg-slate-50 p-4 rounded-xl mb-3 text-center border border-slate-100">
+            <p class="text-[9px] font-bold text-slate-400 uppercase">Available</p>
+            <p class="text-2xl font-black">$${state.balance.toFixed(2)}</p>
+            <p class="text-[9px] text-slate-400">Min: $50 | Max: $${state.balance.toFixed(2)}</p>
+        </div>
+        <input type="number" id="wd-amount" placeholder="Amount ($)" min="50" max="${state.balance}" class="auth-input text-center mb-3">
+        
+        <p class="text-[9px] text-slate-500 font-bold uppercase mb-2 text-center">Select Withdrawal Method</p>
+        <div class="flex gap-3 mb-3">
+            <div onclick="selectWithdrawMethod('binance')" id="wd-pill-binance" class="method-pill flex-1">💛 Binance Pay</div>
+            <div onclick="selectWithdrawMethod('trc20')" id="wd-pill-trc20" class="method-pill active flex-1">💚 USDT TRC20</div>
+        </div>
+        
+        <div id="wd-binance-info" class="hidden">
+            <input type="text" id="wd-binance-id" placeholder="Your Binance Pay ID" class="auth-input text-center text-xs mb-3" style="color:var(--primary);">
+        </div>
+        <div id="wd-trc20-info">
+            <input type="text" id="wd-address" placeholder="Your USDT TRC20 Address" class="auth-input text-center text-xs mb-3" style="color:var(--primary);">
+        </div>
+        
+        <button onclick="submitWithdraw()" id="wd-btn" class="w-full btn-supreme py-4 text-[11px] uppercase flex items-center justify-center gap-2">
+            <span id="wd-btn-txt">Submit Withdrawal</span><div id="wd-btn-ldr" class="loader hidden"></div></button>`;
+    lucide.createIcons();
+}
+
+function selectWithdrawMethod(m){
+    selectedWithdrawMethod=m;
+    document.getElementById('wd-pill-binance').className='method-pill flex-1'+(m==='binance'?' active':'');
+    document.getElementById('wd-pill-trc20').className='method-pill flex-1'+(m==='trc20'?' active':'');
+    document.getElementById('wd-binance-info').classList.toggle('hidden',m!=='binance');
+    document.getElementById('wd-trc20-info').classList.toggle('hidden',m!=='trc20');
+}
+
+async function submitWithdraw(){
+    if(isProcessing)return;
+    const amount=parseFloat(document.getElementById('wd-amount').value);
+    let address='';
+    
+    if(selectedWithdrawMethod==='binance'){
+        address=document.getElementById('wd-binance-id').value.trim();
+        if(!address||address.length<5)return toast('Enter valid Binance Pay ID');
+    } else {
+        address=document.getElementById('wd-address').value.trim();
+        if(!address||address.length<10)return toast('Enter valid TRC20 address');
+    }
+    
+    if(!amount||amount<50)return toast('Min withdrawal $50');
+    if(amount>state.balance)return toast('Insufficient balance');
+    
+    isProcessing=true;setBtn('wd-btn','wd-btn-txt','wd-btn-ldr',false);
+    try{
+        // ✅ Cut amount IMMEDIATELY from balance
+        await db.collection('users').doc(currentUser.uid).update({
+            balance:firebase.firestore.FieldValue.increment(-amount)
+        });
+        // Create pending transaction with selected method
+        await db.collection('transactions').add({
+            user_id:currentUser.uid,
+            user_email:currentUser.email,
+            transaction_type:'WITHDRAWAL',
+            amount,
+            status:'pending',
+            wallet_address:address,
+            payment_method:selectedWithdrawMethod,
+            created_at:firebase.firestore.FieldValue.serverTimestamp()
+        });
+        isProcessing=false;closeModal();toast('Withdrawal submitted!');
+    }catch(e){isProcessing=false;setBtn('wd-btn','wd-btn-txt','wd-btn-ldr',true);toast('Error: '+e.message);}
+}
+
+// ─── TRANSACTIONS ────────────────────────────────────────────
+function switchTxTab(f){currentTxFilter=f;['all','deposit','withdraw','plan','referral'].forEach(t=>{document.getElementById('txtab-'+t).className='tx-tab'+(t===f?' active':'');});renderTransactions();}
+function renderTransactions(){
+    const list=document.getElementById('tx-list');if(!list)return;
+    let txs=state.transactions;
+    if(currentTxFilter==='deposit')txs=txs.filter(t=>t.transaction_type==='DEPOSIT');
+    if(currentTxFilter==='withdraw')txs=txs.filter(t=>t.transaction_type==='WITHDRAWAL');
+    if(currentTxFilter==='plan')txs=txs.filter(t=>t.transaction_type==='PLAN'||t.transaction_type==='PLAN_RETURN');
+    if(currentTxFilter==='referral')txs=txs.filter(t=>t.transaction_type==='REFERRAL');
+    if(txs.length===0){list.innerHTML='<p class="text-center text-slate-400 text-xs py-6">No transactions</p>';return;}
+    list.innerHTML=txs.map(t=>{
+        const badge=t.status==='success'?'badge-success':t.status==='rejected'?'badge-rejected':'badge-pending';
+        const isIn=(t.transaction_type==='DEPOSIT'||t.transaction_type==='REFERRAL'||t.transaction_type==='PLAN_RETURN');
+        const icon=isIn?'arrow-down':'arrow-up';
+        const color=isIn?'text-green-600':'text-red-600';
+        const date=t.created_at?new Date(t.created_at.toDate()).toLocaleDateString():'—';
+        const method=t.payment_method?' | '+t.payment_method.toUpperCase():'';
+        let extra='';
+        if(t.status==='rejected'&&t.rejection_reason){
+            extra=`<button onclick="showRejectionReason(\`${t.rejection_reason.replace(/`/g,'\\`')}\`,'${t.transaction_type}','${t.id}',${t.amount})" class="text-[9px] text-red-600 font-bold underline mt-1">View Reason</button>`;
+        }
+        return`<div class="bg-white p-3 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm">
+            <div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center"><i data-lucide="${icon}" class="w-4 h-4 ${color}"></i></div>
+            <div class="text-left"><p class="text-black font-bold uppercase text-[10px] outfit">${t.transaction_type}${method}</p><p class="text-[9px] text-slate-400 font-bold">${date}</p>${extra}</div></div>
+            <div class="text-right"><p class="text-sm font-black ${color}">$${t.amount.toFixed(2)}</p><span class="${badge}">${t.status.toUpperCase()}</span></div></div>`;
+    }).join('');
+    lucide.createIcons();
+}
+function showRejectionReason(reason,type,txId,amount){
+    showPopupGeneric(`
+        <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
+        <h3 class="text-lg font-black outfit mb-3 text-center text-red-600">❌ Rejection Reason</h3>
+        <div class="bg-red-50 p-4 rounded-xl border border-red-200 mb-3"><p class="text-sm text-red-700 font-bold">${reason}</p></div>
+        <button onclick="closePopupGeneric()" class="popup-btn-secondary">Close</button>`);
+}
+// ─── MILESTONES ──────────────────────────────────────────────
+function renderMilestones(){
+    const el=document.getElementById('milestone-list');if(!el)return;
+    el.innerHTML=MILESTONES.map(m=>{
+        const claimed=claimedMilestones.includes(m.count);
+        const reachable=state.referrals>=m.count;
+        return`<div class="milestone-row ${claimed?'milestone-claimed':''}">
+            <div><p class="text-[11px] font-bold text-slate-700">${m.count} Referrals</p><p class="text-[9px] text-slate-400">+$${m.bonus}</p></div>
+            <div class="flex items-center gap-2">${claimed?`<span class="text-[9px] font-bold text-green-600">✓ Claimed</span>`:reachable?`<button onclick="claimMilestone(${m.count},${m.bonus})" class="claim-btn">Claim</button>`:`<span class="text-[9px] font-bold text-slate-400">${state.referrals}/${m.count}</span>`}</div></div>`;
+    }).join('');
+}
+
+// ─── LEADERBOARD ─────────────────────────────────────────────
+function renderLeaderboard(){
+    const el=document.getElementById('leaderboard-list');if(!el)return;
+    if(!state.leaderboard.length){el.innerHTML='<p class="text-center text-slate-400 text-xs py-3">No data</p>';return;}
+    el.innerHTML=state.leaderboard.map(item=>{
+        const rc=item.rank===1?'rank-1':item.rank===2?'rank-2':item.rank===3?'rank-3':'rank-other';
+        return`<div class="flex items-center gap-3 p-2"><div class="leaderboard-rank ${rc}">#${item.rank}</div><div class="flex-1"><p class="text-[11px] font-bold text-black">${item.name||item.ref_code}</p><p class="text-[9px] text-slate-400">${item.total_referrals} referrals</p></div></div>`;
+    }).join('');
+}
+
+// ─── AD GATE & SIGNALS ───────────────────────────────────────
+function launchAdGate(i,vip){
+    state.activePair=i;
+    if(vip&&!state.isVIP)return handleVipClick();
+    if(state.isVIP){showAnalyzingState(i);setTimeout(()=>revealSignal(i),1700);return;}
+    const adGate=document.getElementById('ad-gate-master');
+    const adFrame=document.getElementById('ad-frame');
+    const tmr=document.getElementById('ad-timer-val');
+    adGate.style.display='flex';
+    adFrame.src=adsCollection[state.adIdx];
+    state.adIdx=(state.adIdx+1)%adsCollection.length;
+    const termBtn=document.querySelector('.ad-terminate-btn');
+    if(termBtn)termBtn.style.display='none';
+    let t=15;
+    const c=setInterval(()=>{t--;tmr.innerText=t+'s REMAINING';if(t<=0){clearInterval(c);tmr.innerText='STREAM COMPLETE';if(termBtn)termBtn.style.display='flex';}},1000);
+}
+function terminateAdStream(){document.getElementById('ad-gate-master').style.display='none';document.getElementById('ad-frame').src='';showAnalyzingState(state.activePair);setTimeout(()=>revealSignal(state.activePair),3000);}
+function showAnalyzingState(i){
+    document.getElementById('sig-box-'+i).classList.add('hidden');
+    const card=document.getElementById('card-'+i);card.classList.remove('box-call','box-put');
+    const s=document.getElementById('status-'+i);s.classList.remove('hidden');s.innerText="ANALYZING...";
+    s.className="text-[9px] sky-text font-black uppercase mt-0.5 tracking-widest animate-pulse";
+}
+function revealSignal(i){
+    const sig=_SIG.generate(i);
+    const baseAcc=state.isVIP?94:84;
+    const accuracy=(baseAcc+(sig.accRaw/100)).toFixed(1);
+    document.getElementById('status-'+i).classList.add('hidden');
+    document.getElementById('sig-box-'+i).classList.remove('hidden');
+    const card=document.getElementById('card-'+i);card.classList.remove('box-call','box-put');
+    const txt=document.getElementById('sig-txt-'+i);
+    if(sig.isCall){card.classList.add('box-call');txt.innerText="CALL ↑";txt.className="text-xl font-black outfit text-green-600 animate-pulse tracking-tighter";}
+    else{card.classList.add('box-put');txt.innerText="PUT ↓";txt.className="text-xl font-black outfit text-red-600 animate-pulse tracking-tighter";}
+    document.getElementById('acc-'+i).innerText=accuracy;
+}
+
+// ─── UI UPDATES ──────────────────────────────────────────────
+function updateBalanceUI(){
+    const b='$'+state.balance.toFixed(2);
+    ['header-bal','sidebar-balance','wallet-balance'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerText=b;});
+    const rc=document.getElementById('ref-count');if(rc)rc.innerText=state.referrals;
+    const sr=document.getElementById('sidebar-refs');if(sr)sr.innerText=state.referrals;
+    const rate=state.isVIP?0.20:0.10;
+    const re=document.getElementById('ref-earnings');if(re)re.innerText='$'+(state.referrals*rate).toFixed(2);
+    const mc=document.getElementById('my-ref-code');if(mc)mc.innerText=state.refCode||'—';
+}
+function updateVIPUI(){
+    const btn=document.getElementById('vip-main-btn');
+    const sideVip=document.getElementById('sidebar-vip-status');
+    const sideRec=document.getElementById('sidebar-recovery-txt');
+    if(state.isVIP&&state.vipExpiry>Date.now()){
+        const d=Math.ceil((state.vipExpiry-Date.now())/(1000*60*60*24));
+        if(btn){btn.innerText='VIP ('+d+'D)';btn.style.background='#22C55E';btn.style.boxShadow='0 4px 12px rgba(34,197,94,0.35)';}
+        if(sideVip){sideVip.innerText='VIP ACTIVE';sideVip.className='text-[11px] font-black text-green-600';}
+        if(sideRec){
+            const s1=state.recoverySessions[0]?'Active':'Used';
+            const s2=state.recoverySessions[1]?'Active':'Used';
+            sideRec.innerText='S1:'+s1+' S2:'+s2;
+            sideRec.className='text-[9px] font-bold text-green-600';
+        }
+        // Unlock VIP pairs
+        for(let i=8;i<16;i++){const c=document.getElementById('card-'+i);if(c){c.classList.remove('opacity-50','grayscale');document.getElementById('status-'+i).innerText='SYNC';}}
+    } else {
+        if(btn){btn.innerText='GET VIP';btn.style.background='';btn.style.boxShadow='';}
+        if(sideVip){sideVip.innerText='FREE';sideVip.className='text-[11px] font-black text-slate-400';}
+        if(sideRec){sideRec.innerText='VIP Only';sideRec.className='text-[10px] font-black text-slate-400';}
+    }
+}
+function updateSidebarInfo(){
+    const nameEl=document.getElementById('sidebar-name');
+    const emailEl=document.getElementById('sidebar-email');
+    if(nameEl)nameEl.innerText=((userData.first_name||'')+' '+(userData.last_name||'')).trim()||currentUser.email;
+    if(emailEl)emailEl.innerText=currentUser.email;
+}
+
+// ─── VIP EXPIRY CHECK ────────────────────────────────────────
+async function checkVipExpiry(){
+    if(state.isVIP&&state.vipExpiry>0&&Date.now()>=state.vipExpiry){
+        await db.collection('users').doc(currentUser.uid).update({is_vip:false,vip_expiry:0});
+        toast('VIP Expired');
+    }
+}
+
+// ─── PRIVACY POLICY ──────────────────────────────────────────
+function openPrivacyPolicy(){
+    document.getElementById('modal-overlay').classList.remove('hidden');
+    document.body.classList.add('modal-open');
+    document.getElementById('modal-body').innerHTML=`
+        <h2 class="text-lg font-black mb-4 outfit sky-text uppercase">Legal Immunity Protocol</h2>
+        <div class="h-48 overflow-y-auto pr-1 text-[10px] text-slate-500 font-bold uppercase leading-relaxed text-justify space-y-2">
+            <p><span class="sky-text">1. Simulation Tool:</span> Silver X is a decentralized educational simulation platform. All signals are algorithmic predictions, not financial advice.</p>
+            <p><span class="sky-text">2. Voluntary Contribution:</span> All payments are voluntary donations. No investment contract exists.</p>
+            <p><span class="sky-text">3. Liability Waiver:</span> User waives all rights to file complaints, lawsuits or claims.</p>
+            <p><span class="sky-text">4. Risk Acknowledgment:</span> User accepts 100% liability for all trading losses.</p>
+            <p><span class="sky-text">5. No Refund Policy:</span> All transactions are final and irreversible.</p>
+            <p><span class="sky-text">6. Jurisdiction:</span> Disputes governed by international maritime law.</p>
+            <p><span class="sky-text">7. Data Protection:</span> User data encrypted and stored securely.</p>
+            <p><span class="sky-text">8. Age Restriction:</span> Platform restricted to users 18+ years.</p>
+            <p><span class="sky-text">9. Anti-Money Laundering:</span> Platform complies with international AML standards.</p>
+            <p><span class="sky-text">10. Intellectual Property:</span> All algorithms, code, designs are proprietary.</p>
+            <p><span class="sky-text">11. Service Termination:</span> Admin reserves right to suspend accounts.</p>
+            <p><span class="sky-text">12. Accuracy Disclaimer:</span> Signals are statistical estimates only.</p>
+            <p><span class="sky-text">13. Taxation:</span> User responsible for all tax obligations.</p>
+            <p><span class="sky-text">14. Force Majeure:</span> Platform not liable for service interruptions.</p>
+            <p><span class="sky-text">15. Binding Acceptance:</span> Continued use = irrevocable acceptance.</p>
+        </div>
+        <button onclick="closeModal()" class="w-full bg-black text-white py-3 rounded-2xl font-bold uppercase text-xs mt-4">I Accept</button>`;
+}
+
+// ─── ABOUT SILVER X ──────────────────────────────────────────
+function openAboutModal(){
+    document.getElementById('modal-overlay').classList.remove('hidden');
+    document.body.classList.add('modal-open');
+    document.getElementById('modal-body').innerHTML=`
+        <h2 class="text-lg font-black mb-4 outfit sky-text uppercase">About Silver X</h2>
+        <div class="space-y-3">
+            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0"><i data-lucide="cpu" class="w-5 h-5 text-sky-600"></i></div>
+                <div><p class="text-[13px] font-black text-black">AI-Powered Trading Bot</p><p class="text-[11px] text-slate-500 mt-0.5">Advanced algorithmic analysis generates real-time signals across forex & crypto markets.</p></div>
+            </div>
+            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0"><i data-lucide="shield-check" class="w-5 h-5 text-green-600"></i></div>
+                <div><p class="text-[13px] font-black text-black">100% Secure Platform</p><p class="text-[11px] text-slate-500 mt-0.5">All data encrypted on Firebase. Firestore rules prevent any unauthorized balance changes.</p></div>
+            </div>
+            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0"><i data-lucide="trending-up" class="w-5 h-5 text-sky-600"></i></div>
+                <div><p class="text-[13px] font-black text-black">Investment Plans</p><p class="text-[11px] text-slate-500 mt-0.5">7 plans with 2%–8% daily returns over 7 days. Returns auto-calculated.</p></div>
+            </div>
+            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0"><i data-lucide="users" class="w-5 h-5 text-sky-600"></i></div>
+                <div><p class="text-[13px] font-black text-black">Referral Rewards</p><p class="text-[11px] text-slate-500 mt-0.5">Earn $0.10 (Free) or $0.20 (VIP) per invite + milestone bonuses up to $60.</p></div>
+            </div>
+            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <div class="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center flex-shrink-0"><i data-lucide="crown" class="w-5 h-5 text-yellow-600"></i></div>
+                <div><p class="text-[13px] font-black text-black">VIP Membership</p><p class="text-[11px] text-slate-500 mt-0.5">16 pairs, ad-free, fast withdrawals, WhatsApp support, recovery sessions — $250 for 30 days.</p></div>
+            </div>
+        </div>
+        <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-700 py-3 rounded-2xl font-bold uppercase text-xs mt-4">Close</button>`;
+    lucide.createIcons();
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────
+function closeModal(){document.getElementById('modal-overlay').classList.add('hidden');document.body.classList.remove('modal-open');}
+function toast(msg){const t=document.getElementById('toast');t.innerText=msg;t.classList.remove('-translate-y-40');setTimeout(()=>t.classList.add('-translate-y-40'),2800);}
+function setBtn(btnId,txtId,ldrId,enable){const btn=document.getElementById(btnId),txt=document.getElementById(txtId),ldr=document.getElementById(ldrId);if(!btn)return;btn.disabled=!enable;if(txt)txt.classList.toggle('hidden',!enable);if(ldr)ldr.classList.toggle('hidden',enable);}
+function toggleSidebar(){const sb=document.getElementById('sidebar-main');sb.classList.toggle('active');document.getElementById('sb-overlay').style.display=sb.classList.contains('active')?'block':'none';if(sb.classList.contains('active'))document.body.classList.add('modal-open');else document.body.classList.remove('modal-open');}
+function switchTab(t){
+    ['bot','wallet','invest','invite'].forEach(x=>{
+        document.getElementById('sec-'+x).classList.add('hidden');
+        const n=document.getElementById('nav-'+x);n.classList.remove('nav-active','text-sky-600');n.classList.add('text-slate-300');
+    });
+    document.getElementById('sec-'+t).classList.remove('hidden');
+    const a=document.getElementById('nav-'+t);a.classList.add('nav-active','text-sky-600');a.classList.remove('text-slate-300');
+    document.getElementById('sidebar-main').classList.remove('active');document.getElementById('sb-overlay').style.display='none';
+    lucide.createIcons();
+}
+function openSupport(){if(!state.isVIP)return toast('WhatsApp Support is VIP-only');window.open("https://wa.me/923064391353","_blank");}
+function contactForRecovery(){
+    if(!state.isVIP||state.vipExpiry<=Date.now())return toast('Recovery is VIP-only');
+    const avail=state.recoverySessions.filter(s=>s).length;
+    if(avail===0)return toast('All Recovery Sessions Used');
+    window.open("https://wa.me/923064391353?text=Hi, I want to activate my recovery session","_blank");
+}
+function copyReferralLink(){const link=location.origin+location.pathname+'?ref='+state.refCode;navigator.clipboard.writeText(link).then(()=>toast('Referral Link Copied!')).catch(()=>toast('Copy failed'));}
+function handleLogout(){if(unsubscribeUser)unsubscribeUser();if(unsubscribeTx)unsubscribeTx();firebase.auth().signOut().then(()=>location.reload());}
+
+// ─── GENERIC POPUP ───────────────────────────────────────────
+function showPopupGeneric(html){let el=document.getElementById('generic-popup');if(el)el.remove();el=document.createElement('div');el.className='popup-overlay';el.id='generic-popup';el.innerHTML=`<div class="popup-box">${html}</div>`;document.body.appendChild(el);document.body.classList.add('modal-open');lucide.createIcons();}
+function closePopupGeneric(){const el=document.getElementById('generic-popup');if(el)el.remove();document.body.classList.remove('modal-open');}
+</script>
+</body>
+</html>
