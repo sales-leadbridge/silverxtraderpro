@@ -358,7 +358,7 @@
                     </div>
                 </div>
                 <button onclick="showTransferToMain()" class="w-full mt-2 bg-yellow-500 text-white py-3 rounded-2xl font-bold uppercase text-[11px] shadow-lg">Transfer to Main</button>
-                <p class="text-[9px] text-slate-400 text-center mt-2">Min $100 required to transfer</p>
+                <p class="text-[9px] text-slate-400 text-center mt-2">Min $120 required to transfer</p>
             </div>
             
             <div class="glass-card p-4 mb-4">
@@ -404,6 +404,21 @@
                         <p class="text-[9px] text-amber-600" id="booster-status-txt">Unlock 3 claims/day ($6 total)</p>
                     </div>
                     <button onclick="handleBuyBooster()" id="booster-btn" class="bg-amber-500 text-white px-3 py-2 rounded-xl font-bold text-[10px] uppercase">$30 / 30d</button>
+                </div>
+            </div>
+
+            <!-- PROMO CODE -->
+            <div class="glass-card p-4 mb-4 border border-yellow-200">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="outfit text-[13px] font-black text-yellow-700 uppercase tracking-tight">Promo Code</h3>
+                    <span class="text-[9px] font-bold bg-yellow-100 text-yellow-700 px-2 py-1 rounded-lg">+$0.50 Each</span>
+                </div>
+                <p class="text-[10px] text-slate-500 mb-3">Enter a valid promo code to earn <strong class="text-yellow-600">$0.50</strong> in Earn Wallet. New codes daily on YouTube &amp; TikTok.</p>
+                <div class="flex gap-2">
+                    <input type="text" id="promo-input" placeholder="Enter promo code..." class="flex-1 auth-input text-xs uppercase" style="border-color:#fde68a;letter-spacing:2px;">
+                    <button onclick="redeemPromoCode()" id="promo-btn" class="bg-yellow-500 text-white px-4 py-2 rounded-xl font-bold text-[11px] uppercase flex items-center gap-1 flex-shrink-0">
+                        <i data-lucide="tag" class="w-3 h-3"></i> Redeem
+                    </button>
                 </div>
             </div>
 
@@ -467,16 +482,18 @@ const adsCollection = [
 const WALLETS = { binance:"403009858", trc20:"TGzsm8guzbaBsbNa9JLPR3WTRzFRy6B6FG" };
 const VIP_PRICE = 250;
 const PLANS = [
-    {name:"MICRO",price:10,roi:20},{name:"STARTER",price:20,roi:20},{name:"BASIC",price:40,roi:20},
-    {name:"PRO",price:80,roi:20},{name:"ELITE",price:160,roi:20},{name:"SUPREME",price:320,roi:20}
+    {name:"MICRO",price:20,roi:20},{name:"STARTER",price:40,roi:20},{name:"BASIC",price:80,roi:20},
+    {name:"PRO",price:160,roi:20},{name:"ELITE",price:320,roi:20},{name:"SUPREME",price:640,roi:20}
 ];
-const MILESTONES = [{count:100,bonus:5},{count:250,bonus:10},{count:500,bonus:15},{count:1000,bonus:30},{count:5000,bonus:60}];
+const MILESTONES = [{count:25,bonus:10},{count:50,bonus:20},{count:100,bonus:30},{count:250,bonus:40},{count:500,bonus:50}];
+// Promo codes config (admin manages codes in Firestore 'promo_codes' collection)
+const PROMO_REWARD = 0.50; // default reward per promo code
 const PAIRS = ["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD","USD/CAD","BTC/USDT","ETH/USDT","EUR/GBP","GBP/JPY","EUR/JPY","AUD/CAD","NZD/USD","EUR/AUD","SOL/USDT","BNB/USDT"];
 
 // ─── STATE ───────────────────────────────────────────────────
 let currentUser=null, userData=null, unsubscribeUser=null, unsubscribeTx=null;
 let isProcessing=false, currentTxFilter='all', claimedMilestones=[];
-let state={isVIP:false,vipExpiry:0,adIdx:0,activePair:null,balance:0,earnWallet:0,plans:{},refCode:'',referrals:0,recoverySessions:[true,true],transactions:[],leaderboard:[],adClaimsToday:0,lastAdClaimDate:'',boosterActive:false,boosterExpiry:0};
+let state={isVIP:false,vipExpiry:0,adIdx:0,activePair:null,balance:0,earnWallet:0,plans:{},refCode:'',referrals:0,recoverySessions:[true,true],transactions:[],leaderboard:[],adClaimsToday:0,lastAdClaimDate:'',boosterActive:false,boosterExpiry:0,totalDeposited:0};
 
 // ─── OBFUSCATED SIGNAL ENGINE ────────────────────────────────
 const _SIG=(function(){
@@ -511,7 +528,7 @@ window.addEventListener('load',async()=>{
             // Auto-check 24hr plan maturation on load
             await autoMaturePlans();
         } else {
-            setTimeout(()=>{document.getElementById('splash').classList.add('hidden');document.getElementById('auth-screen').classList.remove('hidden');},1200);
+            window.location.href='landing.html';
         }
     });
     
@@ -699,6 +716,7 @@ async function loadUserData(){
         state.lastAdClaimDate=userData.last_ad_claim_date||'';
         state.boosterActive=userData.booster_active||false;
         state.boosterExpiry=userData.booster_expiry||0;
+        state.totalDeposited=parseFloat(userData.total_deposited)||0;
         
         // ✅ AUTO CHECK VIP EXPIRY ON DATA LOAD
         await checkVipExpiry();
@@ -712,21 +730,21 @@ async function loadUserData(){
         renderPlans();renderMilestones();
     });
 
+    // Compute total deposited from approved deposits
+    db.collection('transactions').where('user_id','==',currentUser.uid)
+        .where('transaction_type','==','DEPOSIT')
+        .where('status','==','success')
+        .get().then(snap=>{
+            let total = 0;
+            snap.forEach(d=>{ total += parseFloat(d.data().amount)||0; });
+            state.totalDeposited = total;
+            // Update userData too so withdrawal check works
+            if(userData) userData.total_deposited = total;
+        });
+
     unsubscribeTx=db.collection('transactions').where('user_id','==',currentUser.uid).orderBy('created_at','desc').limit(30).onSnapshot((snap)=>{
         state.transactions=snap.docs.map(d=>({id:d.id,...d.data()}));
         renderTransactions();
-        // ✅ 3% DEPOSIT COMMISSION: Auto-trigger when admin approves a deposit
-        snap.docChanges().forEach(async(change)=>{
-            if(change.type==='modified'){
-                const tx=change.doc.data();
-                // Only fire when a DEPOSIT transitions to approved AND commission not yet paid
-                if(tx.transaction_type==='DEPOSIT' && tx.status==='approved' && !tx.commission_paid){
-                    // Mark commission as paid first to prevent duplicate triggers
-                    await db.collection('transactions').doc(change.doc.id).update({commission_paid:true});
-                    await triggerDepositCommission(currentUser.uid, tx.amount);
-                }
-            }
-        });
     });
 }
 
@@ -840,10 +858,10 @@ async function claimMilestone(count,bonus){
     if(claimedMilestones.includes(count))return toast('Already claimed');
     isProcessing=true;
     try{
-        await db.collection('users').doc(currentUser.uid).update({balance:firebase.firestore.FieldValue.increment(bonus)});
+        await db.collection('users').doc(currentUser.uid).update({earn_wallet:firebase.firestore.FieldValue.increment(bonus)});
         await db.collection('referral_bonuses').add({user_id:currentUser.uid,milestone:count,bonus_amount:bonus,claimed_at:firebase.firestore.FieldValue.serverTimestamp()});
         claimedMilestones.push(count);isProcessing=false;
-        toast('$'+bonus+' Bonus Claimed!');renderMilestones();
+        toast('$'+bonus+' Bonus added to Earn Wallet!');renderMilestones();
     }catch(e){isProcessing=false;toast('Error: '+e.message);}
 }
 
@@ -1208,9 +1226,9 @@ async function submitDeposit(){
 // ─── WITHDRAW MODAL ──────────────────────────────────────────
 let selectedWithdrawMethod='trc20';
 function showWithdrawModal(){
-    // ✅ WITHDRAWAL SECURITY: Check for active investment plan
-    const hasActivePlan = Object.keys(state.plans).length > 0;
-    if(!hasActivePlan){
+    // ✅ WITHDRAWAL SECURITY: Check if user has deposited at least $20
+    const totalDeposited = userData && userData.total_deposited ? parseFloat(userData.total_deposited) : 0;
+    if(totalDeposited < 20){
         showPopupGeneric(`
             <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
             <div class="flex flex-col items-center text-center py-2">
@@ -1218,19 +1236,20 @@ function showWithdrawModal(){
                     <i data-lucide="lock" class="w-8 h-8 text-red-500"></i>
                 </div>
                 <h3 class="text-xl font-black outfit text-red-600 mb-2">Withdrawal Locked!</h3>
-                <p class="text-sm text-slate-600 font-bold mb-4">You must have at least one active investment of $10 or more to withdraw funds.</p>
+                <p class="text-sm text-slate-600 font-bold mb-4">You must deposit a minimum of <strong>$20</strong> first to unlock withdrawals.</p>
                 <div class="bg-red-50 border border-red-200 rounded-xl p-3 w-full mb-4">
-                    <p class="text-xs text-red-700 font-bold">💡 Activate any investment plan to unlock withdrawals instantly.</p>
+                    <p class="text-xs text-red-700 font-bold">💡 Deposit at least $20 to your account to enable withdrawals.</p>
+                    <p class="text-xs text-red-600 mt-1">Total Deposited: <strong>$${totalDeposited.toFixed(2)}</strong> / $20.00 required</p>
                 </div>
                 <div class="flex gap-3 w-full">
                     <button onclick="closePopupGeneric()" class="popup-btn-secondary flex-1">Close</button>
-                    <button onclick="closePopupGeneric();switchTab('invest')" class="popup-btn-primary flex-1">View Plans</button>
+                    <button onclick="closePopupGeneric();showDepositModal()" class="popup-btn-primary flex-1">Deposit Now</button>
                 </div>
             </div>`);
         lucide.createIcons();
         return;
     }
-    if(state.balance<50)return toast('Min withdrawal $50');
+    if(state.balance<10)return toast('Min withdrawal $10');
     document.getElementById('modal-overlay').classList.remove('hidden');
     document.body.classList.add('modal-open');
     document.getElementById('modal-body').innerHTML=`
@@ -1238,7 +1257,7 @@ function showWithdrawModal(){
         <div class="bg-slate-50 p-4 rounded-xl mb-3 text-center border border-slate-100">
             <p class="text-[9px] font-bold text-slate-400 uppercase">Available</p>
             <p class="text-2xl font-black">$${state.balance.toFixed(2)}</p>
-            <p class="text-[9px] text-slate-400">Min: $50 | Max: $${state.balance.toFixed(2)}</p>
+            <p class="text-[9px] text-slate-400">Min: $10 | Max: $${state.balance.toFixed(2)}</p>
         </div>
         <div class="bg-orange-50 border-l-4 border-orange-500 p-3 rounded-lg mb-3">
             <p class="text-xs font-bold text-orange-700 mb-2">📚 HOW TO WITHDRAW:</p>
@@ -1248,7 +1267,7 @@ function showWithdrawModal(){
                 <li>Submit request - processing takes 15min to 3 hours</li>
             </ol>
         </div>
-        <input type="number" id="wd-amount" placeholder="Amount ($)" min="50" max="${state.balance}" class="auth-input text-center mb-3">
+        <input type="number" id="wd-amount" placeholder="Amount ($)" min="10" max="${state.balance}" class="auth-input text-center mb-3">
         
         <p class="text-[9px] text-slate-500 font-bold uppercase mb-2 text-center">Select Withdrawal Method</p>
         <div class="flex gap-3 mb-3">
@@ -1289,7 +1308,7 @@ async function submitWithdraw(){
         if(!address||address.length<10)return toast('Enter valid TRC20 address');
     }
     
-    if(!amount||amount<50)return toast('Min withdrawal $50');
+    if(!amount||amount<10)return toast('Min withdrawal $10');
     if(amount>state.balance)return toast('Insufficient balance');
     
     isProcessing=true;setBtn('wd-btn','wd-btn-txt','wd-btn-ldr',false);
@@ -1322,11 +1341,11 @@ function renderTransactions(){
     if(currentTxFilter==='deposit')txs=txs.filter(t=>t.transaction_type==='DEPOSIT');
     if(currentTxFilter==='withdraw')txs=txs.filter(t=>t.transaction_type==='WITHDRAWAL');
     if(currentTxFilter==='plan')txs=txs.filter(t=>t.transaction_type==='PLAN'||t.transaction_type==='PLAN_RETURN');
-    if(currentTxFilter==='referral')txs=txs.filter(t=>['REFERRAL','DEPOSIT_COMMISSION','AD_CLAIM','TRANSFER','BOOSTER'].includes(t.transaction_type));
+    if(currentTxFilter==='referral')txs=txs.filter(t=>['REFERRAL','DEPOSIT_COMMISSION','AD_CLAIM','TRANSFER','BOOSTER','PROMO_CODE'].includes(t.transaction_type));
     if(txs.length===0){list.innerHTML='<p class="text-center text-slate-400 text-xs py-6">No transactions</p>';return;}
     list.innerHTML=txs.map(t=>{
         const badge=t.status==='approved'||t.status==='success'?'badge-success':t.status==='rejected'?'badge-rejected':'badge-pending';
-        const isIn=['DEPOSIT','REFERRAL','PLAN_RETURN','AD_CLAIM','DEPOSIT_COMMISSION','TRANSFER'].includes(t.transaction_type);
+        const isIn=['DEPOSIT','REFERRAL','PLAN_RETURN','AD_CLAIM','DEPOSIT_COMMISSION','TRANSFER','PROMO_CODE'].includes(t.transaction_type);
         const icon=isIn?'arrow-down':'arrow-up';
         const color=isIn?'text-green-600':'text-red-600';
         const date=t.created_at?new Date(t.created_at.toDate()).toLocaleDateString():'—';
@@ -1456,7 +1475,7 @@ async function autoMaturePlans(){
 
 // ─── TRANSFER EARN WALLET TO MAIN ────────────────────────────
 function showTransferToMain(){
-    if(state.earnWallet<100){
+    if(state.earnWallet<120){
         showPopupGeneric(`
             <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
             <div class="flex flex-col items-center text-center py-2">
@@ -1464,10 +1483,10 @@ function showTransferToMain(){
                     <i data-lucide="alert-circle" class="w-8 h-8 text-yellow-500"></i>
                 </div>
                 <h3 class="text-xl font-black outfit text-yellow-600 mb-2">Minimum Not Met</h3>
-                <p class="text-sm text-slate-600 mb-3">You need at least <strong>$100.00</strong> in your Earn Wallet to transfer.</p>
+                <p class="text-sm text-slate-600 mb-3">You need at least <strong>$120.00</strong> in your Earn Wallet to transfer.</p>
                 <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 w-full mb-3">
                     <p class="text-xs text-yellow-700 font-bold">Current Earn Wallet: <span class="text-yellow-800 text-sm">$${state.earnWallet.toFixed(2)}</span></p>
-                    <p class="text-xs text-yellow-600 mt-1">Need $${(100-state.earnWallet).toFixed(2)} more</p>
+                    <p class="text-xs text-yellow-600 mt-1">Need $${(120-state.earnWallet).toFixed(2)} more</p>
                 </div>
                 <button onclick="closePopupGeneric()" class="popup-btn-secondary">Got It</button>
             </div>`);
@@ -1690,52 +1709,60 @@ async function checkBoosterExpiry(){
 // ─── 3% DEPOSIT COMMISSION FOR UPLINE ────────────────────────
 // Called after deposit is approved (admin flow) — here we expose a client trigger
 // that credits 3% of deposit amount to referrer's earn wallet
-// ─── 3% DEPOSIT COMMISSION FOR UPLINE ───────────────────────────────────────
-// Triggered automatically when admin approves a downline deposit.
-// Finds the referrer via referred_by (ref_code string) and
-// credits 3% of the deposit amount to their Earn Wallet.
 async function triggerDepositCommission(userId, depositAmount){
     try{
-        if(!depositAmount || depositAmount <= 0) return;
-        const commission = parseFloat((depositAmount * 0.03).toFixed(2));
-        if(commission < 0.01) return; // skip dust amounts
-
-        // Get current user doc to find their referrer
-        const userDoc = await db.collection('users').doc(userId).get();
-        if(!userDoc.exists) return;
-        const udata = userDoc.data();
-        if(!udata.referred_by) return; // no upline, nothing to do
-
-        // Find the referrer by their ref_code stored in referred_by field
-        const snap = await db.collection('users').where('ref_code','==', udata.referred_by).limit(1).get();
-        if(snap.empty) return;
-        const refDoc = snap.docs[0];
-
-        // Prevent self-commission (safety check)
-        if(refDoc.id === userId) return;
-
-        // ✅ Credit 3% to referrer's Earn Wallet
+        const userDoc=await db.collection('users').doc(userId).get();
+        if(!userDoc.exists)return;
+        const udata=userDoc.data();
+        if(!udata.referred_by)return;
+        // Find referrer by ref code
+        const snap=await db.collection('users').where('ref_code','==',udata.referred_by).limit(1).get();
+        if(snap.empty)return;
+        const refDoc=snap.docs[0];
+        const commission=parseFloat((depositAmount*0.03).toFixed(2));
         await db.collection('users').doc(refDoc.id).update({
-            earn_wallet: firebase.firestore.FieldValue.increment(commission)
+            earn_wallet:firebase.firestore.FieldValue.increment(commission)
         });
-
-        // ✅ Log transaction for referrer
         await db.collection('transactions').add({
-            user_id: refDoc.id,
-            transaction_type: 'DEPOSIT_COMMISSION',
-            amount: commission,
-            status: 'approved',
-            notes: `3% deposit commission from referral ($${depositAmount.toFixed(2)} deposit)`,
-            created_at: firebase.firestore.FieldValue.serverTimestamp()
+            user_id:refDoc.id,
+            transaction_type:'DEPOSIT_COMMISSION',
+            amount:commission,
+            status:'approved',
+            notes:`3% deposit commission from referral deposit of $${depositAmount}`,
+            created_at:firebase.firestore.FieldValue.serverTimestamp()
         });
-
-        console.log('✅ Deposit commission: $' + commission + ' credited to ' + refDoc.data().email);
-    } catch(e){
-        console.error('Deposit commission error:', e);
-    }
+    }catch(e){console.error('Deposit commission error:',e);}
 }
 
 // ✅ AUTO-CHECK VIP EXPIRY - RUNS EVERY 30 SECONDS
+// ─── PROMO CODE REDEMPTION ───────────────────────────────────────
+async function redeemPromoCode(){
+    if(isProcessing)return;
+    const inp=document.getElementById('promo-input');
+    const code=(inp?inp.value.trim():'').toUpperCase();
+    if(!code||code.length<3)return toast('Enter a valid promo code');
+    isProcessing=true;
+    const btn=document.getElementById('promo-btn');
+    if(btn)btn.disabled=true;
+    try{
+        const codeDoc=await db.collection('promo_codes').doc(code).get();
+        if(!codeDoc.exists){isProcessing=false;if(btn)btn.disabled=false;return toast('Invalid promo code!');}
+        const cd=codeDoc.data();
+        if(!cd.active){isProcessing=false;if(btn)btn.disabled=false;return toast('Promo code expired!');}
+        if(cd.max_uses&&cd.uses>=cd.max_uses){isProcessing=false;if(btn)btn.disabled=false;return toast('Promo code limit reached!');}
+        const used=await db.collection('promo_redemptions').where('user_id','==',currentUser.uid).where('code','==',code).limit(1).get();
+        if(!used.empty){isProcessing=false;if(btn)btn.disabled=false;return toast('You already used this code!');}
+        const reward=cd.reward||PROMO_REWARD;
+        await db.collection('users').doc(currentUser.uid).update({earn_wallet:firebase.firestore.FieldValue.increment(reward)});
+        await db.collection('promo_redemptions').add({user_id:currentUser.uid,user_email:currentUser.email,code:code,reward:reward,redeemed_at:firebase.firestore.FieldValue.serverTimestamp()});
+        await db.collection('promo_codes').doc(code).update({uses:firebase.firestore.FieldValue.increment(1)});
+        await db.collection('transactions').add({user_id:currentUser.uid,transaction_type:'PROMO_CODE',amount:reward,status:'approved',notes:'Promo code: '+code,created_at:firebase.firestore.FieldValue.serverTimestamp()});
+        if(inp)inp.value='';
+        isProcessing=false;if(btn)btn.disabled=false;
+        toast('Promo redeemed! $'+reward.toFixed(2)+' added to Earn Wallet!');
+    }catch(e){isProcessing=false;if(btn)btn.disabled=false;toast('Error: '+e.message);}
+}
+
 async function checkVipExpiry() {
     if (!currentUser || !userData) return;
     
@@ -1869,7 +1896,7 @@ function openAboutModal(){
             </div>
             <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
                 <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0"><i data-lucide="trending-up" class="w-5 h-5 text-sky-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Investment Plans</p><p class="text-[11px] text-slate-500 mt-0.5">6 plans ($10–$320) with 20% fixed ROI in 24 hours. Capital + profit auto-credited.</p></div>
+                <div><p class="text-[13px] font-black text-black">Investment Plans</p><p class="text-[11px] text-slate-500 mt-0.5">6 plans ($20–$640) with 20% fixed ROI in 24 hours. Capital + profit auto-credited.</p></div>
             </div>
             <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
                 <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0"><i data-lucide="users" class="w-5 h-5 text-sky-600"></i></div>
@@ -1940,8 +1967,7 @@ function handleLogout(){
     
     // Firebase signout and reload
     firebase.auth().signOut().then(()=>{
-        toast('Logged out successfully');
-        setTimeout(()=>location.reload(), 500);
+        window.location.href='landing.html';
     }).catch(e=>{
         console.error('Logout error:', e);
         location.reload(); // Force reload anyway
