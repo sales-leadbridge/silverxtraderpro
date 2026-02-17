@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SILVER X | ADMIN PANEL</title>
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -85,6 +86,9 @@
                 <button onclick="switchAdminTab('withdrawals')" id="tab-withdrawals" class="tab-btn">Withdrawals</button>
                 <button onclick="switchAdminTab('free-users')"  id="tab-free-users"  class="tab-btn">Free Users</button>
                 <button onclick="switchAdminTab('vip-users')"   id="tab-vip-users"   class="tab-btn">VIP Users</button>
+                <button onclick="switchAdminTab('promo-codes')" id="tab-promo-codes" class="tab-btn">🎟 Promo Codes</button>
+                <button onclick="switchAdminTab('broadcast')"   id="tab-broadcast"   class="tab-btn">📢 Broadcast</button>
+                <button onclick="switchAdminTab('tools')"       id="tab-tools"       class="tab-btn">⚙️ Tools</button>
             </div>
         </div>
 
@@ -110,6 +114,190 @@
         <div id="section-vip-users" class="hidden bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
             <h3 class="text-lg font-black outfit mb-4">VIP Users</h3>
             <div id="list-vip-users" class="space-y-4"></div>
+        </div>
+
+        <!-- ✅ NEW: PROMO CODES MANAGEMENT -->
+        <div id="section-promo-codes" class="hidden bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+            <h3 class="text-lg font-black outfit mb-4 text-yellow-600">🎟 Promo Code Manager</h3>
+            <!-- Create Promo Code -->
+            <div class="bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-4 mb-5">
+                <h4 class="font-black text-sm text-yellow-800 mb-3">➕ Create New Promo Code</h4>
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div>
+                        <label class="text-[10px] text-slate-500 font-bold uppercase">Code Name</label>
+                        <input type="text" id="promo-code-name" placeholder="e.g. SILVER50" class="w-full bg-white border border-slate-200 p-3 rounded-xl mt-1 outline-none focus:border-yellow-400 font-bold text-sm uppercase">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-slate-500 font-bold uppercase">Reward Amount ($)</label>
+                        <input type="number" id="promo-code-reward" placeholder="0.50" step="0.01" min="0.10" max="100" value="0.50" class="w-full bg-white border border-slate-200 p-3 rounded-xl mt-1 outline-none focus:border-yellow-400 font-bold text-sm">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div>
+                        <label class="text-[10px] text-slate-500 font-bold uppercase">Max Uses (0 = unlimited)</label>
+                        <input type="number" id="promo-code-max" placeholder="100" min="0" value="100" class="w-full bg-white border border-slate-200 p-3 rounded-xl mt-1 outline-none focus:border-yellow-400 font-bold text-sm">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-slate-500 font-bold uppercase">Expires After (days, 0=never)</label>
+                        <input type="number" id="promo-code-days" placeholder="7" min="0" value="1" class="w-full bg-white border border-slate-200 p-3 rounded-xl mt-1 outline-none focus:border-yellow-400 font-bold text-sm">
+                    </div>
+                </div>
+                <button onclick="createPromoCode()" class="w-full bg-yellow-500 text-white py-3 rounded-xl font-bold text-sm">Create Promo Code</button>
+            </div>
+            <!-- Active Promo Codes List -->
+            <h4 class="font-black text-sm text-slate-700 mb-3">📋 Active Promo Codes</h4>
+            <div id="list-promo-codes" class="space-y-3">
+                <p class="text-center text-slate-400 text-sm py-4">Loading...</p>
+            </div>
+        </div>
+
+        <!-- ✅ NEW: BROADCAST -->
+        <div id="section-broadcast" class="hidden bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+            <h3 class="text-lg font-black outfit mb-4 text-sky-600">📢 Broadcast Notification</h3>
+            <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-4 mb-4">
+                <p class="text-xs text-sky-700 font-bold mb-4">Send a notification/message that all users will see when they open the app.</p>
+                <div class="mb-3">
+                    <label class="text-[10px] text-slate-500 font-bold uppercase">Notification Title</label>
+                    <input type="text" id="bc-title" placeholder="e.g. 🎉 New Promo Code Available!" class="w-full bg-white border border-slate-200 p-3 rounded-xl mt-1 outline-none focus:border-sky-400 font-bold text-sm">
+                </div>
+                <div class="mb-3">
+                    <label class="text-[10px] text-slate-500 font-bold uppercase">Message Body</label>
+                    <textarea id="bc-body" rows="3" placeholder="Enter your message to all users..." class="w-full bg-white border border-slate-200 p-3 rounded-xl mt-1 outline-none focus:border-sky-400 font-bold text-sm resize-none"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="text-[10px] text-slate-500 font-bold uppercase">Type</label>
+                    <select id="bc-type" class="w-full bg-white border border-slate-200 p-3 rounded-xl mt-1 outline-none font-bold text-sm">
+                        <option value="info">ℹ️ Info</option>
+                        <option value="promo">🎟 Promo Alert</option>
+                        <option value="maintenance">🔧 Maintenance</option>
+                        <option value="bonus">💰 Bonus Announcement</option>
+                    </select>
+                </div>
+                <button onclick="sendBroadcast()" class="w-full bg-sky-600 text-white py-3 rounded-xl font-bold text-sm">📤 Send to All Users</button>
+            </div>
+            <h4 class="font-black text-sm text-slate-700 mb-3">📋 Recent Broadcasts</h4>
+            <div id="list-broadcasts" class="space-y-3">
+                <p class="text-center text-slate-400 text-sm py-4">Loading...</p>
+            </div>
+        </div>
+
+        <!-- ✅ NEW: TOOLS -->
+        <div id="section-tools" class="hidden bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+            <h3 class="text-lg font-black outfit mb-5 text-slate-700">⚙️ Admin Tools</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Grant VIP -->
+                <div class="border border-purple-200 rounded-2xl p-4 bg-purple-50">
+                    <h4 class="font-black text-sm text-purple-700 mb-3">👑 Grant VIP to User</h4>
+                    <input type="email" id="tool-vip-email" placeholder="User email" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-2 outline-none font-bold text-xs">
+                    <select id="tool-vip-days" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs">
+                        <option value="7">7 Days</option>
+                        <option value="14">14 Days</option>
+                        <option value="30" selected>30 Days</option>
+                        <option value="60">60 Days</option>
+                        <option value="90">90 Days</option>
+                        <option value="365">1 Year</option>
+                    </select>
+                    <button onclick="grantVIP()" class="w-full bg-purple-600 text-white py-2.5 rounded-xl font-bold text-xs">Grant VIP</button>
+                </div>
+                <!-- Revoke VIP -->
+                <div class="border border-red-200 rounded-2xl p-4 bg-red-50">
+                    <h4 class="font-black text-sm text-red-700 mb-3">🚫 Revoke VIP</h4>
+                    <input type="email" id="tool-revoke-email" placeholder="User email" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs">
+                    <button onclick="revokeVIP()" class="w-full bg-red-600 text-white py-2.5 rounded-xl font-bold text-xs">Revoke VIP</button>
+                </div>
+                <!-- Edit Earn Wallet -->
+                <div class="border border-yellow-200 rounded-2xl p-4 bg-yellow-50">
+                    <h4 class="font-black text-sm text-yellow-700 mb-3">💛 Edit Earn Wallet</h4>
+                    <input type="email" id="tool-earn-email" placeholder="User email" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-2 outline-none font-bold text-xs">
+                    <input type="number" id="tool-earn-amount" placeholder="New earn wallet amount" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs">
+                    <button onclick="editEarnWallet()" class="w-full bg-yellow-500 text-white py-2.5 rounded-xl font-bold text-xs">Update Earn Wallet</button>
+                </div>
+                <!-- Add Balance -->
+                <div class="border border-green-200 rounded-2xl p-4 bg-green-50">
+                    <h4 class="font-black text-sm text-green-700 mb-3">💰 Add to Main Balance</h4>
+                    <input type="email" id="tool-addb-email" placeholder="User email" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-2 outline-none font-bold text-xs">
+                    <input type="number" id="tool-addb-amount" placeholder="Amount to add" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs">
+                    <button onclick="addToBalance()" class="w-full bg-green-600 text-white py-2.5 rounded-xl font-bold text-xs">Add Balance</button>
+                </div>
+                <!-- Deduct Balance -->
+                <div class="border border-orange-200 rounded-2xl p-4 bg-orange-50">
+                    <h4 class="font-black text-sm text-orange-700 mb-3">➖ Deduct from Balance</h4>
+                    <input type="email" id="tool-ddb-email" placeholder="User email" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-2 outline-none font-bold text-xs">
+                    <input type="number" id="tool-ddb-amount" placeholder="Amount to deduct" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs">
+                    <button onclick="deductBalance()" class="w-full bg-orange-600 text-white py-2.5 rounded-xl font-bold text-xs">Deduct Balance</button>
+                </div>
+                <!-- Grant Booster -->
+                <div class="border border-sky-200 rounded-2xl p-4 bg-sky-50">
+                    <h4 class="font-black text-sm text-sky-700 mb-3">🚀 Grant Ad Booster</h4>
+                    <input type="email" id="tool-boost-email" placeholder="User email" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-2 outline-none font-bold text-xs">
+                    <select id="tool-boost-days" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs">
+                        <option value="7">7 Days</option>
+                        <option value="30" selected>30 Days</option>
+                        <option value="60">60 Days</option>
+                    </select>
+                    <button onclick="grantBooster()" class="w-full bg-sky-600 text-white py-2.5 rounded-xl font-bold text-xs">Grant Booster</button>
+                </div>
+                <!-- Set Referrals Count -->
+                <div class="border border-teal-200 rounded-2xl p-4 bg-teal-50">
+                    <h4 class="font-black text-sm text-teal-700 mb-3">👥 Set Referral Count</h4>
+                    <input type="email" id="tool-ref-email" placeholder="User email" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-2 outline-none font-bold text-xs">
+                    <input type="number" id="tool-ref-count" placeholder="New referral count" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs">
+                    <button onclick="setReferrals()" class="w-full bg-teal-600 text-white py-2.5 rounded-xl font-bold text-xs">Set Referrals</button>
+                </div>
+                <!-- Restore Recovery -->
+                <div class="border border-indigo-200 rounded-2xl p-4 bg-indigo-50">
+                    <h4 class="font-black text-sm text-indigo-700 mb-3">♻️ Restore Recovery Sessions</h4>
+                    <input type="email" id="tool-rec-email" placeholder="User email" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs">
+                    <button onclick="restoreRecovery()" class="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-bold text-xs">Restore Both Sessions</button>
+                </div>
+                <!-- Reset Ad Claims -->
+                <div class="border border-pink-200 rounded-2xl p-4 bg-pink-50">
+                    <h4 class="font-black text-sm text-pink-700 mb-3">📺 Reset Ad Claims</h4>
+                    <input type="email" id="tool-ad-email" placeholder="User email" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs">
+                    <button onclick="resetAdClaims()" class="w-full bg-pink-600 text-white py-2.5 rounded-xl font-bold text-xs">Reset Today's Claims</button>
+                </div>
+                <!-- Change Ref Code -->
+                <div class="border border-slate-300 rounded-2xl p-4 bg-slate-50">
+                    <h4 class="font-black text-sm text-slate-700 mb-3">🔑 Change Referral Code</h4>
+                    <input type="email" id="tool-refcode-email" placeholder="User email" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-2 outline-none font-bold text-xs">
+                    <input type="text" id="tool-refcode-new" placeholder="New code (e.g. SX-ELITE)" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs uppercase">
+                    <button onclick="changeRefCode()" class="w-full bg-slate-700 text-white py-2.5 rounded-xl font-bold text-xs">Update Ref Code</button>
+                </div>
+            </div>
+
+            <!-- Plan & Rate Settings -->
+            <div class="mt-6 border-2 border-slate-200 rounded-2xl p-4">
+                <h4 class="font-black text-sm text-slate-700 mb-4">📊 Platform Rate Settings</h4>
+                <p class="text-xs text-slate-500 mb-4">Update platform-wide settings stored in Firestore. App will read these on load.</p>
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 uppercase">Referral Bonus Free ($)</label>
+                        <input type="number" id="cfg-ref-free" placeholder="1.00" step="0.10" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mt-1 outline-none font-bold text-xs">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 uppercase">Referral Bonus VIP ($)</label>
+                        <input type="number" id="cfg-ref-vip" placeholder="2.00" step="0.10" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mt-1 outline-none font-bold text-xs">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 uppercase">VIP Price ($)</label>
+                        <input type="number" id="cfg-vip-price" placeholder="250" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mt-1 outline-none font-bold text-xs">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 uppercase">Deposit Commission (%)</label>
+                        <input type="number" id="cfg-dep-comm" placeholder="3" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mt-1 outline-none font-bold text-xs">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 uppercase">Earn Transfer Min ($)</label>
+                        <input type="number" id="cfg-earn-min" placeholder="120" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mt-1 outline-none font-bold text-xs">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-600 uppercase">Ad Claim Reward ($)</label>
+                        <input type="number" id="cfg-ad-reward" placeholder="2.00" step="0.10" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mt-1 outline-none font-bold text-xs">
+                    </div>
+                </div>
+                <button onclick="saveConfigSettings()" class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold text-sm">💾 Save Platform Settings</button>
+                <button onclick="loadConfigSettings()" class="w-full bg-slate-100 text-slate-700 py-3 rounded-xl font-bold text-sm mt-2">🔄 Load Current Settings</button>
+            </div>
         </div>
     </main>
 </div>
@@ -460,13 +648,333 @@ async function toggleRecovery(userId, session, currentVal){
 
 // ─── TAB SWITCHER ────────────────────────────────────────
 function switchAdminTab(tab){
-    ['deposits','withdrawals','free-users','vip-users'].forEach(t=>{
+    ['deposits','withdrawals','free-users','vip-users','promo-codes','broadcast','tools'].forEach(t=>{
         document.getElementById('section-'+t).classList.add('hidden');
         document.getElementById('tab-'+t).classList.remove('active');
     });
     document.getElementById('section-'+tab).classList.remove('hidden');
     document.getElementById('tab-'+tab).classList.add('active');
+    // Load data for specific tabs
+    if(tab === 'promo-codes') loadPromoCodes();
+    if(tab === 'broadcast') loadBroadcasts();
+    if(tab === 'tools') loadConfigSettings();
 }
+
+// ─── HELPER: Get User by Email ────────────────────────────
+async function getUserByEmail(email) {
+    const snap = await db.collection('users').where('email','==',email.toLowerCase().trim()).limit(1).get();
+    if(snap.empty) throw new Error('User not found: '+email);
+    return { id: snap.docs[0].id, ...snap.docs[0].data() };
+}
+
+// ─── PROMO CODE MANAGEMENT ───────────────────────────────
+async function createPromoCode() {
+    const code = (document.getElementById('promo-code-name').value || '').trim().toUpperCase();
+    const reward = parseFloat(document.getElementById('promo-code-reward').value || 0.50);
+    const maxUses = parseInt(document.getElementById('promo-code-max').value || 100);
+    const days = parseInt(document.getElementById('promo-code-days').value || 1);
+    
+    if(!code || code.length < 3) return alert('⚠️ Enter a valid code name (min 3 chars)');
+    if(isNaN(reward) || reward <= 0) return alert('⚠️ Enter valid reward amount');
+    
+    const expiry = days > 0 ? Date.now() + (days * 24 * 60 * 60 * 1000) : 0;
+    
+    try {
+        await db.collection('promo_codes').doc(code).set({
+            code: code,
+            reward: reward,
+            max_uses: maxUses,
+            uses: 0,
+            active: true,
+            expiry: expiry,
+            days: days,
+            created_by: adminUser.email,
+            created_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert('✅ Promo code "'+code+'" created! Reward: $'+reward.toFixed(2));
+        document.getElementById('promo-code-name').value = '';
+        loadPromoCodes();
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function loadPromoCodes() {
+    const list = document.getElementById('list-promo-codes');
+    list.innerHTML = '<p class="text-center text-slate-400 text-sm py-4">Loading...</p>';
+    try {
+        const snap = await db.collection('promo_codes').orderBy('created_at','desc').limit(50).get();
+        if(snap.empty) { list.innerHTML = '<p class="text-center text-slate-400 text-sm py-4">No promo codes yet</p>'; return; }
+        list.innerHTML = snap.docs.map(d => {
+            const pc = d.data();
+            const expired = pc.expiry > 0 && Date.now() > pc.expiry;
+            const status = !pc.active || expired ? 'EXPIRED/OFF' : 'ACTIVE';
+            const statusColor = status === 'ACTIVE' ? 'text-green-600 bg-green-50 border-green-200' : 'text-red-500 bg-red-50 border-red-200';
+            return `<div class="border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-3">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="font-black text-sm text-slate-800 tracking-widest">${d.id}</span>
+                        <span class="text-[9px] font-bold border px-2 py-0.5 rounded-lg ${statusColor}">${status}</span>
+                    </div>
+                    <p class="text-xs text-slate-500">💰 $${(pc.reward||0).toFixed(2)} | Used: ${pc.uses||0}/${pc.max_uses>0?pc.max_uses:'∞'}</p>
+                    ${pc.expiry > 0 ? `<p class="text-[9px] text-slate-400">Expires: ${new Date(pc.expiry).toLocaleDateString()}</p>` : '<p class="text-[9px] text-slate-400">No expiry</p>'}
+                </div>
+                <div class="flex gap-2 flex-shrink-0">
+                    <button onclick="togglePromoCode('${d.id}',${pc.active})" class="py-1.5 px-3 rounded-lg font-bold text-[10px] ${pc.active?'bg-orange-100 text-orange-700':'bg-green-100 text-green-700'}">${pc.active?'Deactivate':'Activate'}</button>
+                    <button onclick="editPromoReward('${d.id}',${pc.reward})" class="py-1.5 px-3 rounded-lg font-bold text-[10px] bg-sky-100 text-sky-700">Edit $</button>
+                    <button onclick="deletePromoCode('${d.id}')" class="py-1.5 px-3 rounded-lg font-bold text-[10px] bg-red-100 text-red-700">Delete</button>
+                </div>
+            </div>`;
+        }).join('');
+    } catch(e) { list.innerHTML = `<p class="text-red-500 text-sm text-center">${e.message}</p>`; }
+}
+
+async function togglePromoCode(code, currentActive) {
+    try {
+        await db.collection('promo_codes').doc(code).update({ active: !currentActive });
+        loadPromoCodes();
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function editPromoReward(code, currentReward) {
+    const newReward = prompt(`Current reward: $${currentReward}\nEnter new reward amount:`, currentReward);
+    if(!newReward) return;
+    const amount = parseFloat(newReward);
+    if(isNaN(amount) || amount <= 0) return alert('Invalid amount');
+    try {
+        await db.collection('promo_codes').doc(code).update({ reward: amount });
+        alert(`✅ Reward updated to $${amount.toFixed(2)}`);
+        loadPromoCodes();
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function deletePromoCode(code) {
+    if(!confirm(`Delete promo code "${code}"?`)) return;
+    try {
+        await db.collection('promo_codes').doc(code).delete();
+        loadPromoCodes();
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+// ─── BROADCAST ───────────────────────────────────────────
+async function sendBroadcast() {
+    const title = document.getElementById('bc-title').value.trim();
+    const body = document.getElementById('bc-body').value.trim();
+    const type = document.getElementById('bc-type').value;
+    if(!title || !body) return alert('Fill all fields');
+    if(!confirm(`Send broadcast to ALL users?\n\n"${title}"\n${body}`)) return;
+    try {
+        await db.collection('broadcasts').add({
+            title, body, type,
+            sent_by: adminUser.email,
+            active: true,
+            created_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        document.getElementById('bc-title').value = '';
+        document.getElementById('bc-body').value = '';
+        alert('✅ Broadcast sent!');
+        loadBroadcasts();
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function loadBroadcasts() {
+    const list = document.getElementById('list-broadcasts');
+    list.innerHTML = '<p class="text-center text-slate-400 text-sm py-4">Loading...</p>';
+    try {
+        const snap = await db.collection('broadcasts').orderBy('created_at','desc').limit(20).get();
+        if(snap.empty) { list.innerHTML = '<p class="text-center text-slate-400 text-sm py-4">No broadcasts yet</p>'; return; }
+        list.innerHTML = snap.docs.map(d => {
+            const b = d.data();
+            const date = b.created_at ? new Date(b.created_at.toDate()).toLocaleString() : '—';
+            return `<div class="border border-slate-200 rounded-xl p-3">
+                <div class="flex justify-between items-start mb-1">
+                    <p class="text-sm font-black text-black">${b.title}</p>
+                    <button onclick="deleteBroadcast('${d.id}')" class="text-[9px] bg-red-100 text-red-600 px-2 py-1 rounded-lg font-bold">Delete</button>
+                </div>
+                <p class="text-xs text-slate-500 mb-1">${b.body}</p>
+                <p class="text-[9px] text-slate-400">${date}</p>
+            </div>`;
+        }).join('');
+    } catch(e) { list.innerHTML = `<p class="text-red-500 text-sm text-center">${e.message}</p>`; }
+}
+
+async function deleteBroadcast(id) {
+    if(!confirm('Delete this broadcast?')) return;
+    await db.collection('broadcasts').doc(id).delete();
+    loadBroadcasts();
+}
+
+// ─── TOOLS ───────────────────────────────────────────────
+async function grantVIP() {
+    const email = document.getElementById('tool-vip-email').value.trim();
+    const days = parseInt(document.getElementById('tool-vip-days').value);
+    if(!email) return alert('Enter email');
+    try {
+        const user = await getUserByEmail(email);
+        const expiry = Date.now() + (days * 24 * 60 * 60 * 1000);
+        await db.collection('users').doc(user.id).update({ is_vip: true, vip_expiry: expiry });
+        await db.collection('admin_actions').add({ admin_email: adminUser.email, action: 'grant_vip', user_id: user.id, days, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert(`✅ VIP granted to ${email} for ${days} days!`);
+        document.getElementById('tool-vip-email').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function revokeVIP() {
+    const email = document.getElementById('tool-revoke-email').value.trim();
+    if(!email) return alert('Enter email');
+    try {
+        const user = await getUserByEmail(email);
+        await db.collection('users').doc(user.id).update({ is_vip: false, vip_expiry: 0 });
+        alert(`✅ VIP revoked for ${email}`);
+        document.getElementById('tool-revoke-email').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function editEarnWallet() {
+    const email = document.getElementById('tool-earn-email').value.trim();
+    const amount = parseFloat(document.getElementById('tool-earn-amount').value);
+    if(!email) return alert('Enter email');
+    if(isNaN(amount) || amount < 0) return alert('Enter valid amount');
+    try {
+        const user = await getUserByEmail(email);
+        await db.collection('users').doc(user.id).update({ earn_wallet: amount });
+        await db.collection('admin_actions').add({ admin_email: adminUser.email, action: 'edit_earn_wallet', user_id: user.id, amount, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert(`✅ Earn wallet set to $${amount.toFixed(2)} for ${email}`);
+        document.getElementById('tool-earn-email').value = '';
+        document.getElementById('tool-earn-amount').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function addToBalance() {
+    const email = document.getElementById('tool-addb-email').value.trim();
+    const amount = parseFloat(document.getElementById('tool-addb-amount').value);
+    if(!email) return alert('Enter email');
+    if(isNaN(amount) || amount <= 0) return alert('Enter valid amount');
+    try {
+        const user = await getUserByEmail(email);
+        await db.collection('users').doc(user.id).update({ balance: firebase.firestore.FieldValue.increment(amount) });
+        await db.collection('transactions').add({ user_id: user.id, transaction_type: 'ADMIN_CREDIT', amount, status: 'approved', notes: 'Admin credit by '+adminUser.email, created_at: firebase.firestore.FieldValue.serverTimestamp() });
+        alert(`✅ $${amount.toFixed(2)} added to ${email}'s balance`);
+        document.getElementById('tool-addb-email').value = '';
+        document.getElementById('tool-addb-amount').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function deductBalance() {
+    const email = document.getElementById('tool-ddb-email').value.trim();
+    const amount = parseFloat(document.getElementById('tool-ddb-amount').value);
+    if(!email) return alert('Enter email');
+    if(isNaN(amount) || amount <= 0) return alert('Enter valid amount');
+    if(!confirm(`Deduct $${amount} from ${email}?`)) return;
+    try {
+        const user = await getUserByEmail(email);
+        const newBal = Math.max(0, (user.balance||0) - amount);
+        await db.collection('users').doc(user.id).update({ balance: newBal });
+        await db.collection('admin_actions').add({ admin_email: adminUser.email, action: 'deduct_balance', user_id: user.id, amount, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert(`✅ $${amount.toFixed(2)} deducted from ${email}. New balance: $${newBal.toFixed(2)}`);
+        document.getElementById('tool-ddb-email').value = '';
+        document.getElementById('tool-ddb-amount').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function grantBooster() {
+    const email = document.getElementById('tool-boost-email').value.trim();
+    const days = parseInt(document.getElementById('tool-boost-days').value);
+    if(!email) return alert('Enter email');
+    try {
+        const user = await getUserByEmail(email);
+        const expiry = Date.now() + (days * 24 * 60 * 60 * 1000);
+        await db.collection('users').doc(user.id).update({ booster_active: true, booster_expiry: expiry });
+        alert(`✅ Ad Booster granted to ${email} for ${days} days!`);
+        document.getElementById('tool-boost-email').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function setReferrals() {
+    const email = document.getElementById('tool-ref-email').value.trim();
+    const count = parseInt(document.getElementById('tool-ref-count').value);
+    if(!email) return alert('Enter email');
+    if(isNaN(count) || count < 0) return alert('Enter valid count');
+    try {
+        const user = await getUserByEmail(email);
+        await db.collection('users').doc(user.id).update({ referrals: count });
+        alert(`✅ Referral count set to ${count} for ${email}`);
+        document.getElementById('tool-ref-email').value = '';
+        document.getElementById('tool-ref-count').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function restoreRecovery() {
+    const email = document.getElementById('tool-rec-email').value.trim();
+    if(!email) return alert('Enter email');
+    try {
+        const user = await getUserByEmail(email);
+        await db.collection('users').doc(user.id).update({ recovery_session_1: true, recovery_session_2: true });
+        alert(`✅ Both recovery sessions restored for ${email}`);
+        document.getElementById('tool-rec-email').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function resetAdClaims() {
+    const email = document.getElementById('tool-ad-email').value.trim();
+    if(!email) return alert('Enter email');
+    try {
+        const user = await getUserByEmail(email);
+        await db.collection('users').doc(user.id).update({ ad_claims_today: 0, last_ad_claim_date: '' });
+        alert(`✅ Ad claims reset for ${email}`);
+        document.getElementById('tool-ad-email').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function changeRefCode() {
+    const email = document.getElementById('tool-refcode-email').value.trim();
+    const newCode = (document.getElementById('tool-refcode-new').value || '').trim().toUpperCase();
+    if(!email) return alert('Enter email');
+    if(!newCode || newCode.length < 3) return alert('Enter valid new code');
+    try {
+        const user = await getUserByEmail(email);
+        // Check uniqueness
+        const existing = await db.collection('users').where('ref_code','==',newCode).limit(1).get();
+        if(!existing.empty && existing.docs[0].id !== user.id) return alert('Code already taken by another user!');
+        await db.collection('users').doc(user.id).update({ ref_code: newCode });
+        alert(`✅ Referral code updated to "${newCode}" for ${email}`);
+        document.getElementById('tool-refcode-email').value = '';
+        document.getElementById('tool-refcode-new').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+// ─── CONFIG SETTINGS ─────────────────────────────────────
+async function saveConfigSettings() {
+    const cfg = {
+        ref_bonus_free: parseFloat(document.getElementById('cfg-ref-free').value) || 1,
+        ref_bonus_vip: parseFloat(document.getElementById('cfg-ref-vip').value) || 2,
+        vip_price: parseFloat(document.getElementById('cfg-vip-price').value) || 250,
+        deposit_commission_pct: parseFloat(document.getElementById('cfg-dep-comm').value) || 3,
+        earn_transfer_min: parseFloat(document.getElementById('cfg-earn-min').value) || 120,
+        ad_claim_reward: parseFloat(document.getElementById('cfg-ad-reward').value) || 2,
+        updated_at: firebase.firestore.FieldValue.serverTimestamp(),
+        updated_by: adminUser.email
+    };
+    if(!confirm('Save these platform settings?')) return;
+    try {
+        await db.collection('config').doc('platform').set(cfg, { merge: true });
+        alert('✅ Platform settings saved! App will use these on next load.');
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function loadConfigSettings() {
+    try {
+        const doc = await db.collection('config').doc('platform').get();
+        if(!doc.exists) { alert('No config saved yet. Using defaults.'); return; }
+        const cfg = doc.data();
+        if(cfg.ref_bonus_free) document.getElementById('cfg-ref-free').value = cfg.ref_bonus_free;
+        if(cfg.ref_bonus_vip) document.getElementById('cfg-ref-vip').value = cfg.ref_bonus_vip;
+        if(cfg.vip_price) document.getElementById('cfg-vip-price').value = cfg.vip_price;
+        if(cfg.deposit_commission_pct) document.getElementById('cfg-dep-comm').value = cfg.deposit_commission_pct;
+        if(cfg.earn_transfer_min) document.getElementById('cfg-earn-min').value = cfg.earn_transfer_min;
+        if(cfg.ad_claim_reward) document.getElementById('cfg-ad-reward').value = cfg.ad_claim_reward;
+    } catch(e) { console.error('Config load error:', e); }
+}
+
+
 
 // ✅ FIX: User Search Functions
 async function searchUser(){
