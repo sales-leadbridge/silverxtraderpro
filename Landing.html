@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silver X Trader - Best Quotex Signal Bot & Investment Platform | 98% Accuracy</title>
+    <meta name="description" content="Silver X Trader - AI-powered Quotex signal bot with 98% accuracy. Invest with 20% daily returns in 24 hours. Join 15,000+ traders today!">
+    <meta name="keywords" content="quotex signals, binary options bot, quotex signal bot, AI trading signals, investment opportunity, daily profit, CALL PUT signals, forex trading, crypto signals, referral program, daily claim">
+    <meta name="author" content="Silver X Trader">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://silverxtrader.com/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://silverxtrader.com/">
+    <meta property="og:title" content="Silver X Trader - Best Quotex Signal Bot">
+    <meta property="og:description" content="98% accuracy AI signals. 20% daily profit. Join today!">
+    <meta property="twitter:card" content="summary_large_image">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Silver X Trader","applicationCategory":"FinanceApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","ratingCount":"15000"}}</script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root {
+            --sky:#0ea5e9; --sky2:#38bdf8; --gold:#F59E0B; --green:#10B981;
+            --dark:#060B14; --dark2:#0D1629; --card:#0F1E35;
+            --border:rgba(14,165,233,0.18);
+        }
+        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        body {
+            font-family:'DM Sans',sans-serif;
+            background:var(--dark);
+            color:#E2E8F0;
+            margin:0; padding:0; overflow-x:hidden;
+        }
+        .syne { font-family:'Syne',sans-serif; }
+
+        /* ── NOISE TEXTURE OVERLAY ── */
+        body::before {
+            content:'';
+            position:fixed; inset:0;
+            background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events:none; z-index:0; opacity:0.4;
+        }
+
+        /* ── GLOW ORBS ── */
+        .orb { position:fixed; border-radius:50%; filter:blur(120px); pointer-events:none; z-index:0; }
+        .orb-1 { width:500px;height:500px;background:rgba(14,165,233,0.12);top:-200px;right:-150px; }
+        .orb-2 { width:400px;height:400px;background:rgba(16,185,129,0.08);bottom:-100px;left:-100px; }
+        .orb-3 { width:300px;height:300px;background:rgba(245,158,11,0.06);top:50%;left:50%;transform:translate(-50%,-50%); }
+
+        /* ── SKY TEXT ── */
+        .sky-text { color:var(--sky); }
+        .gold-text { color:var(--gold); }
+        .green-text { color:var(--green); }
+        .grad-text {
+            background:linear-gradient(135deg,var(--sky) 0%,var(--sky2) 40%,#7dd3fc 100%);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+        }
+
+        /* ── CARDS ── */
+        .card {
+            background:var(--card);
+            border:1.5px solid var(--border);
+            border-radius:20px;
+            position:relative; overflow:hidden;
+        }
+        .card-glow { box-shadow:0 0 0 1px var(--border),0 12px 48px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.04); }
+        .card::before {
+            content:''; position:absolute;
+            top:0;left:0;right:0;height:1px;
+            background:linear-gradient(90deg,transparent,rgba(14,165,233,0.4),transparent);
+        }
+
+        /* ── BUTTONS ── */
+        .btn-sky {
+            background:linear-gradient(135deg,#0284c7,#0ea5e9,#38bdf8);
+            color:white; font-weight:700; padding:14px 28px; border-radius:14px;
+            border:none; cursor:pointer; font-family:'Syne',sans-serif;
+            font-size:13px; letter-spacing:0.5px;
+            box-shadow:0 6px 24px rgba(14,165,233,0.35),inset 0 1px 0 rgba(255,255,255,0.2);
+            transition:all 0.2s; position:relative; overflow:hidden;
+        }
+        .btn-sky::after { content:''; position:absolute;inset:0;background:linear-gradient(135deg,transparent 0%,rgba(255,255,255,0.08) 50%,transparent 100%); }
+        .btn-sky:hover { transform:translateY(-2px); box-shadow:0 10px 32px rgba(14,165,233,0.45); }
+        .btn-sky:active { transform:scale(0.97); }
+        .btn-outline {
+            background:transparent; color:var(--sky); font-weight:700;
+            padding:14px 28px; border-radius:14px;
+            border:1.5px solid var(--border); cursor:pointer;
+            font-family:'Syne',sans-serif; font-size:13px;
+            transition:all 0.2s;
+        }
+        .btn-outline:hover { border-color:var(--sky); background:rgba(14,165,233,0.08); }
+        .btn-gold {
+            background:linear-gradient(135deg,#d97706,#f59e0b,#fbbf24);
+            color:#1a0a00; font-weight:800; padding:14px 28px; border-radius:14px;
+            border:none; cursor:pointer; font-family:'Syne',sans-serif;
+            font-size:13px; letter-spacing:0.5px;
+            box-shadow:0 6px 24px rgba(245,158,11,0.35);
+            transition:all 0.2s;
+        }
+        .btn-gold:hover { transform:translateY(-2px); box-shadow:0 10px 32px rgba(245,158,11,0.5); }
+
+        /* ── INPUT ── */
+        .inp {
+            width:100%; background:rgba(255,255,255,0.04);
+            border:1.5px solid var(--border); padding:14px 16px;
+            border-radius:12px; font-weight:600; font-size:14px;
+            color:#e2e8f0; transition:all 0.2s; outline:none;
+            font-family:'DM Sans',sans-serif;
+        }
+        .inp:focus { border-color:var(--sky); background:rgba(14,165,233,0.06); box-shadow:0 0 0 3px rgba(14,165,233,0.1); }
+        .inp::placeholder { color:#475569; }
+
+        /* ── TICKER ── */
+        .ticker-wrap { overflow:hidden; background:rgba(14,165,233,0.06); border-bottom:1px solid var(--border); padding:8px 0; }
+        .ticker { display:flex; animation:tickerMove 35s linear infinite; }
+        .ticker-item { padding:0 28px; font-size:11px; font-weight:700; color:#64748b; white-space:nowrap; display:flex; align-items:center; gap:6px; font-family:'Syne',sans-serif; }
+        .ticker-item .up { color:#10B981; }
+        .ticker-item .down { color:#EF4444; }
+        @keyframes tickerMove { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+        /* ── SECTIONS ── */
+        .section { position:relative; z-index:1; }
+
+        /* ── PLAN CARD ── */
+        .plan-card {
+            background:linear-gradient(160deg,#111c2e 0%,#0d1829 100%);
+            border:1.5px solid rgba(245,158,11,0.25);
+            border-radius:20px; padding:22px 18px; text-align:center;
+            position:relative; overflow:hidden; transition:all 0.3s;
+            box-shadow:0 8px 32px rgba(0,0,0,0.3);
+        }
+        .plan-card::before { content:''; position:absolute; top:0;left:0;right:0;height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+        .plan-card:hover { transform:translateY(-6px); border-color:rgba(245,158,11,0.5); box-shadow:0 16px 48px rgba(245,158,11,0.15); }
+        .plan-tag { position:absolute; top:10px; right:10px; background:linear-gradient(135deg,#d97706,#f59e0b); color:#1a0a00; padding:3px 10px; border-radius:8px; font-size:9px; font-weight:800; font-family:'Syne',sans-serif; text-transform:uppercase; }
+        .plan-invest { font-size:2rem; font-weight:900; color:var(--gold); font-family:'Syne',sans-serif; }
+        .plan-return { font-size:1.6rem; font-weight:900; color:var(--green); font-family:'Syne',sans-serif; }
+        .plan-profit-box { background:rgba(16,185,129,0.1); border:1.5px solid rgba(16,185,129,0.25); border-radius:12px; padding:8px 12px; margin-top:8px; }
+        .plan-profit { font-size:1.3rem; font-weight:900; color:var(--green); font-family:'Syne',sans-serif; }
+
+        /* ── STAT CARD ── */
+        .stat-card {
+            background:rgba(255,255,255,0.03); border:1.5px solid var(--border);
+            border-radius:16px; padding:18px 14px; text-align:center;
+            transition:all 0.3s;
+        }
+        .stat-card:hover { border-color:var(--sky); background:rgba(14,165,233,0.05); transform:translateY(-4px); }
+
+        /* ── VIP ── */
+        .vip-card {
+            background:linear-gradient(160deg,#150d2e 0%,#1a1040 50%,#0d1829 100%);
+            border:2px solid rgba(139,92,246,0.4);
+            border-radius:24px; position:relative; overflow:hidden;
+            box-shadow:0 20px 80px rgba(139,92,246,0.2),inset 0 1px 0 rgba(139,92,246,0.15);
+        }
+        .vip-card::before { content:''; position:absolute; top:0;left:0;right:0;height:2px; background:linear-gradient(90deg,transparent,#7c3aed,#a78bfa,#7c3aed,transparent); }
+        .vip-benefit {
+            display:flex; align-items:center; gap:12px;
+            padding:12px 14px; background:rgba(139,92,246,0.08);
+            border:1px solid rgba(139,92,246,0.2); border-radius:12px;
+            transition:all 0.2s;
+        }
+        .vip-benefit:hover { background:rgba(139,92,246,0.15); transform:translateX(4px); }
+        .vip-icon { width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+
+        /* ── EARN CARDS ── */
+        .earn-card {
+            background:rgba(255,255,255,0.03); border:1.5px solid var(--border);
+            border-radius:18px; padding:20px 16px; text-align:center; transition:all 0.3s;
+        }
+        .earn-card:hover { transform:translateY(-5px); }
+
+        /* ── REF CARD ── */
+        .ref-card {
+            background:rgba(16,185,129,0.06); border:1.5px solid rgba(16,185,129,0.2);
+            border-radius:20px; padding:24px 20px; text-align:center; transition:all 0.3s;
+        }
+        .ref-card:hover { border-color:var(--green); box-shadow:0 12px 40px rgba(16,185,129,0.12); transform:translateY(-5px); }
+
+        /* ── AUTH POPUP ── */
+        .auth-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); z-index:99999; display:flex; align-items:center; justify-content:center; padding:16px; }
+        .auth-box { background:#0D1629; border:1.5px solid var(--border); border-radius:24px; padding:32px 28px 28px; max-width:460px; width:100%; box-shadow:0 24px 80px rgba(0,0,0,0.6),0 0 80px rgba(14,165,233,0.08); animation:revealUp 0.3s ease-out; max-height:92vh; overflow-y:auto; position:relative; }
+        .auth-box::before { content:''; position:absolute; top:0;left:0;right:0;height:2px; background:linear-gradient(90deg,transparent,var(--sky),transparent); border-radius:24px 24px 0 0; }
+        .auth-close { position:absolute; top:14px; right:14px; width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.06); border:1px solid var(--border); cursor:pointer; display:flex; align-items:center; justify-content:center; color:#94a3b8; transition:0.2s; }
+        .auth-close:hover { background:rgba(255,255,255,0.1); color:#e2e8f0; }
+
+        /* ── STEP CARD ── */
+        .step-card { background:rgba(255,255,255,0.03); border:1.5px solid var(--border); border-radius:20px; padding:28px 22px; text-align:center; transition:all 0.3s; position:relative; }
+        .step-card:hover { border-color:var(--sky); box-shadow:0 12px 40px rgba(14,165,233,0.08); transform:translateY(-4px); }
+        .step-num { width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-family:'Syne',sans-serif;font-weight:900;font-size:22px;border:2px solid; }
+
+        /* ── PAIR BADGE ── */
+        .pair-badge { background:rgba(14,165,233,0.08); color:var(--sky); padding:8px 14px; border-radius:10px; font-size:11px; font-weight:700; display:inline-block; margin:4px; border:1.5px solid var(--border); transition:all 0.2s; font-family:'Syne',sans-serif; }
+        .pair-badge:hover { background:rgba(14,165,233,0.15); border-color:var(--sky); transform:translateY(-2px); }
+        .pair-badge.vip { background:linear-gradient(135deg,rgba(14,165,233,0.2),rgba(56,189,248,0.1)); color:var(--sky2); border-color:rgba(14,165,233,0.35); }
+
+        /* ── DIVIDER ── */
+        .divider { height:1px; background:linear-gradient(90deg,transparent,var(--border),transparent); margin:48px 0; }
+
+        /* ── ANIMATIONS ── */
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        @keyframes pulse-glow { 0%,100%{opacity:0.6} 50%{opacity:1} }
+        @keyframes revealUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes spin { to{transform:rotate(360deg)} }
+        @keyframes slide-in-left { from{opacity:0;transform:translateX(-30px)} to{opacity:1;transform:translateX(0)} }
+
+        .float { animation:float 3.5s ease-in-out infinite; }
+        .reveal { opacity:0; transform:translateY(32px); transition:all 0.65s cubic-bezier(0.4,0,0.2,1); }
+        .reveal.active { opacity:1; transform:translateY(0); }
+        .reveal-d1 { transition-delay:0.1s; }
+        .reveal-d2 { transition-delay:0.2s; }
+        .reveal-d3 { transition-delay:0.3s; }
+
+        .loader-spin { width:20px;height:20px;border:2.5px solid rgba(255,255,255,0.25);border-top:2.5px solid white;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block; }
+
+        /* ── PULSE DOT ── */
+        .live-dot { width:8px;height:8px;background:#10B981;border-radius:50%;animation:pulse-glow 2s infinite; box-shadow:0 0 8px #10B981; }
+
+        /* ── MILESTONE TABLE ── */
+        .ms-row { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.15); border-radius:12px; margin-bottom:6px; }
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar { width:4px; }
+        ::-webkit-scrollbar-track { background:var(--dark); }
+        ::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+
+        @media(max-width:640px) { .auth-box{padding:24px 20px;} }
+    </style>
+</head>
+<body>
+<!-- Background orbs -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- ── TICKER ── -->
+<div class="ticker-wrap">
+    <div class="ticker" id="ticker">
+        <div class="ticker-item">EUR/USD <span class="up">▲ 1.0921</span></div>
+        <div class="ticker-item">GBP/USD <span class="up">▲ 1.2745</span></div>
+        <div class="ticker-item">USD/JPY <span class="down">▼ 149.32</span></div>
+        <div class="ticker-item">BTC/USDT <span class="up">▲ $67,420</span></div>
+        <div class="ticker-item">ETH/USDT <span class="up">▲ $3,284</span></div>
+        <div class="ticker-item">AUD/USD <span class="down">▼ 0.6512</span></div>
+        <div class="ticker-item">USD/CHF <span class="up">▲ 0.8832</span></div>
+        <div class="ticker-item">XAU/USD <span class="up">▲ $2,321</span></div>
+        <div class="ticker-item">SOL/USDT <span class="up">▲ $142.50</span></div>
+        <div class="ticker-item">BNB/USDT <span class="up">▲ $398.20</span></div>
+        <div class="ticker-item">EUR/USD <span class="up">▲ 1.0921</span></div>
+        <div class="ticker-item">GBP/USD <span class="up">▲ 1.2745</span></div>
+        <div class="ticker-item">USD/JPY <span class="down">▼ 149.32</span></div>
+        <div class="ticker-item">BTC/USDT <span class="up">▲ $67,420</span></div>
+        <div class="ticker-item">ETH/USDT <span class="up">▲ $3,284</span></div>
+        <div class="ticker-item">AUD/USD <span class="down">▼ 0.6512</span></div>
+        <div class="ticker-item">USD/CHF <span class="up">▲ 0.8832</span></div>
+        <div class="ticker-item">XAU/USD <span class="up">▲ $2,321</span></div>
+        <div class="ticker-item">SOL/USDT <span class="up">▲ $142.50</span></div>
+        <div class="ticker-item">BNB/USDT <span class="up">▲ $398.20</span></div>
+    </div>
+</div>
+
+<!-- ── HEADER ── -->
+<header class="sticky top-0 z-50 section" style="background:rgba(6,11,20,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);">
+    <div class="flex justify-between items-center max-w-6xl mx-auto px-4 py-3">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center float" style="background:linear-gradient(135deg,#0284c7,#0ea5e9);">
+                <i data-lucide="trending-up" class="w-5 h-5 text-white"></i>
+            </div>
+            <div>
+                <h1 class="text-base font-black syne grad-text uppercase tracking-tight leading-none">SILVER X</h1>
+                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Supreme Elite Terminal</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="openAuthPopup('login')" class="btn-outline text-xs px-4 py-2" style="padding:8px 16px;font-size:11px;">LOGIN</button>
+            <button onclick="openAuthPopup('signup')" class="btn-sky text-xs" style="padding:8px 16px;font-size:11px;">SIGNUP</button>
+        </div>
+    </div>
+</header>
+
+<!-- ── HERO ── -->
+<section class="section px-4 pt-12 pb-8 max-w-6xl mx-auto reveal">
+    <div class="card card-glow p-8 md:p-12" style="border-color:rgba(14,165,233,0.25);">
+        <div class="text-center relative z-10">
+            <!-- Live badge -->
+            <div class="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full" style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);">
+                <div class="live-dot"></div>
+                <span class="text-xs font-bold text-green-400 syne uppercase tracking-widest">AI-Powered Bot • Live Now</span>
+            </div>
+
+            <h2 class="text-5xl md:text-7xl font-black syne grad-text uppercase leading-none mb-4 tracking-tight">
+                SILVER X<br>TRADER
+            </h2>
+            <p class="text-slate-400 font-semibold text-sm md:text-base mb-8 max-w-lg mx-auto">
+                Best Quotex Signal Bot &amp; Investment Platform. <span class="text-white font-bold">98% accuracy.</span> 20% daily returns. Fully automated.
+            </p>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8 max-w-2xl mx-auto">
+                <div class="stat-card reveal reveal-d1">
+                    <div class="text-2xl font-black syne grad-text mb-1">CALL/PUT</div>
+                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Live Signals</div>
+                </div>
+                <div class="stat-card reveal reveal-d2">
+                    <div class="text-2xl font-black syne green-text mb-1">20%</div>
+                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">24h Profit</div>
+                </div>
+                <div class="stat-card reveal reveal-d3">
+                    <div class="text-2xl font-black syne sky-text mb-1">98%</div>
+                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Accuracy</div>
+                </div>
+                <div class="stat-card reveal" style="transition-delay:0.4s;border-color:rgba(16,185,129,0.3);">
+                    <div class="text-2xl font-black syne green-text mb-1">15K+</div>
+                    <div class="text-[9px] text-green-500 font-bold uppercase tracking-widest">Active Users</div>
+                </div>
+            </div>
+
+            <!-- Trust badges -->
+            <div class="flex flex-wrap justify-center gap-3 mb-8">
+                <div class="flex items-center gap-2 px-3 py-2 rounded-xl" style="background:rgba(255,255,255,0.04);border:1px solid var(--border);">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-green-400"></i>
+                    <span class="text-xs font-bold text-slate-300">Secure Platform</span>
+                </div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-xl" style="background:rgba(255,255,255,0.04);border:1px solid var(--border);">
+                    <i data-lucide="zap" class="w-4 h-4 text-yellow-400"></i>
+                    <span class="text-xs font-bold text-slate-300">Instant Signals</span>
+                </div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-xl" style="background:rgba(255,255,255,0.04);border:1px solid var(--border);">
+                    <i data-lucide="clock" class="w-4 h-4 text-sky-400"></i>
+                    <span class="text-xs font-bold text-slate-300">24/7 Active</span>
+                </div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-xl" style="background:rgba(255,255,255,0.04);border:1px solid var(--border);">
+                    <i data-lucide="coins" class="w-4 h-4 text-yellow-400"></i>
+                    <span class="text-xs font-bold text-slate-300">Min Deposit $10</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <button onclick="openAuthPopup('signup')" class="btn-sky px-10 py-4">🚀 GET STARTED FREE</button>
+                <button onclick="document.getElementById('plans-section').scrollIntoView({behavior:'smooth'})" class="btn-outline px-10 py-4">View Plans ↓</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── TRADING PAIRS ── -->
+<section class="section px-4 py-6 max-w-6xl mx-auto reveal">
+    <div class="card card-glow p-7">
+        <div class="text-center mb-6">
+            <h3 class="text-2xl font-black syne grad-text uppercase mb-1">TRADING PAIRS</h3>
+            <p class="text-xs text-slate-500 font-semibold">Free: 8 Pairs &nbsp;|&nbsp; VIP: 16 Pairs</p>
+        </div>
+        <div class="mb-5">
+            <div class="flex flex-wrap justify-center mb-4">
+                <span class="pair-badge">EUR/USD</span>
+                <span class="pair-badge">GBP/USD</span>
+                <span class="pair-badge">USD/JPY</span>
+                <span class="pair-badge">USD/CHF</span>
+                <span class="pair-badge">AUD/USD</span>
+                <span class="pair-badge">USD/CAD</span>
+                <span class="pair-badge">BTC/USDT</span>
+                <span class="pair-badge">ETH/USDT</span>
+            </div>
+            <div style="height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:16px 0;"></div>
+            <div class="text-center mb-3">
+                <span class="inline-block px-4 py-1.5 rounded-full text-xs font-bold syne uppercase" style="background:linear-gradient(135deg,rgba(14,165,233,0.15),rgba(56,189,248,0.1));border:1px solid var(--border);color:var(--sky2);">🔒 VIP Premium Pairs</span>
+            </div>
+            <div class="flex flex-wrap justify-center">
+                <span class="pair-badge vip">EUR/GBP</span>
+                <span class="pair-badge vip">GBP/JPY</span>
+                <span class="pair-badge vip">EUR/JPY</span>
+                <span class="pair-badge vip">AUD/CAD</span>
+                <span class="pair-badge vip">NZD/USD</span>
+                <span class="pair-badge vip">EUR/AUD</span>
+                <span class="pair-badge vip">SOL/USDT</span>
+                <span class="pair-badge vip">BNB/USDT</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── INVESTMENT PLANS ── -->
+<section id="plans-section" class="section px-4 py-6 max-w-6xl mx-auto reveal">
+    <div class="text-center mb-8">
+        <div class="inline-block px-4 py-2 rounded-full mb-3" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);">
+            <span class="text-xs font-bold syne uppercase tracking-wider gold-text">💰 Investment Plans</span>
+        </div>
+        <h3 class="text-3xl font-black syne gold-text uppercase mb-1">1-DAY PLANS</h3>
+        <p class="text-xs font-bold text-slate-500 uppercase tracking-wide">20% Profit Automatically After 24 Hours</p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+        <div class="plan-card reveal reveal-d1">
+            <div class="plan-tag">Hot 🔥</div>
+            <div class="plan-invest mb-1">$10</div>
+            <div class="text-[10px] text-amber-500 font-bold uppercase mb-2 syne">Invest</div>
+            <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(245,158,11,0.3),transparent);margin:8px 0;"></div>
+            <div class="plan-return mb-1">$12</div>
+            <div class="text-[10px] text-green-500 font-bold uppercase mb-2 syne">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit">+$2</div><div class="text-[9px] text-green-400 font-bold syne">20% PROFIT</div></div>
+        </div>
+        <div class="plan-card reveal reveal-d2">
+            <div class="plan-tag">Popular ⭐</div>
+            <div class="plan-invest mb-1">$20</div>
+            <div class="text-[10px] text-amber-500 font-bold uppercase mb-2 syne">Invest</div>
+            <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(245,158,11,0.3),transparent);margin:8px 0;"></div>
+            <div class="plan-return mb-1">$24</div>
+            <div class="text-[10px] text-green-500 font-bold uppercase mb-2 syne">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit">+$4</div><div class="text-[9px] text-green-400 font-bold syne">20% PROFIT</div></div>
+        </div>
+        <div class="plan-card reveal reveal-d3">
+            <div class="plan-tag">Best 💎</div>
+            <div class="plan-invest mb-1">$40</div>
+            <div class="text-[10px] text-amber-500 font-bold uppercase mb-2 syne">Invest</div>
+            <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(245,158,11,0.3),transparent);margin:8px 0;"></div>
+            <div class="plan-return mb-1">$48</div>
+            <div class="text-[10px] text-green-500 font-bold uppercase mb-2 syne">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit">+$8</div><div class="text-[9px] text-green-400 font-bold syne">20% PROFIT</div></div>
+        </div>
+        <div class="plan-card reveal reveal-d1">
+            <div class="plan-tag">Pro 🚀</div>
+            <div class="plan-invest mb-1">$80</div>
+            <div class="text-[10px] text-amber-500 font-bold uppercase mb-2 syne">Invest</div>
+            <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(245,158,11,0.3),transparent);margin:8px 0;"></div>
+            <div class="plan-return mb-1">$96</div>
+            <div class="text-[10px] text-green-500 font-bold uppercase mb-2 syne">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit">+$16</div><div class="text-[9px] text-green-400 font-bold syne">20% PROFIT</div></div>
+        </div>
+        <div class="plan-card reveal reveal-d2">
+            <div class="plan-tag">Elite 👑</div>
+            <div class="plan-invest mb-1">$160</div>
+            <div class="text-[10px] text-amber-500 font-bold uppercase mb-2 syne">Invest</div>
+            <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(245,158,11,0.3),transparent);margin:8px 0;"></div>
+            <div class="plan-return mb-1">$192</div>
+            <div class="text-[10px] text-green-500 font-bold uppercase mb-2 syne">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit">+$32</div><div class="text-[9px] text-green-400 font-bold syne">20% PROFIT</div></div>
+        </div>
+        <div class="plan-card reveal reveal-d3" style="border-color:rgba(245,158,11,0.5);border-width:2px;">
+            <div class="plan-tag" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);">Supreme 🏆</div>
+            <div class="plan-invest mb-1">$320</div>
+            <div class="text-[10px] text-amber-500 font-bold uppercase mb-2 syne">Invest</div>
+            <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(245,158,11,0.3),transparent);margin:8px 0;"></div>
+            <div class="plan-return mb-1">$384</div>
+            <div class="text-[10px] text-green-500 font-bold uppercase mb-2 syne">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit">+$64</div><div class="text-[9px] text-green-400 font-bold syne">20% PROFIT</div></div>
+        </div>
+    </div>
+
+    <div class="text-center p-4 rounded-2xl" style="background:rgba(16,185,129,0.08);border:1.5px solid rgba(16,185,129,0.2);">
+        <p class="text-sm font-black syne text-green-400">⚡ Capital + 20% Profit Auto-Credited to Main Balance After 24 Hours</p>
+        <p class="text-xs text-green-600 font-semibold mt-1">Fully automated — no manual processing needed</p>
+    </div>
+</section>
+
+<div class="divider max-w-6xl mx-auto px-4"></div>
+
+<!-- ── MULTIPLE WAYS TO EARN ── -->
+<section class="section px-4 py-6 max-w-6xl mx-auto reveal">
+    <div class="text-center mb-8">
+        <h3 class="text-2xl font-black syne grad-text uppercase mb-1">MULTIPLE WAYS TO EARN</h3>
+        <p class="text-xs font-semibold text-slate-500">All earnings go to your Earn Wallet</p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+        <!-- Ad Claim -->
+        <div class="earn-card reveal reveal-d1" style="border-color:rgba(14,165,233,0.3);">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3 float" style="background:linear-gradient(135deg,#0284c7,#0ea5e9);">
+                <i data-lucide="play-circle" class="w-6 h-6 text-white"></i>
+            </div>
+            <div class="text-2xl font-black syne sky-text mb-1">$2</div>
+            <div class="text-xs font-bold syne sky-text uppercase mb-1">Ad Claim</div>
+            <div class="text-[10px] text-slate-500 font-semibold">1x daily (free)</div>
+        </div>
+        <!-- Booster -->
+        <div class="earn-card reveal reveal-d2" style="border-color:rgba(139,92,246,0.3);">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3 float" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);">
+                <i data-lucide="zap" class="w-6 h-6 text-white"></i>
+            </div>
+            <div class="text-2xl font-black syne mb-1" style="color:#a78bfa;">$6/day</div>
+            <div class="text-xs font-bold syne uppercase mb-1" style="color:#a78bfa;">Booster</div>
+            <div class="text-[10px] text-slate-500 font-semibold">$30 for 30 days</div>
+        </div>
+        <!-- Promo Code -->
+        <div class="earn-card reveal reveal-d3" style="border-color:rgba(245,158,11,0.3);">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3 float" style="background:linear-gradient(135deg,#d97706,#f59e0b);">
+                <i data-lucide="tag" class="w-6 h-6 text-white"></i>
+            </div>
+            <div class="text-2xl font-black syne gold-text mb-1">$0.50</div>
+            <div class="text-xs font-bold syne gold-text uppercase mb-1">Promo Code</div>
+            <div class="text-[10px] text-slate-500 font-semibold">Daily codes</div>
+        </div>
+        <!-- Referral -->
+        <div class="earn-card reveal" style="transition-delay:0.4s;border-color:rgba(16,185,129,0.3);">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3 float" style="background:linear-gradient(135deg,#059669,#10b981);">
+                <i data-lucide="users" class="w-6 h-6 text-white"></i>
+            </div>
+            <div class="text-2xl font-black syne green-text mb-1">$1–$2</div>
+            <div class="text-xs font-bold syne green-text uppercase mb-1">Referral</div>
+            <div class="text-[10px] text-slate-500 font-semibold">Per invite</div>
+        </div>
+    </div>
+
+    <!-- Wallet note -->
+    <div class="p-4 rounded-2xl text-center reveal" style="background:rgba(245,158,11,0.06);border:1.5px solid rgba(245,158,11,0.2);">
+        <p class="text-sm font-black syne gold-text">💼 Earn Wallet — Transfer to Main Balance at $100 minimum</p>
+        <p class="text-xs text-slate-500 font-semibold mt-1">Earn Wallet holds: Referrals · Ad Claims · Promo Codes · Deposit Commissions</p>
+    </div>
+</section>
+
+<div class="divider max-w-6xl mx-auto px-4"></div>
+
+<!-- ── VIP ── -->
+<section class="section px-4 py-6 max-w-6xl mx-auto reveal">
+    <div class="vip-card p-8 md:p-10">
+        <div style="position:absolute;top:0;right:0;width:300px;height:300px;background:radial-gradient(circle,rgba(139,92,246,0.15),transparent);border-radius:50%;filter:blur(60px);pointer-events:none;"></div>
+        <div class="relative z-10">
+            <div class="text-center mb-8">
+                <div class="inline-block px-4 py-1.5 rounded-full mb-3 text-xs font-bold syne uppercase" style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.35);color:#a78bfa;">⭐ Premium Access</div>
+                <h3 class="text-3xl font-black syne uppercase mb-2" style="color:#c4b5fd;">VIP ELITE</h3>
+                <div class="text-5xl font-black syne text-white mb-1">$250</div>
+                <div class="text-sm font-bold syne uppercase tracking-wider" style="color:#c4b5fd;">30 Days Full Access</div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-2">
+                <div class="vip-benefit"><div class="vip-icon"><i data-lucide="zap" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">Ad-Free Experience</div><div class="text-xs text-slate-400">Zero interruptions</div></div></div>
+                <div class="vip-benefit"><div class="vip-icon"><i data-lucide="trending-up" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">16 Premium Pairs</div><div class="text-xs text-slate-400">All pairs unlocked</div></div></div>
+                <div class="vip-benefit"><div class="vip-icon"><i data-lucide="target" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">98% Accuracy</div><div class="text-xs text-slate-400">Premium signals</div></div></div>
+                <div class="vip-benefit"><div class="vip-icon"><i data-lucide="shield-check" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">2 Recovery Sessions</div><div class="text-xs text-slate-400">Trade protection</div></div></div>
+                <div class="vip-benefit"><div class="vip-icon"><i data-lucide="message-circle" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">WhatsApp Support</div><div class="text-xs text-slate-400">Direct 24/7 help</div></div></div>
+                <div class="vip-benefit"><div class="vip-icon"><i data-lucide="clock" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">Fast Withdrawals</div><div class="text-xs text-slate-400">15min – 3 hours</div></div></div>
+                <div class="vip-benefit md:col-span-2" style="background:rgba(16,185,129,0.12);border-color:rgba(16,185,129,0.3);">
+                    <div class="vip-icon" style="background:linear-gradient(135deg,#059669,#10b981);"><i data-lucide="gift" class="w-5 h-5 text-white"></i></div>
+                    <div><div class="font-bold text-base text-white">Double Referral Bonus</div><div class="text-sm text-green-400">Earn $2 per invite (instead of $1) + 3% deposit commission</div></div>
+                </div>
+            </div>
+            <div class="mt-6 text-center">
+                <button onclick="openAuthPopup('signup')" class="btn-gold px-12 py-4 text-sm syne font-black">GET VIP ACCESS — $250</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider max-w-6xl mx-auto px-4"></div>
+
+<!-- ── REFERRAL PROGRAM ── -->
+<section class="section px-4 py-6 max-w-6xl mx-auto reveal">
+    <div class="text-center mb-8">
+        <h3 class="text-2xl font-black syne grad-text uppercase mb-1">REFERRAL PROGRAM</h3>
+        <p class="text-xs font-semibold text-slate-500">Invite friends &amp; earn from every deposit they make</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+        <!-- Per invite -->
+        <div class="ref-card reveal reveal-d1">
+            <div class="float mb-3"><i data-lucide="users" class="w-12 h-12 text-green-400 mx-auto"></i></div>
+            <div class="text-4xl font-black syne green-text mb-1">$1–$2</div>
+            <div class="text-sm font-bold syne text-green-400 uppercase mb-2">Per Invite</div>
+            <div class="text-xs text-slate-400 font-semibold">Free: $1/signup &nbsp;|&nbsp; VIP: $2/signup</div>
+        </div>
+        <!-- 3% Commission -->
+        <div class="ref-card reveal reveal-d2" style="border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.05);">
+            <div class="float mb-3"><i data-lucide="percent" class="w-12 h-12 text-amber-400 mx-auto"></i></div>
+            <div class="text-4xl font-black syne gold-text mb-1">3%</div>
+            <div class="text-sm font-bold syne gold-text uppercase mb-2">Deposit Commission</div>
+            <div class="text-xs text-slate-400 font-semibold">Every time your referral deposits funds</div>
+            <div class="mt-3 p-2 rounded-xl text-xs font-bold" style="background:rgba(245,158,11,0.1);color:#fbbf24;">Example: $100 deposit → You get $3</div>
+        </div>
+        <!-- Milestones -->
+        <div class="reveal reveal-d3" style="background:rgba(139,92,246,0.06);border:1.5px solid rgba(139,92,246,0.2);border-radius:20px;padding:24px 20px;text-align:center;">
+            <i data-lucide="trophy" class="w-10 h-10 mx-auto mb-3" style="color:#a78bfa;"></i>
+            <div class="text-sm font-black syne uppercase mb-4" style="color:#a78bfa;">Milestone Bonuses</div>
+            <div class="space-y-2">
+                <div class="ms-row"><span class="text-xs font-bold text-slate-300 syne">5 Referrals</span><span class="text-sm font-black syne" style="color:#a78bfa;">+$5</span></div>
+                <div class="ms-row"><span class="text-xs font-bold text-slate-300 syne">10 Referrals</span><span class="text-sm font-black syne" style="color:#a78bfa;">+$10</span></div>
+                <div class="ms-row"><span class="text-xs font-bold text-slate-300 syne">25 Referrals</span><span class="text-sm font-black syne" style="color:#a78bfa;">+$20</span></div>
+                <div class="ms-row"><span class="text-xs font-bold text-slate-300 syne">50 Referrals</span><span class="text-sm font-black syne" style="color:#a78bfa;">+$30</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <div class="inline-block px-8 py-4 rounded-2xl font-black syne text-sm" style="background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(16,185,129,0.08));border:2px solid rgba(16,185,129,0.3);color:#34d399;">
+            All referral earnings → 💼 Earn Wallet (Transfer to Main at $100)
+        </div>
+    </div>
+</section>
+
+<div class="divider max-w-6xl mx-auto px-4"></div>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="section px-4 py-6 max-w-6xl mx-auto reveal">
+    <div class="text-center mb-8">
+        <h3 class="text-2xl font-black syne grad-text uppercase mb-1">HOW IT WORKS</h3>
+        <p class="text-xs font-semibold text-slate-500">Simple 3-step process</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="step-card reveal reveal-d1">
+            <div class="step-num sky-text" style="border-color:var(--sky);background:rgba(14,165,233,0.08);">1</div>
+            <h4 class="font-black syne text-white mb-2 text-base">Sign Up Free</h4>
+            <p class="text-xs text-slate-400 font-semibold leading-relaxed">Create account in seconds. Use a referral code for bonus. Start immediately.</p>
+        </div>
+        <div class="step-card reveal reveal-d2">
+            <div class="step-num green-text" style="border-color:var(--green);background:rgba(16,185,129,0.08);">2</div>
+            <h4 class="font-black syne text-white mb-2 text-base">Deposit &amp; Invest</h4>
+            <p class="text-xs text-slate-400 font-semibold leading-relaxed">Deposit from $10 via Binance or USDT TRC20. Choose any 24-hour plan.</p>
+        </div>
+        <div class="step-card reveal reveal-d3">
+            <div class="step-num gold-text" style="border-color:var(--gold);background:rgba(245,158,11,0.08);">3</div>
+            <h4 class="font-black syne text-white mb-2 text-base">Earn &amp; Withdraw</h4>
+            <p class="text-xs text-slate-400 font-semibold leading-relaxed">20% profit auto-credited after 24 hours. Withdraw anytime with active plan.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="section px-4 py-8 max-w-4xl mx-auto reveal">
+    <div class="card card-glow p-8 text-center" style="border-color:rgba(14,165,233,0.3);background:linear-gradient(160deg,rgba(14,165,233,0.06),rgba(56,189,248,0.03));">
+        <h3 class="text-3xl font-black syne grad-text uppercase mb-3">JOIN 15,000+ TRADERS</h3>
+        <p class="text-sm font-semibold text-slate-400 mb-6">Start earning today. 100% automated. Zero experience needed.</p>
+        <button onclick="openAuthPopup('signup')" class="btn-sky px-14 py-4 text-sm">🚀 CREATE FREE ACCOUNT</button>
+    </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer class="section mt-8 py-10" style="background:rgba(6,11,20,0.98);border-top:1px solid var(--border);">
+    <div class="px-4 max-w-6xl mx-auto">
+        <div class="text-center mb-6">
+            <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3" style="background:linear-gradient(135deg,#0284c7,#0ea5e9);">
+                <i data-lucide="trending-up" class="w-7 h-7 text-white"></i>
+            </div>
+            <h2 class="text-xl font-black syne grad-text mb-1">SILVER X TRADER</h2>
+            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Best Quotex Signal Bot</p>
+        </div>
+        <div class="flex justify-center gap-4 mb-6">
+            <a href="https://www.youtube.com/@silverxtrader" target="_blank" class="w-12 h-12 rounded-xl flex items-center justify-center transition-all hover:scale-110" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);">
+                <i data-lucide="youtube" class="w-5 h-5 text-red-500"></i>
+            </a>
+            <a href="https://www.tiktok.com/@silverxtrader" target="_blank" class="w-12 h-12 rounded-xl flex items-center justify-center transition-all hover:scale-110" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);">
+                <i data-lucide="music-2" class="w-5 h-5 text-slate-300"></i>
+            </a>
+            <a href="https://wa.me/923294007913" target="_blank" class="w-12 h-12 rounded-xl flex items-center justify-center transition-all hover:scale-110" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);">
+                <i data-lucide="message-circle" class="w-5 h-5 text-green-400"></i>
+            </a>
+        </div>
+        <div class="text-center text-xs text-slate-600">
+            <p class="mb-2">&copy; 2026 Silver X Trader. All Rights Reserved.</p>
+            <div class="flex justify-center gap-4">
+                <a href="#" class="hover:text-sky-400 transition font-semibold">Privacy Policy</a>
+                <span>•</span>
+                <a href="#" class="hover:text-sky-400 transition font-semibold">Terms of Service</a>
+                <span>•</span>
+                <a href="https://wa.me/923294007913" class="hover:text-sky-400 transition font-semibold">Contact</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- ── AUTH POPUP ── -->
+<div id="auth-overlay" class="auth-overlay hidden" onclick="if(event.target===this)closeAuthPopup()">
+    <div class="auth-box">
+        <button class="auth-close" onclick="closeAuthPopup()"><i data-lucide="x" class="w-4 h-4"></i></button>
+
+        <!-- SIGNUP -->
+        <div id="auth-signup">
+            <div class="text-center mb-6">
+                <h3 class="text-2xl font-black syne grad-text uppercase mb-1">CREATE ACCOUNT</h3>
+                <p class="text-xs text-slate-500 font-semibold">Join Silver X Community</p>
+            </div>
+            <form id="signup-form" class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" id="su-fname" placeholder="First Name" class="inp" required>
+                    <input type="text" id="su-lname" placeholder="Last Name" class="inp" required>
+                </div>
+                <input type="tel" id="su-phone" placeholder="Phone Number" class="inp" required>
+                <input type="email" id="su-email" placeholder="Email Address" class="inp" required>
+                <input type="password" id="su-pass" placeholder="Password (min 6 chars)" class="inp" required>
+                <input type="password" id="su-cpass" placeholder="Confirm Password" class="inp" required>
+
+                <div class="p-3 rounded-xl" style="background:rgba(16,185,129,0.08);border:1.5px solid rgba(16,185,129,0.2);">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i data-lucide="gift" class="w-4 h-4 text-green-400"></i>
+                        <span class="text-xs font-bold text-green-400">Have a Referral Code?</span>
+                    </div>
+                    <input type="text" id="su-ref" placeholder="Referral Code (Optional)" class="inp" style="border-color:rgba(16,185,129,0.3);">
+                </div>
+
+                <div class="flex items-start gap-3 p-3 rounded-xl" style="background:rgba(255,255,255,0.03);border:1px solid var(--border);">
+                    <input type="checkbox" id="su-privacy" class="mt-0.5 w-4 h-4 accent-sky-500 flex-shrink-0" required>
+                    <label for="su-privacy" class="text-xs text-slate-400 font-semibold">I accept the <span class="sky-text font-bold cursor-pointer">Terms &amp; Conditions</span> and <span class="sky-text font-bold cursor-pointer">Privacy Policy</span></label>
+                </div>
+
+                <button type="submit" id="signup-btn" class="btn-sky w-full py-4">
+                    <span id="signup-text">CREATE ACCOUNT</span>
+                    <span id="signup-loader" class="loader-spin hidden"></span>
+                </button>
+            </form>
+            <p class="text-center text-xs text-slate-500 mt-4">Already have account? <button onclick="switchToLogin()" class="sky-text font-bold hover:underline">Login Here</button></p>
+        </div>
+
+        <!-- LOGIN -->
+        <div id="auth-login" class="hidden">
+            <div class="text-center mb-6">
+                <h3 class="text-2xl font-black syne text-white uppercase mb-1">WELCOME BACK</h3>
+                <p class="text-xs text-slate-500 font-semibold">Sign in to your account</p>
+            </div>
+            <form id="login-form" class="space-y-3">
+                <input type="email" id="login-email" placeholder="Email Address" class="inp" required>
+                <input type="password" id="login-pass" placeholder="Password" class="inp" required>
+                <button type="submit" id="login-btn" class="btn-sky w-full py-4">
+                    <span id="login-text">LOGIN NOW</span>
+                    <span id="login-loader" class="loader-spin hidden"></span>
+                </button>
+                <div class="text-center">
+                    <button type="button" onclick="handleForgotPassword()" class="text-xs font-bold sky-text hover:underline">Forgot Password?</button>
+                </div>
+            </form>
+            <p class="text-center text-xs text-slate-500 mt-4">New to Silver X? <button onclick="switchToSignup()" class="sky-text font-bold hover:underline">Create Account</button></p>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast-el" style="position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:999999;display:none;padding:12px 24px;border-radius:14px;font-size:12px;font-weight:700;color:white;box-shadow:0 12px 40px rgba(0,0,0,0.5);white-space:nowrap;font-family:'Syne',sans-serif;letter-spacing:0.5px;border:1px solid rgba(255,255,255,0.1);"></div>
+
+<script src="firebase-config.js"></script>
+<script>
+lucide.createIcons();
+
+// ── SCROLL REVEAL ──
+const revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('active'); });
+}, {threshold:0.06});
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// ── AUTH REDIRECT ──
+firebase.auth().onAuthStateChanged(user => { if(user) window.location.href = 'index.html'; });
+
+// ── TOAST ──
+function toast(msg, type='info') {
+    const colors = {success:'linear-gradient(135deg,#059669,#10b981)',error:'linear-gradient(135deg,#dc2626,#ef4444)',info:'linear-gradient(135deg,#0284c7,#0ea5e9)',warning:'linear-gradient(135deg,#d97706,#f59e0b)'};
+    const el = document.getElementById('toast-el');
+    el.style.background = colors[type]||colors.info;
+    el.innerText = msg;
+    el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 3200);
+}
+
+// ── POPUP HELPERS ──
+function openAuthPopup(mode) {
+    document.getElementById('auth-overlay').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    if(mode === 'login') { document.getElementById('auth-signup').classList.add('hidden'); document.getElementById('auth-login').classList.remove('hidden'); }
+    else { document.getElementById('auth-login').classList.add('hidden'); document.getElementById('auth-signup').classList.remove('hidden'); }
+    lucide.createIcons();
+}
+function closeAuthPopup() { document.getElementById('auth-overlay').classList.add('hidden'); document.body.style.overflow = ''; }
+function switchToLogin() { document.getElementById('auth-signup').classList.add('hidden'); document.getElementById('auth-login').classList.remove('hidden'); }
+function switchToSignup() { document.getElementById('auth-login').classList.add('hidden'); document.getElementById('auth-signup').classList.remove('hidden'); }
+
+// ── FORGOT PASSWORD ──
+async function handleForgotPassword() {
+    const email = document.getElementById('login-email').value.trim();
+    if(!email) return toast('Enter your email first', 'warning');
+    try { await firebase.auth().sendPasswordResetEmail(email); toast('Reset email sent! Check inbox', 'success'); }
+    catch(e) { toast(e.message, 'error'); }
+}
+
+// ── SIGNUP ──
+document.getElementById('signup-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn=document.getElementById('signup-btn'),txt=document.getElementById('signup-text'),ldr=document.getElementById('signup-loader');
+    btn.disabled=true; txt.classList.add('hidden'); ldr.classList.remove('hidden');
+
+    const fname  = document.getElementById('su-fname').value.trim();
+    const lname  = document.getElementById('su-lname').value.trim();
+    const phone  = document.getElementById('su-phone').value.trim();
+    const email  = document.getElementById('su-email').value.trim();
+    const pass   = document.getElementById('su-pass').value;
+    const cpass  = document.getElementById('su-cpass').value;
+    const ref    = document.getElementById('su-ref').value.trim().toUpperCase();
+
+    if(pass !== cpass) { btn.disabled=false; txt.classList.remove('hidden'); ldr.classList.add('hidden'); return toast('Passwords do not match!','error'); }
+    if(pass.length < 6) { btn.disabled=false; txt.classList.remove('hidden'); ldr.classList.add('hidden'); return toast('Password min 6 characters!','error'); }
+
+    try {
+        const cred = await firebase.auth().createUserWithEmailAndPassword(email, pass);
+        const uid  = cred.user.uid;
+        const refCode = 'SX-' + Math.floor(1000 + Math.random() * 9000);
+
+        let referredBy = null;
+
+        // ── PROCESS REFERRAL ──
+        if(ref && ref.length >= 3) {
+            const snap = await db.collection('users').where('ref_code','==',ref).limit(1).get();
+            if(!snap.empty && snap.docs[0].id !== uid) {
+                referredBy = ref; // store ref_code string (matching index.html)
+                const refData = snap.docs[0].data();
+                const isVIP = refData.is_vip && refData.vip_expiry > Date.now();
+                const bonus = isVIP ? 2.00 : 1.00;
+
+                // Credit to referrer's earn_wallet (matching index.html field name)
+                await db.collection('users').doc(snap.docs[0].id).update({
+                    referrals: firebase.firestore.FieldValue.increment(1),
+                    earn_wallet: firebase.firestore.FieldValue.increment(bonus)
+                });
+                await db.collection('transactions').add({
+                    user_id: snap.docs[0].id,
+                    transaction_type: 'REFERRAL',
+                    amount: bonus,
+                    status: 'approved',
+                    notes: `Referral signup: ${email}`,
+                    created_at: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+        }
+
+        // ── CREATE USER DOC (fields synced with index.html) ──
+        await db.collection('users').doc(uid).set({
+            first_name: fname,
+            last_name: lname,
+            phone: phone,
+            email: email,
+            balance: 0,
+            earn_wallet: 0,
+            ref_code: refCode,
+            referrals: 0,
+            referred_by: referredBy,
+            referral_processed: true,
+            is_vip: false,
+            vip_expiry: 0,
+            recovery_session_1: true,
+            recovery_session_2: true,
+            suspended: false,
+            ad_claims_today: 0,
+            last_ad_claim_date: '',
+            booster_active: false,
+            booster_expiry: 0,
+            created_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        toast('Account created! Redirecting...', 'success');
+        setTimeout(() => window.location.href = 'index.html', 1400);
+
+    } catch(err) {
+        btn.disabled=false; txt.classList.remove('hidden'); ldr.classList.add('hidden');
+        const msgs = {'auth/email-already-in-use':'Email already registered!','auth/invalid-email':'Invalid email!','auth/weak-password':'Password too weak!'};
+        toast(msgs[err.code]||err.message, 'error');
+    }
+});
+
+// ── LOGIN ──
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn=document.getElementById('login-btn'),txt=document.getElementById('login-text'),ldr=document.getElementById('login-loader');
+    btn.disabled=true; txt.classList.add('hidden'); ldr.classList.remove('hidden');
+
+    const email = document.getElementById('login-email').value.trim();
+    const pass  = document.getElementById('login-pass').value;
+
+    try {
+        await firebase.auth().signInWithEmailAndPassword(email, pass);
+        const uid = firebase.auth().currentUser.uid;
+        const userDoc = await db.collection('users').doc(uid).get();
+        if(userDoc.exists && userDoc.data().suspended) {
+            await firebase.auth().signOut();
+            btn.disabled=false; txt.classList.remove('hidden'); ldr.classList.add('hidden');
+            return toast('Account suspended. Contact support.','error');
+        }
+        toast('Login successful! Redirecting...','success');
+        setTimeout(() => window.location.href = 'index.html', 1000);
+    } catch(err) {
+        btn.disabled=false; txt.classList.remove('hidden'); ldr.classList.add('hidden');
+        const msgs = {'auth/user-not-found':'Account not found!','auth/wrong-password':'Incorrect password!','auth/invalid-credential':'Invalid email or password!','auth/too-many-requests':'Too many attempts. Try later.'};
+        toast(msgs[err.code]||'Login failed!','error');
+    }
+});
+</script>
+</body>
+</html>
