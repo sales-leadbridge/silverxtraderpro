@@ -715,6 +715,18 @@ async function loadUserData(){
     unsubscribeTx=db.collection('transactions').where('user_id','==',currentUser.uid).orderBy('created_at','desc').limit(30).onSnapshot((snap)=>{
         state.transactions=snap.docs.map(d=>({id:d.id,...d.data()}));
         renderTransactions();
+        // ✅ 3% DEPOSIT COMMISSION: Auto-trigger when admin approves a deposit
+        snap.docChanges().forEach(async(change)=>{
+            if(change.type==='modified'){
+                const tx=change.doc.data();
+                // Only fire when a DEPOSIT transitions to approved AND commission not yet paid
+                if(tx.transaction_type==='DEPOSIT' && tx.status==='approved' && !tx.commission_paid){
+                    // Mark commission as paid first to prevent duplicate triggers
+                    await db.collection('transactions').doc(change.doc.id).update({commission_paid:true});
+                    await triggerDepositCommission(currentUser.uid, tx.amount);
+                }
+            }
+        });
     });
 }
 
@@ -1678,29 +1690,49 @@ async function checkBoosterExpiry(){
 // ─── 3% DEPOSIT COMMISSION FOR UPLINE ────────────────────────
 // Called after deposit is approved (admin flow) — here we expose a client trigger
 // that credits 3% of deposit amount to referrer's earn wallet
+// ─── 3% DEPOSIT COMMISSION FOR UPLINE ───────────────────────────────────────
+// Triggered automatically when admin approves a downline deposit.
+// Finds the referrer via referred_by (ref_code string) and
+// credits 3% of the deposit amount to their Earn Wallet.
 async function triggerDepositCommission(userId, depositAmount){
     try{
-        const userDoc=await db.collection('users').doc(userId).get();
-        if(!userDoc.exists)return;
-        const udata=userDoc.data();
-        if(!udata.referred_by)return;
-        // Find referrer by ref code
-        const snap=await db.collection('users').where('ref_code','==',udata.referred_by).limit(1).get();
-        if(snap.empty)return;
-        const refDoc=snap.docs[0];
-        const commission=parseFloat((depositAmount*0.03).toFixed(2));
+        if(!depositAmount || depositAmount <= 0) return;
+        const commission = parseFloat((depositAmount * 0.03).toFixed(2));
+        if(commission < 0.01) return; // skip dust amounts
+
+        // Get current user doc to find their referrer
+        const userDoc = await db.collection('users').doc(userId).get();
+        if(!userDoc.exists) return;
+        const udata = userDoc.data();
+        if(!udata.referred_by) return; // no upline, nothing to do
+
+        // Find the referrer by their ref_code stored in referred_by field
+        const snap = await db.collection('users').where('ref_code','==', udata.referred_by).limit(1).get();
+        if(snap.empty) return;
+        const refDoc = snap.docs[0];
+
+        // Prevent self-commission (safety check)
+        if(refDoc.id === userId) return;
+
+        // ✅ Credit 3% to referrer's Earn Wallet
         await db.collection('users').doc(refDoc.id).update({
-            earn_wallet:firebase.firestore.FieldValue.increment(commission)
+            earn_wallet: firebase.firestore.FieldValue.increment(commission)
         });
+
+        // ✅ Log transaction for referrer
         await db.collection('transactions').add({
-            user_id:refDoc.id,
-            transaction_type:'DEPOSIT_COMMISSION',
-            amount:commission,
-            status:'approved',
-            notes:`3% deposit commission from referral deposit of $${depositAmount}`,
-            created_at:firebase.firestore.FieldValue.serverTimestamp()
+            user_id: refDoc.id,
+            transaction_type: 'DEPOSIT_COMMISSION',
+            amount: commission,
+            status: 'approved',
+            notes: `3% deposit commission from referral ($${depositAmount.toFixed(2)} deposit)`,
+            created_at: firebase.firestore.FieldValue.serverTimestamp()
         });
-    }catch(e){console.error('Deposit commission error:',e);}
+
+        console.log('✅ Deposit commission: $' + commission + ' credited to ' + refDoc.data().email);
+    } catch(e){
+        console.error('Deposit commission error:', e);
+    }
 }
 
 // ✅ AUTO-CHECK VIP EXPIRY - RUNS EVERY 30 SECONDS
