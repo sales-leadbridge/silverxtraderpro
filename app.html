@@ -528,7 +528,7 @@ window.addEventListener('load',async()=>{
             // Auto-check 24hr plan maturation on load
             await autoMaturePlans();
         } else {
-            window.location.href='landing.html';
+            window.location.href='index.html';
         }
     });
     
@@ -1967,7 +1967,7 @@ function handleLogout(){
     
     // Firebase signout and reload
     firebase.auth().signOut().then(()=>{
-        window.location.href='landing.html';
+        window.location.href='index.html';
     }).catch(e=>{
         console.error('Logout error:', e);
         location.reload(); // Force reload anyway
