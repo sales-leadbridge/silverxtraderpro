@@ -16,6 +16,8 @@
     <meta property="twitter:card" content="summary_large_image">
     <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Silver X Trader","applicationCategory":"FinanceApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","ratingCount":"15000"}}</script>
 
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <link rel="apple-touch-icon" href="logo.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800;900&display=swap" rel="stylesheet">
@@ -107,8 +109,8 @@
 <header class="bg-white/95 backdrop-blur-xl border-b-2 border-slate-200/80 sticky top-0 z-50 px-4 py-3 shadow-lg">
     <div class="flex justify-between items-center max-w-6xl mx-auto">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-sky-400 to-sky-600 rounded-xl items-center justify-center shadow-lg float-premium flex">
-                <i data-lucide="trending-up" class="w-5 h-5 text-white"></i>
+            <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg float-premium flex items-center justify-center">
+                <img src="logo.jpg" alt="Silver X" class="w-10 h-10 object-cover rounded-xl">
             </div>
             <div>
                 <h1 class="text-base font-black outfit text-premium uppercase tracking-tight leading-none">SILVER X</h1>
@@ -465,9 +467,9 @@
         <div class="text-center text-xs text-slate-400">
             <p class="mb-2">&copy; 2026 Silver X Trader. All Rights Reserved.</p>
             <div class="flex justify-center gap-4">
-                <a href="#" class="hover:text-sky-400 transition font-semibold">Privacy Policy</a>
+                <a href="#" onclick="showPrivacyModal('privacy');return false;" class="hover:text-sky-400 transition font-semibold">Privacy Policy</a>
                 <span>&bull;</span>
-                <a href="#" class="hover:text-sky-400 transition font-semibold">Terms of Service</a>
+                <a href="#" onclick="showPrivacyModal('terms');return false;" class="hover:text-sky-400 transition font-semibold">Terms of Service</a>
                 <span>&bull;</span>
                 <a href="https://wa.me/923294007913" class="hover:text-sky-400 transition font-semibold">Contact</a>
             </div>
@@ -504,7 +506,7 @@
                 </div>
                 <div class="flex items-start gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
                     <input type="checkbox" id="su-privacy" class="mt-0.5 w-4 h-4 accent-sky-500 flex-shrink-0">
-                    <label for="su-privacy" class="text-xs text-slate-600 font-semibold">I accept the <span class="text-sky-600 font-bold">Terms &amp; Conditions</span> and <span class="text-sky-600 font-bold">Privacy Policy</span></label>
+                    <label for="su-privacy" class="text-xs text-slate-600 font-semibold">I accept the <button type="button" onclick="showPrivacyModal('terms')" class="text-sky-600 font-bold underline cursor-pointer">Terms &amp; Conditions</button> and <button type="button" onclick="showPrivacyModal('privacy')" class="text-sky-600 font-bold underline cursor-pointer">Privacy Policy</button></label>
                 </div>
                 <button onclick="handleSignup()" id="signup-btn" class="btn-premium w-full py-4">
                     <span id="signup-text">CREATE ACCOUNT</span>
@@ -539,6 +541,17 @@
 <!-- Toast -->
 <div id="toast-el" style="position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:999999;display:none;padding:14px 28px;border-radius:16px;font-size:13px;font-weight:700;color:white;box-shadow:0 12px 40px rgba(0,0,0,0.3);white-space:nowrap;"></div>
 
+<!-- Privacy/Terms Modal -->
+<div id="policy-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:999999;display:none;align-items:center;justify-content:center;padding:16px;">
+    <div style="background:#fff;border-radius:24px;padding:28px 24px;max-width:480px;width:100%;max-height:85vh;overflow-y:auto;position:relative;box-shadow:0 24px 80px rgba(0,0,0,0.4);">
+        <button onclick="document.getElementById('policy-overlay').style.display='none'" style="position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;background:#f1f5f9;border:none;cursor:pointer;font-size:18px;font-weight:700;color:#64748b;">&#x2715;</button>
+        <h2 id="policy-title" style="font-size:20px;font-weight:900;color:#0ea5e9;margin-bottom:4px;font-family:'Space Grotesk',sans-serif;">Privacy Policy</h2>
+        <p style="font-size:10px;color:#94a3b8;font-weight:700;margin-bottom:20px;">Last Updated: January 2026</p>
+        <div id="policy-body" style="font-size:12px;color:#475569;line-height:1.8;font-weight:500;"></div>
+        <button onclick="document.getElementById('su-privacy').checked=true;document.getElementById('policy-overlay').style.display='none'" style="margin-top:20px;width:100%;background:#0ea5e9;color:#fff;padding:14px;border:none;border-radius:14px;font-weight:700;font-size:13px;cursor:pointer;">I Agree ✓</button>
+    </div>
+</div>
+
 <script src="firebase-config.js"></script>
 <script>
 lucide.createIcons();
@@ -563,7 +576,21 @@ firebase.auth().onAuthStateChanged(user => {
     }
 })();
 
-function toast(msg, type='info') {
+function showPrivacyModal(type) {
+    const overlay = document.getElementById('policy-overlay');
+    const title = document.getElementById('policy-title');
+    const body = document.getElementById('policy-body');
+    if(type === 'privacy') {
+        title.innerText = 'Privacy Policy';
+        body.innerHTML = `<strong>1. Information We Collect</strong><br>We collect your name, email, phone number, and usage data when you register or use Silver X Trader platform.<br><br><strong>2. How We Use Your Information</strong><br>Your information is used to manage your account, process transactions, send important updates, and improve our services. We do not sell your personal data to third parties.<br><br><strong>3. Data Security</strong><br>We use industry-standard encryption (Firebase/Google Cloud) to protect your data. Your passwords are securely hashed and never stored in plain text.<br><br><strong>4. Cookies</strong><br>We use cookies and local storage to keep you logged in and improve your experience. You can disable cookies in your browser settings.<br><br><strong>5. Third-Party Services</strong><br>We use Firebase (Google) for authentication and data storage. Google's Privacy Policy applies to data processed through these services.<br><br><strong>6. Financial Data</strong><br>All deposit and withdrawal records are stored securely. We do not store your wallet addresses beyond what is necessary to process transactions.<br><br><strong>7. Your Rights</strong><br>You may request deletion of your account and associated data by contacting us via WhatsApp.<br><br><strong>8. Contact</strong><br>For privacy concerns: <a href="https://wa.me/923294007913" style="color:#0ea5e9">WhatsApp Support</a>`;
+    } else {
+        title.innerText = 'Terms & Conditions';
+        body.innerHTML = `<strong>1. Platform Nature</strong><br>Silver X Trader is an educational and simulation platform for binary options signals. All signals are algorithmic and for educational purposes only — not financial advice.<br><br><strong>2. Risk Disclaimer</strong><br>Trading binary options involves significant financial risk. You may lose your invested capital. Past performance does not guarantee future results. Never invest money you cannot afford to lose.<br><br><strong>3. Eligibility</strong><br>You must be 18 years or older to use this platform. By registering, you confirm you meet this requirement and that online trading is legal in your jurisdiction.<br><br><strong>4. Account Responsibility</strong><br>You are responsible for maintaining the security of your account credentials. Do not share your password with anyone. Silver X Trader is not liable for unauthorized access due to your negligence.<br><br><strong>5. Deposits & Withdrawals</strong><br>Minimum deposit is $10 (USDT TRC20 or Binance Pay). Minimum withdrawal is $10, requiring a prior deposit of $20. Processing time is 15 minutes to 24 hours.<br><br><strong>6. Earn Wallet</strong><br>Referral bonuses, ad claims, promo codes, and commissions go to your Earn Wallet. Minimum $120 is required to transfer to main balance.<br><br><strong>7. Prohibited Activities</strong><br>Fraud, multi-accounting, fake referrals, or any form of system abuse will result in immediate account suspension without refund.<br><br><strong>8. Modifications</strong><br>Silver X Trader reserves the right to modify these terms at any time. Continued use of the platform constitutes acceptance of updated terms.<br><br><strong>9. Contact</strong><br><a href="https://wa.me/923294007913" style="color:#0ea5e9">WhatsApp Support</a>`;
+    }
+    overlay.style.display = 'flex';
+}
+
+
     const colors = {success:'#10B981', error:'#EF4444', info:'#0ea5e9', warning:'#F59E0B'};
     const el = document.getElementById('toast-el');
     el.style.background = colors[type] || colors.info;
