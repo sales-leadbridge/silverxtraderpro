@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silver X Trader - Best Quotex Signal Bot &amp; Investment Platform | 98% Accuracy</title>
+    <meta name="description" content="Silver X Trader - AI-powered Quotex signal bot with 98% accuracy. Invest with 20% daily returns in 24 hours. Join 15,000+ traders today!">
+    <meta name="keywords" content="quotex signals, binary options bot, quotex signal bot, AI trading signals, investment opportunity, daily profit, CALL PUT signals, forex trading, crypto signals, referral program, daily claim">
+    <meta name="author" content="Silver X Trader">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://silverxtrader.com/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://silverxtrader.com/">
+    <meta property="og:title" content="Silver X Trader - Best Quotex Signal Bot">
+    <meta property="og:description" content="98% accuracy AI signals. 20% daily profit. Join today!">
+    <meta property="twitter:card" content="summary_large_image">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Silver X Trader","applicationCategory":"FinanceApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","ratingCount":"15000"}}</script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root { --primary:#0ea5e9; --secondary:#8B5CF6; --accent:#F59E0B; --success:#10B981; --bg:#F8FAFC; }
+        * { font-family:'Plus Jakarta Sans',sans-serif; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        .outfit { font-family:'Space Grotesk',sans-serif; }
+        body { background:linear-gradient(135deg,#F8FAFC 0%,#EFF6FF 100%); color:#0F172A; margin:0; padding:0; overflow-x:hidden; }
+
+        .text-premium { background:linear-gradient(135deg,#0ea5e9 0%,#38bdf8 50%,#0ea5e9 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; font-weight:900; }
+
+        .glass-premium { background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); border:1.5px solid rgba(226,232,240,0.8); border-radius:24px; box-shadow:0 10px 40px rgba(0,0,0,0.08),0 0 80px rgba(14,165,233,0.1); position:relative; overflow:hidden; }
+        .glass-premium::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent); transition:0.8s; }
+        .glass-premium:hover::before { left:100%; }
+
+        .btn-premium { background:linear-gradient(135deg,#0ea5e9 0%,#38bdf8 100%); color:white; font-weight:700; padding:16px 32px; border-radius:16px; border:none; cursor:pointer; text-transform:uppercase; letter-spacing:1px; font-size:13px; box-shadow:0 8px 24px rgba(14,165,233,0.4); transition:all 0.3s; position:relative; overflow:hidden; }
+        .btn-premium:active { transform:scale(0.96); }
+        .btn-premium:disabled { opacity:0.6; cursor:not-allowed; }
+
+        .input-premium { width:100%; background:linear-gradient(135deg,#F8FAFC 0%,#EFF6FF 100%); border:2px solid #E2E8F0; padding:15px 18px; border-radius:14px; font-weight:600; font-size:14px; color:#0F172A; transition:all 0.3s; outline:none; }
+        .input-premium:focus { border-color:var(--primary); background:white; box-shadow:0 0 0 4px rgba(14,165,233,0.1); }
+        .input-premium::placeholder { color:#94a3b8; font-weight:500; }
+
+        .hero-premium { background:linear-gradient(rgba(239,246,255,0.95),rgba(219,234,254,0.9)); border-radius:28px; padding:32px 24px; position:relative; overflow:hidden; border:2px solid rgba(14,165,233,0.2); }
+
+        .stat-premium { background:linear-gradient(135deg,#ffffff 0%,#f8fafc 100%); border:2px solid #E2E8F0; border-radius:20px; padding:20px 16px; text-align:center; transition:all 0.3s; box-shadow:0 4px 16px rgba(0,0,0,0.06); }
+        .stat-premium:hover { transform:translateY(-6px); box-shadow:0 12px 32px rgba(14,165,233,0.15); border-color:var(--primary); }
+
+        .pairs-premium { background:linear-gradient(135deg,#ffffff 0%,#eff6ff 50%,#ffffff 100%); border:2px solid #BFDBFE; border-radius:24px; padding:28px 24px; box-shadow:0 8px 32px rgba(14,165,233,0.12); }
+        .pair-badge-premium { background:linear-gradient(135deg,#EFF6FF 0%,#DBEAFE 100%); color:var(--primary); padding:10px 16px; border-radius:12px; font-size:12px; font-weight:700; display:inline-block; margin:5px; border:1.5px solid #BFDBFE; transition:all 0.3s; }
+        .pair-badge-premium:hover { transform:translateY(-3px) scale(1.05); }
+        .pair-badge-premium.vip { background:linear-gradient(135deg,var(--primary) 0%,#38bdf8 100%); color:white; border-color:var(--primary); }
+
+        .plan-premium { background:linear-gradient(135deg,#FFFEF0 0%,#FEF7E0 100%); border:2px solid #FDB022; border-radius:24px; padding:24px 20px; text-align:center; position:relative; overflow:hidden; transition:all 0.3s; box-shadow:0 8px 32px rgba(253,176,34,0.2); }
+        .plan-premium:hover { transform:translateY(-6px); box-shadow:0 16px 48px rgba(253,176,34,0.3); }
+        .plan-tag-premium { position:absolute; top:12px; right:12px; background:linear-gradient(135deg,#F59E0B,#FDB022); color:white; padding:5px 12px; border-radius:10px; font-size:9px; font-weight:800; text-transform:uppercase; }
+        .plan-invest-amount { color:#F59E0B; font-size:2.2rem; font-weight:900; }
+        .plan-return-amount { color:#059669; font-size:1.8rem; font-weight:900; }
+        .plan-profit-box { background:linear-gradient(135deg,#ECFDF5 0%,#D1FAE5 100%); border:2px solid #10B981; border-radius:14px; padding:10px 14px; margin-top:8px; }
+        .plan-profit-amount { color:#059669; font-size:1.4rem; font-weight:900; }
+
+        .vip-premium { background:linear-gradient(135deg,#2D1B69 0%,#3730A3 50%,#2D1B69 100%); border:2px solid #7C3AED; border-radius:28px; padding:32px 28px; position:relative; overflow:hidden; box-shadow:0 16px 64px rgba(124,58,237,0.35); }
+        .vip-premium::before { content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%; background:radial-gradient(circle,rgba(124,58,237,0.15) 0%,transparent 70%); animation:rotate 15s linear infinite; }
+        .vip-glow-premium { position:absolute; top:0; right:0; width:250px; height:250px; background:radial-gradient(circle,rgba(124,58,237,0.4),transparent); border-radius:50%; filter:blur(50px); animation:vpulse 4s ease-in-out infinite; }
+        .benefit-premium { display:flex; align-items:center; gap:14px; padding:14px 16px; background:rgba(139,92,246,0.15); border:1.5px solid rgba(139,92,246,0.3); border-radius:14px; margin-bottom:10px; transition:all 0.3s; }
+        .benefit-premium:hover { background:rgba(139,92,246,0.25); transform:translateX(6px); }
+        .benefit-icon-premium { width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,#7C3AED,#A78BFA); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 6px 20px rgba(124,58,237,0.5); }
+        .benefit-double-bonus { background:linear-gradient(135deg,rgba(16,185,129,0.25),rgba(16,185,129,0.15)) !important; border:2px solid #10B981 !important; }
+        .benefit-double-bonus .benefit-icon-premium { background:linear-gradient(135deg,#059669,#10B981); }
+
+        .ref-premium { background:linear-gradient(135deg,#ffffff 0%,#f0fdf4 100%); border:2px solid var(--success); border-radius:24px; padding:28px 24px; text-align:center; box-shadow:0 8px 32px rgba(16,185,129,0.2); transition:all 0.3s; }
+        .ref-premium:hover { transform:translateY(-6px); box-shadow:0 16px 48px rgba(16,185,129,0.3); }
+        .milestone-premium { background:linear-gradient(135deg,#FAF5FF 0%,#F3E8FF 100%); border:2px solid var(--secondary); border-radius:24px; padding:28px 24px; box-shadow:0 8px 32px rgba(139,92,246,0.2); }
+
+        .divider-premium { height:2px; background:linear-gradient(90deg,transparent,var(--primary),transparent); margin:48px 0; position:relative; }
+        .divider-premium::before { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:12px; height:12px; background:var(--primary); border-radius:50%; box-shadow:0 0 20px rgba(14,165,233,0.6); }
+
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+        @keyframes rotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        @keyframes vpulse { 0%,100%{opacity:0.6;transform:scale(1)} 50%{opacity:1;transform:scale(1.2)} }
+        @keyframes revealUp { from{opacity:0;transform:translateX(-50%) translateY(-30px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+
+        .float-premium { animation:float 3s ease-in-out infinite; }
+        .reveal-premium { opacity:0; transform:translateY(40px); transition:all 0.6s cubic-bezier(0.4,0,0.2,1); }
+        .reveal-premium.active { opacity:1; transform:translateY(0); }
+
+        .loader-spin { width:22px; height:22px; border:3px solid rgba(255,255,255,0.3); border-top:3px solid white; border-radius:50%; animation:rotate 0.7s linear infinite; display:inline-block; }
+
+        @media (max-width:640px) { .hero-premium{padding:24px 20px;} .btn-premium{padding:14px 24px;font-size:12px;} }
+
+        .auth-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(8px); z-index:99999; display:flex; align-items:center; justify-content:center; padding:16px; }
+        .auth-box { background:#fff; border-radius:24px; padding:32px 28px 28px; max-width:460px; width:100%; box-shadow:0 24px 80px rgba(0,0,0,0.3); max-height:92vh; overflow-y:auto; position:relative; }
+        .auth-close { position:absolute; top:14px; right:14px; width:32px; height:32px; border-radius:50%; background:#f1f5f9; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:#64748b; transition:0.2s; }
+        .auth-close:hover { background:#e2e8f0; color:#0f172a; }
+
+        .trust-badge { display:flex; align-items:center; gap:8px; padding:12px 16px; background:rgba(255,255,255,0.7); border:1.5px solid rgba(14,165,233,0.2); border-radius:14px; }
+
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+    </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="bg-white/95 backdrop-blur-xl border-b-2 border-slate-200/80 sticky top-0 z-50 px-4 py-3 shadow-lg">
+    <div class="flex justify-between items-center max-w-6xl mx-auto">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-sky-400 to-sky-600 rounded-xl items-center justify-center shadow-lg float-premium flex">
+                <i data-lucide="trending-up" class="w-5 h-5 text-white"></i>
+            </div>
+            <div>
+                <h1 class="text-base font-black outfit text-premium uppercase tracking-tight leading-none">SILVER X</h1>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Supreme Elite</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="openAuthPopup('login')" class="text-xs font-bold text-sky-600 px-4 py-2 rounded-xl bg-sky-50 border-2 border-sky-200 hover:border-sky-400 transition">LOGIN</button>
+            <button onclick="openAuthPopup('signup')" class="text-xs font-bold text-white px-4 py-2 rounded-xl btn-premium">SIGNUP</button>
+        </div>
+    </div>
+</header>
+
+<!-- ── HERO ── -->
+<section class="px-4 pt-8 pb-6 max-w-6xl mx-auto reveal-premium">
+    <div class="hero-premium">
+        <div class="text-center relative z-10">
+
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/80 border-2 border-sky-200 rounded-full mb-5 shadow-lg">
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span class="text-xs font-bold text-sky-700 uppercase tracking-wider">AI-Powered Trading Bot • Live Now</span>
+            </div>
+
+            <h2 class="text-4xl md:text-6xl font-black outfit text-premium uppercase leading-tight mb-3">
+                SILVER X TRADER
+            </h2>
+            <p class="text-sm md:text-base font-bold text-slate-600 mb-6">
+                Best Quotex Signal Bot &amp; Investment Opportunity
+            </p>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 max-w-2xl mx-auto">
+                <div class="stat-premium">
+                    <div class="text-2xl font-black outfit text-premium mb-1">CALL/PUT</div>
+                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Live Signals</div>
+                </div>
+                <div class="stat-premium">
+                    <div class="text-2xl font-black outfit text-green-600 mb-1">20%</div>
+                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Daily Profit</div>
+                </div>
+                <div class="stat-premium">
+                    <div class="text-2xl font-black outfit text-premium mb-1">98%</div>
+                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Accuracy</div>
+                </div>
+                <div class="stat-premium border-green-400 bg-gradient-to-br from-green-50 to-emerald-50">
+                    <div class="text-2xl font-black outfit text-green-600 mb-1">15K+</div>
+                    <div class="text-[9px] text-green-600 font-bold uppercase tracking-widest">Active Users</div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-3 mb-6">
+                <div class="trust-badge"><i data-lucide="shield-check" class="w-4 h-4 text-green-600"></i><span class="text-xs font-bold text-slate-700">Secure Platform</span></div>
+                <div class="trust-badge"><i data-lucide="zap" class="w-4 h-4 text-yellow-500"></i><span class="text-xs font-bold text-slate-700">Instant Signals</span></div>
+                <div class="trust-badge"><i data-lucide="clock" class="w-4 h-4 text-sky-500"></i><span class="text-xs font-bold text-slate-700">24/7 Active</span></div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <button onclick="openAuthPopup('signup')" class="btn-premium px-8 py-4">
+                    &#x1F680; GET STARTED FREE
+                </button>
+                <button onclick="document.getElementById('plans-section').scrollIntoView({behavior:'smooth'})" class="px-8 py-4 rounded-2xl border-2 border-sky-300 text-sky-700 font-bold text-sm hover:bg-sky-50 transition">
+                    View Plans &#x2193;
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── TRADING PAIRS ── -->
+<section class="px-4 py-6 max-w-6xl mx-auto reveal-premium">
+    <div class="glass-premium p-7">
+        <div class="text-center mb-5">
+            <h3 class="text-2xl font-black outfit text-premium uppercase mb-1">TRADING PAIRS</h3>
+            <p class="text-xs text-slate-500 font-bold">Free: 8 Pairs | VIP: 16 Pairs</p>
+        </div>
+        <div class="pairs-premium">
+            <div class="flex flex-wrap justify-center mb-3">
+                <span class="pair-badge-premium">EUR/USD</span>
+                <span class="pair-badge-premium">GBP/USD</span>
+                <span class="pair-badge-premium">USD/JPY</span>
+                <span class="pair-badge-premium">USD/CHF</span>
+                <span class="pair-badge-premium">AUD/USD</span>
+                <span class="pair-badge-premium">USD/CAD</span>
+                <span class="pair-badge-premium">BTC/USDT</span>
+                <span class="pair-badge-premium">ETH/USDT</span>
+            </div>
+            <div class="h-px bg-gradient-to-r from-transparent via-sky-400 to-transparent my-4"></div>
+            <div class="text-center mb-3">
+                <span class="inline-block px-4 py-1.5 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-full text-xs font-bold uppercase shadow-lg">&#x1F512; VIP Premium Pairs</span>
+            </div>
+            <div class="flex flex-wrap justify-center">
+                <span class="pair-badge-premium vip">EUR/GBP</span>
+                <span class="pair-badge-premium vip">GBP/JPY</span>
+                <span class="pair-badge-premium vip">EUR/JPY</span>
+                <span class="pair-badge-premium vip">AUD/CAD</span>
+                <span class="pair-badge-premium vip">NZD/USD</span>
+                <span class="pair-badge-premium vip">EUR/AUD</span>
+                <span class="pair-badge-premium vip">SOL/USDT</span>
+                <span class="pair-badge-premium vip">BNB/USDT</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── INVESTMENT PLANS ── -->
+<section id="plans-section" class="px-4 py-6 max-w-6xl mx-auto reveal-premium">
+    <div class="text-center mb-6">
+        <div class="inline-block px-4 py-2 bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300 rounded-full mb-3 shadow-lg">
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-700">&#x1F4B0; Investment Plans</span>
+        </div>
+        <h3 class="text-3xl font-black outfit uppercase mb-1" style="color:#F59E0B;">1-DAY PLANS</h3>
+        <p class="text-xs font-bold text-slate-600 uppercase">20% Profit Automatically After 24 Hours</p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+        <div class="plan-premium">
+            <div class="plan-tag-premium">Starter &#x1F525;</div>
+            <div class="plan-invest-amount outfit mb-1">$20</div>
+            <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
+            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
+            <div class="plan-return-amount outfit mb-1">$24</div>
+            <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$4</div><div class="text-[9px] text-green-700 font-bold">20% PROFIT</div></div>
+        </div>
+        <div class="plan-premium">
+            <div class="plan-tag-premium">Popular &#x2B50;</div>
+            <div class="plan-invest-amount outfit mb-1">$40</div>
+            <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
+            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
+            <div class="plan-return-amount outfit mb-1">$48</div>
+            <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$8</div><div class="text-[9px] text-green-700 font-bold">20% PROFIT</div></div>
+        </div>
+        <div class="plan-premium">
+            <div class="plan-tag-premium">Best &#x1F48E;</div>
+            <div class="plan-invest-amount outfit mb-1">$80</div>
+            <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
+            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
+            <div class="plan-return-amount outfit mb-1">$96</div>
+            <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$16</div><div class="text-[9px] text-green-700 font-bold">20% PROFIT</div></div>
+        </div>
+        <div class="plan-premium">
+            <div class="plan-tag-premium">Pro &#x1F680;</div>
+            <div class="plan-invest-amount outfit mb-1">$160</div>
+            <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
+            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
+            <div class="plan-return-amount outfit mb-1">$192</div>
+            <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$32</div><div class="text-[9px] text-green-700 font-bold">20% PROFIT</div></div>
+        </div>
+        <div class="plan-premium">
+            <div class="plan-tag-premium">Elite &#x1F451;</div>
+            <div class="plan-invest-amount outfit mb-1">$320</div>
+            <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
+            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
+            <div class="plan-return-amount outfit mb-1">$384</div>
+            <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$64</div><div class="text-[9px] text-green-700 font-bold">20% PROFIT</div></div>
+        </div>
+        <div class="plan-premium border-4 border-yellow-400">
+            <div class="plan-tag-premium" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">Supreme &#x1F3C6;</div>
+            <div class="plan-invest-amount outfit mb-1">$640</div>
+            <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
+            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
+            <div class="plan-return-amount outfit mb-1">$768</div>
+            <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$128</div><div class="text-[9px] text-green-700 font-bold">20% PROFIT</div></div>
+        </div>
+    </div>
+
+    <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-2xl p-4 text-center">
+        <p class="text-sm font-black text-green-700">&#x26A1; Capital + 20% Profit Auto-Credited to Your Main Balance After 24 Hours!</p>
+        <p class="text-xs text-green-600 font-bold mt-1">Min Deposit: $10 | Min Withdrawal: $10 (requires $20 deposit first)</p>
+    </div>
+</section>
+
+<div class="divider-premium max-w-6xl mx-auto px-4"></div>
+
+<!-- ── EARN FEATURES ── -->
+<section class="px-4 py-6 max-w-6xl mx-auto reveal-premium">
+    <div class="text-center mb-6">
+        <h3 class="text-2xl font-black outfit text-premium uppercase mb-1">MULTIPLE WAYS TO EARN</h3>
+        <p class="text-xs font-bold text-slate-500">Earn from referrals, ads, promos &amp; more</p>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="glass-premium p-5 text-center border-2 border-sky-300">
+            <div class="w-12 h-12 bg-gradient-to-br from-sky-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-3 float-premium">
+                <i data-lucide="play-circle" class="w-6 h-6 text-white"></i>
+            </div>
+            <div class="text-2xl font-black outfit text-sky-600 mb-1">$2</div>
+            <div class="text-xs font-bold text-sky-700 uppercase mb-1">Ad-Claim</div>
+            <div class="text-[10px] text-slate-500 font-semibold">Daily reward</div>
+        </div>
+        <div class="glass-premium p-5 text-center border-2 border-purple-300">
+            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center mx-auto mb-3 float-premium">
+                <i data-lucide="zap" class="w-6 h-6 text-white"></i>
+            </div>
+            <div class="text-2xl font-black outfit text-purple-600 mb-1">$6/day</div>
+            <div class="text-xs font-bold text-purple-700 uppercase mb-1">Booster</div>
+            <div class="text-[10px] text-slate-500 font-semibold">$30 for 30 days</div>
+        </div>
+        <div class="glass-premium p-5 text-center border-2 border-yellow-300">
+            <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-3 float-premium">
+                <i data-lucide="gift" class="w-6 h-6 text-white"></i>
+            </div>
+            <div class="text-2xl font-black outfit text-yellow-600 mb-1">$0.50</div>
+            <div class="text-xs font-bold text-yellow-700 uppercase mb-1">Promo Code</div>
+            <div class="text-[10px] text-slate-500 font-semibold">Daily codes</div>
+        </div>
+        <div class="glass-premium p-5 text-center border-2 border-green-300">
+            <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-3 float-premium">
+                <i data-lucide="users" class="w-6 h-6 text-white"></i>
+            </div>
+            <div class="text-2xl font-black outfit text-green-600 mb-1">$2</div>
+            <div class="text-xs font-bold text-green-700 uppercase mb-1">Referral</div>
+            <div class="text-[10px] text-slate-500 font-semibold">Per invite</div>
+        </div>
+    </div>
+    <div class="mt-4 bg-gradient-to-r from-green-50 to-teal-50 border-2 border-green-200 rounded-2xl p-4 text-center">
+        <p class="text-sm font-black text-green-700">&#x1F4BC; All earnings go to your <span class="text-green-800 underline">Earn Wallet</span> — Transfer to Main Balance at $120</p>
+    </div>
+</section>
+
+<div class="divider-premium max-w-6xl mx-auto px-4"></div>
+
+<!-- ── VIP SECTION ── -->
+<section class="px-4 py-6 max-w-6xl mx-auto reveal-premium">
+    <div class="vip-premium relative z-10">
+        <div class="vip-glow-premium"></div>
+        <div class="relative z-20">
+            <div class="text-center mb-6">
+                <div class="inline-block px-4 py-2 bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded-full text-xs font-bold uppercase mb-3 shadow-lg">&#x2B50; Premium Access</div>
+                <h3 class="text-3xl font-black outfit uppercase mb-2" style="color:#C4B5FD;">VIP ELITE</h3>
+                <div class="text-5xl font-black outfit text-white mb-1" style="text-shadow:0 0 40px rgba(167,139,250,0.5);">$250</div>
+                <div class="text-sm font-bold uppercase tracking-wider" style="color:#C4B5FD;">30 Days Access</div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-2">
+                <div class="benefit-premium"><div class="benefit-icon-premium"><i data-lucide="zap" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">Ad-Free Experience</div><div class="text-xs text-gray-300">Zero interruptions</div></div></div>
+                <div class="benefit-premium"><div class="benefit-icon-premium"><i data-lucide="trending-up" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">16 Premium Pairs</div><div class="text-xs text-gray-300">All pairs unlocked</div></div></div>
+                <div class="benefit-premium"><div class="benefit-icon-premium"><i data-lucide="target" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">98% Accuracy</div><div class="text-xs text-gray-300">Premium signals</div></div></div>
+                <div class="benefit-premium"><div class="benefit-icon-premium"><i data-lucide="shield-check" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">2 Recovery Sessions</div><div class="text-xs text-gray-300">Trade protection</div></div></div>
+                <div class="benefit-premium"><div class="benefit-icon-premium"><i data-lucide="message-circle" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">WhatsApp Support</div><div class="text-xs text-gray-300">Direct 24/7 help</div></div></div>
+                <div class="benefit-premium"><div class="benefit-icon-premium"><i data-lucide="clock" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">Fast Withdrawals</div><div class="text-xs text-gray-300">15min – 3 hours</div></div></div>
+                <div class="benefit-premium benefit-double-bonus" style="grid-column:span 2 / span 2;"><div class="benefit-icon-premium"><i data-lucide="gift" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-base text-white">Double Referral Bonus</div><div class="text-sm text-green-300">Earn $2 per invite (instead of $1)</div></div></div>
+            </div>
+            <div class="mt-5 text-center">
+                <button onclick="openAuthPopup('signup')" class="px-10 py-4 bg-gradient-to-r from-purple-500 to-violet-600 text-white font-black text-sm rounded-2xl uppercase tracking-wide shadow-2xl hover:opacity-90 transition">
+                    GET VIP ACCESS — $250
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider-premium max-w-6xl mx-auto px-4"></div>
+
+<!-- ── REFERRAL PROGRAM ── -->
+<section class="px-4 py-6 max-w-6xl mx-auto reveal-premium">
+    <div class="text-center mb-6">
+        <h3 class="text-2xl font-black outfit text-premium uppercase mb-1">REFERRAL PROGRAM</h3>
+        <p class="text-xs font-bold text-slate-500">Invite friends &amp; earn forever</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div class="ref-premium">
+            <div class="float-premium mb-3"><i data-lucide="users" class="w-14 h-14 text-green-600 mx-auto"></i></div>
+            <div class="text-4xl font-black outfit text-green-600 mb-2">$2</div>
+            <div class="text-sm font-bold text-green-700 uppercase mb-1">Per Invite</div>
+            <div class="text-xs text-slate-600 font-semibold">Free: $1 | VIP: $2 per signup</div>
+        </div>
+        <div class="ref-premium" style="border-color:#F59E0B;background:linear-gradient(135deg,#fffbf0,#fff9e0);">
+            <div class="float-premium mb-3"><i data-lucide="percent" class="w-14 h-14 text-amber-600 mx-auto"></i></div>
+            <div class="text-4xl font-black outfit text-amber-600 mb-2">3%</div>
+            <div class="text-sm font-bold text-amber-700 uppercase mb-1">Deposit Commission</div>
+            <div class="text-xs text-slate-600 font-semibold">Every time your referral deposits</div>
+        </div>
+        <div class="milestone-premium text-center">
+            <i data-lucide="trophy" class="w-12 h-12 mx-auto mb-3" style="color:#8B5CF6;"></i>
+            <div class="text-sm font-black outfit uppercase mb-3" style="color:#8B5CF6;">Milestone Bonuses</div>
+            <div class="grid grid-cols-2 gap-2">
+                <div class="bg-white/60 rounded-xl p-2"><div class="text-xl font-black outfit" style="color:#8B5CF6;">$10</div><div class="text-[9px] font-bold text-slate-600">25 Refs</div></div>
+                <div class="bg-white/60 rounded-xl p-2"><div class="text-xl font-black outfit" style="color:#8B5CF6;">$20</div><div class="text-[9px] font-bold text-slate-600">50 Refs</div></div>
+                <div class="bg-white/60 rounded-xl p-2"><div class="text-xl font-black outfit" style="color:#8B5CF6;">$30</div><div class="text-[9px] font-bold text-slate-600">100 Refs</div></div>
+                <div class="bg-white/60 rounded-xl p-2"><div class="text-xl font-black outfit" style="color:#8B5CF6;">$50</div><div class="text-[9px] font-bold text-slate-600">500 Refs</div></div>
+            </div>
+        </div>
+    </div>
+    <div class="text-center">
+        <div class="inline-block bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 py-4 rounded-2xl font-black text-base shadow-xl">
+            All referral earnings &#x2192; &#x1F4BC; Earn Wallet (Transfer at $120)
+        </div>
+    </div>
+</section>
+
+<div class="divider-premium max-w-6xl mx-auto px-4"></div>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="px-4 py-6 max-w-6xl mx-auto reveal-premium">
+    <div class="text-center mb-6">
+        <h3 class="text-2xl font-black outfit text-premium uppercase mb-1">HOW IT WORKS</h3>
+        <p class="text-xs font-bold text-slate-500">Simple 3-step process</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="glass-premium p-6 text-center border-2 border-sky-200">
+            <div class="w-14 h-14 bg-gradient-to-br from-sky-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white font-black text-xl outfit">1</div>
+            <h4 class="font-black text-black mb-2">Sign Up Free</h4>
+            <p class="text-xs text-slate-600 font-semibold">Create account in seconds. No KYC required. Start immediately.</p>
+        </div>
+        <div class="glass-premium p-6 text-center border-2 border-green-200">
+            <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white font-black text-xl outfit">2</div>
+            <h4 class="font-black text-black mb-2">Deposit &amp; Invest</h4>
+            <p class="text-xs text-slate-600 font-semibold">Deposit min $10. Choose a 24-hour plan. 20% profit guaranteed.</p>
+        </div>
+        <div class="glass-premium p-6 text-center border-2 border-amber-200">
+            <div class="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white font-black text-xl outfit">3</div>
+            <h4 class="font-black text-black mb-2">Earn &amp; Withdraw</h4>
+            <p class="text-xs text-slate-600 font-semibold">Profit auto-credited after 24 hours. Withdraw min $10 (requires $20 deposit first).</p>
+        </div>
+    </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="px-4 py-8 max-w-4xl mx-auto reveal-premium">
+    <div class="glass-premium p-8 border-2 border-sky-400 text-center" style="background:linear-gradient(135deg,rgba(14,165,233,0.05),rgba(56,189,248,0.05));">
+        <h3 class="text-3xl font-black outfit text-premium uppercase mb-3">JOIN 15,000+ TRADERS</h3>
+        <p class="text-sm font-bold text-slate-600 mb-6">Start earning today. 100% automated. Zero experience needed.</p>
+        <button onclick="openAuthPopup('signup')" class="btn-premium px-12 py-4 text-sm">
+            &#x1F680; CREATE FREE ACCOUNT
+        </button>
+    </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer class="bg-gradient-to-br from-slate-900 to-slate-800 text-white py-10 mt-8">
+    <div class="px-4 max-w-6xl mx-auto">
+        <div class="text-center mb-6">
+            <div class="w-14 h-14 bg-gradient-to-br from-sky-400 to-sky-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-xl">
+                <i data-lucide="trending-up" class="w-7 h-7 text-white"></i>
+            </div>
+            <h2 class="text-xl font-black outfit mb-1 text-premium">SILVER X TRADER</h2>
+            <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Best Quotex Signal Bot</p>
+        </div>
+        <div class="flex justify-center gap-4 mb-6">
+            <a href="https://www.youtube.com/@silverxtrader" target="_blank" class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-700 transition-all shadow-lg hover:scale-110">
+                <i data-lucide="youtube" class="w-6 h-6 text-red-500"></i>
+            </a>
+            <a href="https://www.tiktok.com/@silverxtrader" target="_blank" class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-700 transition-all shadow-lg hover:scale-110">
+                <i data-lucide="music-2" class="w-6 h-6 text-slate-300"></i>
+            </a>
+            <a href="https://wa.me/923294007913" target="_blank" class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-700 transition-all shadow-lg hover:scale-110">
+                <i data-lucide="message-circle" class="w-6 h-6 text-green-500"></i>
+            </a>
+        </div>
+        <div class="text-center text-xs text-slate-400">
+            <p class="mb-2">&copy; 2026 Silver X Trader. All Rights Reserved.</p>
+            <div class="flex justify-center gap-4">
+                <a href="#" class="hover:text-sky-400 transition font-semibold">Privacy Policy</a>
+                <span>&bull;</span>
+                <a href="#" class="hover:text-sky-400 transition font-semibold">Terms of Service</a>
+                <span>&bull;</span>
+                <a href="https://wa.me/923294007913" class="hover:text-sky-400 transition font-semibold">Contact</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- ══ AUTH POPUP ══ -->
+<div id="auth-overlay" class="auth-overlay hidden" onclick="if(event.target===this)closeAuthPopup()">
+    <div class="auth-box">
+        <button class="auth-close" onclick="closeAuthPopup()">&#x2715;</button>
+
+        <!-- SIGNUP -->
+        <div id="auth-signup">
+            <div class="text-center mb-5">
+                <h3 class="text-2xl font-black outfit text-premium uppercase mb-1">CREATE ACCOUNT</h3>
+                <p class="text-xs text-slate-500 font-bold">Join Silver X Community</p>
+            </div>
+            <div class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" id="su-fname" placeholder="First Name" class="input-premium">
+                    <input type="text" id="su-lname" placeholder="Last Name" class="input-premium">
+                </div>
+                <input type="tel" id="su-phone" placeholder="Phone Number" class="input-premium">
+                <input type="email" id="su-email" placeholder="Email Address" class="input-premium">
+                <input type="password" id="su-pass" placeholder="Password (min 6 chars)" class="input-premium">
+                <input type="password" id="su-cpass" placeholder="Confirm Password" class="input-premium">
+                <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-2xl p-3">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i data-lucide="gift" class="w-5 h-5 text-green-600"></i>
+                        <span class="text-xs font-bold text-green-700">Have a Referral Code? Get a Bonus!</span>
+                    </div>
+                    <input type="text" id="su-ref" placeholder="Referral Code (Optional)" class="input-premium" style="border-color:#10B981; background:white;">
+                </div>
+                <div class="flex items-start gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <input type="checkbox" id="su-privacy" class="mt-0.5 w-4 h-4 accent-sky-500 flex-shrink-0">
+                    <label for="su-privacy" class="text-xs text-slate-600 font-semibold">I accept the <span class="text-sky-600 font-bold">Terms &amp; Conditions</span> and <span class="text-sky-600 font-bold">Privacy Policy</span></label>
+                </div>
+                <button onclick="handleSignup()" id="signup-btn" class="btn-premium w-full py-4">
+                    <span id="signup-text">CREATE ACCOUNT</span>
+                    <span id="signup-loader" class="loader-spin hidden"></span>
+                </button>
+            </div>
+            <p class="text-center text-xs text-slate-500 mt-4">Already have an account? <button onclick="switchToLogin()" class="text-sky-600 font-bold hover:underline">Login Here</button></p>
+        </div>
+
+        <!-- LOGIN -->
+        <div id="auth-login" class="hidden">
+            <div class="text-center mb-5">
+                <h3 class="text-2xl font-black outfit text-slate-800 uppercase mb-1">WELCOME BACK</h3>
+                <p class="text-xs text-slate-500 font-bold">Sign in to your account</p>
+            </div>
+            <div class="space-y-3">
+                <input type="email" id="login-email" placeholder="Email Address" class="input-premium">
+                <input type="password" id="login-pass" placeholder="Password" class="input-premium">
+                <button onclick="handleLogin()" id="login-btn" class="btn-premium w-full py-4">
+                    <span id="login-text">LOGIN NOW</span>
+                    <span id="login-loader" class="loader-spin hidden"></span>
+                </button>
+                <div class="text-center">
+                    <button onclick="handleForgotPassword()" class="text-xs font-bold text-sky-600 hover:underline">Forgot Password?</button>
+                </div>
+            </div>
+            <p class="text-center text-xs text-slate-500 mt-4">New to Silver X? <button onclick="switchToSignup()" class="text-sky-600 font-bold hover:underline">Create Account</button></p>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast-el" style="position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:999999;display:none;padding:14px 28px;border-radius:16px;font-size:13px;font-weight:700;color:white;box-shadow:0 12px 40px rgba(0,0,0,0.3);white-space:nowrap;"></div>
+
+<script src="firebase-config.js"></script>
+<script>
+lucide.createIcons();
+
+// Scroll reveal
+const revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('active'); });
+}, {threshold:0.08});
+document.querySelectorAll('.reveal-premium').forEach(el => revealObserver.observe(el));
+
+// Check auth: if already logged in → go to app
+firebase.auth().onAuthStateChanged(user => {
+    if (user) window.location.href = 'app.html';
+});
+
+// ── URL ref param pre-fill ──
+(function(){
+    const r = new URLSearchParams(window.location.search).get('ref');
+    if(r) {
+        openAuthPopup('signup');
+        setTimeout(()=>{ const el=document.getElementById('su-ref'); if(el) el.value=r; }, 300);
+    }
+})();
+
+function toast(msg, type='info') {
+    const colors = {success:'#10B981', error:'#EF4444', info:'#0ea5e9', warning:'#F59E0B'};
+    const el = document.getElementById('toast-el');
+    el.style.background = colors[type] || colors.info;
+    el.innerText = msg;
+    el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 3200);
+}
+
+function openAuthPopup(mode) {
+    document.getElementById('auth-overlay').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    if(mode === 'login') {
+        document.getElementById('auth-signup').classList.add('hidden');
+        document.getElementById('auth-login').classList.remove('hidden');
+    } else {
+        document.getElementById('auth-login').classList.add('hidden');
+        document.getElementById('auth-signup').classList.remove('hidden');
+    }
+    lucide.createIcons();
+}
+function closeAuthPopup() {
+    document.getElementById('auth-overlay').classList.add('hidden');
+    document.body.style.overflow = '';
+}
+function switchToLogin() {
+    document.getElementById('auth-signup').classList.add('hidden');
+    document.getElementById('auth-login').classList.remove('hidden');
+}
+function switchToSignup() {
+    document.getElementById('auth-login').classList.add('hidden');
+    document.getElementById('auth-signup').classList.remove('hidden');
+}
+
+async function handleForgotPassword() {
+    const email = document.getElementById('login-email').value.trim();
+    if (!email) return toast('Enter your email address first', 'warning');
+    try {
+        await firebase.auth().sendPasswordResetEmail(email);
+        toast('Password reset email sent! Check your inbox.', 'success');
+    } catch(e) {
+        const msgs = {
+            'auth/user-not-found': 'No account found with this email.',
+            'auth/invalid-email': 'Invalid email format.'
+        };
+        toast(msgs[e.code] || e.message, 'error');
+    }
+}
+
+async function handleSignup() {
+    const btn = document.getElementById('signup-btn');
+    const txt = document.getElementById('signup-text');
+    const ldr = document.getElementById('signup-loader');
+
+    const firstName  = document.getElementById('su-fname').value.trim();
+    const lastName   = document.getElementById('su-lname').value.trim();
+    const phone      = document.getElementById('su-phone').value.trim();
+    const email      = document.getElementById('su-email').value.trim();
+    const password   = document.getElementById('su-pass').value;
+    const confirmPwd = document.getElementById('su-cpass').value;
+    const refCode    = document.getElementById('su-ref').value.trim().toUpperCase();
+    const privacy    = document.getElementById('su-privacy').checked;
+
+    if(!firstName||!lastName) return toast('Enter first and last name', 'warning');
+    if(!phone||phone.length<7) return toast('Enter a valid phone number', 'warning');
+    if(!email) return toast('Enter your email', 'warning');
+    if(password.length < 6) return toast('Password must be at least 6 characters!', 'warning');
+    if(password !== confirmPwd) return toast('Passwords do not match!', 'error');
+    if(!privacy) return toast('Please accept the Terms & Conditions', 'warning');
+
+    btn.disabled=true; txt.classList.add('hidden'); ldr.classList.remove('hidden');
+
+    try {
+        const cred = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        const uid  = cred.user.uid;
+        const refCodeGenerated = 'SX-' + Math.floor(1000 + Math.random() * 9000);
+
+        // Process referral
+        let referrerId = null;
+        if(refCode && refCode.length > 3) {
+            const snap = await db.collection('users').where('ref_code', '==', refCode).limit(1).get();
+            if(!snap.empty && snap.docs[0].id !== uid) {
+                referrerId = snap.docs[0].id;
+                const rData = snap.docs[0].data();
+                const isVIP = rData.is_vip && rData.vip_expiry > Date.now();
+                const bonus = isVIP ? 2 : 1;
+                await db.collection('users').doc(referrerId).update({
+                    referrals: firebase.firestore.FieldValue.increment(1),
+                    earn_wallet: firebase.firestore.FieldValue.increment(bonus)
+                });
+                await db.collection('transactions').add({
+                    user_id: referrerId,
+                    transaction_type: 'REFERRAL',
+                    amount: bonus,
+                    status: 'approved',
+                    notes: 'Referral signup: ' + email,
+                    created_at: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+        }
+
+        await db.collection('users').doc(uid).set({
+            email, first_name:firstName, last_name:lastName, phone,
+            ref_code: refCodeGenerated,
+            referred_by: referrerId ? refCode : null,
+            referral_processed: referrerId ? true : false,
+            balance: 0,
+            earn_wallet: 0,
+            total_deposited: 0,
+            referrals: 0,
+            is_vip: false,
+            vip_expiry: 0,
+            recovery_session_1: true,
+            recovery_session_2: true,
+            suspended: false,
+            ad_claims_today: 0,
+            last_ad_claim_date: '',
+            booster_active: false,
+            booster_expiry: 0,
+            created_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        toast('Account created! Redirecting...', 'success');
+        setTimeout(() => window.location.href = 'app.html', 1400);
+
+    } catch(err) {
+        btn.disabled=false; txt.classList.remove('hidden'); ldr.classList.add('hidden');
+        const msgs = {
+            'auth/email-already-in-use': 'This email is already registered!',
+            'auth/invalid-email': 'Invalid email address!',
+            'auth/weak-password': 'Password is too weak!'
+        };
+        toast(msgs[err.code] || err.message, 'error');
+    }
+}
+
+async function handleLogin() {
+    const btn = document.getElementById('login-btn');
+    const txt = document.getElementById('login-text');
+    const ldr = document.getElementById('login-loader');
+    const email    = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-pass').value;
+    if(!email||!password) return toast('Fill all fields', 'warning');
+
+    btn.disabled=true; txt.classList.add('hidden'); ldr.classList.remove('hidden');
+    try {
+        await firebase.auth().signInWithEmailAndPassword(email, password);
+        const uid = firebase.auth().currentUser.uid;
+        const userDoc = await db.collection('users').doc(uid).get();
+        if(userDoc.exists && userDoc.data().suspended) {
+            await firebase.auth().signOut();
+            btn.disabled=false; txt.classList.remove('hidden'); ldr.classList.add('hidden');
+            return toast('Account suspended. Contact support.', 'error');
+        }
+        toast('Login successful! Redirecting...', 'success');
+        setTimeout(() => window.location.href = 'app.html', 1000);
+    } catch(err) {
+        btn.disabled=false; txt.classList.remove('hidden'); ldr.classList.add('hidden');
+        const msgs = {
+            'auth/user-not-found': 'Account not found!',
+            'auth/wrong-password': 'Incorrect password!',
+            'auth/invalid-credential': 'Invalid email or password!',
+            'auth/too-many-requests': 'Too many attempts. Try again later.'
+        };
+        toast(msgs[err.code] || 'Login failed!', 'error');
+    }
+}
+</script>
+</body>
+</html>
