@@ -111,6 +111,23 @@
 
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyCFeZCVi3bnRYlL78M4vIAe4h-_3a0VRyU",
+  authDomain: "silver-x-trader.firebaseapp.com",
+  projectId: "silver-x-trader",
+  storageBucket: "silver-x-trader.firebasestorage.app",
+  messagingSenderId: "239715343845",
+  appId: "1:239715343845:web:a72cce9be116b1d0ae230c"
+};
+try { firebase.initializeApp(firebaseConfig); } catch(e) {}
+const db = firebase.firestore();
+const auth = firebase.auth();
+</script>
 <script>
 let secondsLeft = 300; // 5 minutes
 const totalSeconds = 300;
