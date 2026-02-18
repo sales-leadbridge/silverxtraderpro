@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Silver X Trader - Best Quotex Signal Bot &amp; Investment Platform | 98% Accuracy</title>
-    <meta name="description" content="Silver X Trader - AI-powered Quotex signal bot with 98% accuracy. Invest with 20% daily returns in 24 hours. Join 15,000+ traders today!">
+    <meta name="description" content="Silver X Trader - AI-powered Quotex signal bot with 98% accuracy. Invest with 15% daily returns in 24 hours. Join 15,000+ traders today!">
     <meta name="keywords" content="quotex signals, binary options bot, quotex signal bot, AI trading signals, investment opportunity, daily profit, CALL PUT signals, forex trading, crypto signals, referral program, daily claim">
     <meta name="author" content="Silver X Trader">
     <meta name="robots" content="index, follow">
@@ -12,8 +12,8 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://silverxtrader.com/">
     <meta property="og:title" content="Silver X Trader - Best Quotex Signal Bot">
-    <meta property="og:description" content="98% accuracy AI signals. 20% daily profit. Join today!">
-    <meta property="twitter:card" content="summary_large_image">
+    <meta property="og:description" content="98% accuracy AI signals. 15% daily profit. Join today!">
+    <meta name="twitter:card" content="summary_large_image">
     <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Silver X Trader","applicationCategory":"FinanceApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","ratingCount":"15000"}}</script>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -44,15 +44,20 @@
         .input-premium:focus { border-color:var(--primary); background:white; box-shadow:0 0 0 4px rgba(14,165,233,0.1); }
         .input-premium::placeholder { color:#94a3b8; font-weight:500; }
 
-        .hero-premium { background:linear-gradient(rgba(239,246,255,0.95),rgba(219,234,254,0.9)); border-radius:28px; padding:32px 24px; position:relative; overflow:hidden; border:2px solid rgba(14,165,233,0.2); }
+        /* ── HERO with dark overlay for white text contrast ── */
+        .hero-premium { background:linear-gradient(135deg,#0c2d48 0%,#1a4a72 50%,#0c3460 100%); border-radius:28px; padding:36px 24px; position:relative; overflow:hidden; border:2px solid rgba(14,165,233,0.4); }
+        .hero-premium::before { content:''; position:absolute; inset:0; background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2338bdf8' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); pointer-events:none; }
 
-        .stat-premium { background:linear-gradient(135deg,#ffffff 0%,#f8fafc 100%); border:2px solid #E2E8F0; border-radius:20px; padding:20px 16px; text-align:center; transition:all 0.3s; box-shadow:0 4px 16px rgba(0,0,0,0.06); }
-        .stat-premium:hover { transform:translateY(-6px); box-shadow:0 12px 32px rgba(14,165,233,0.15); border-color:var(--primary); }
+        .stat-premium { background:rgba(255,255,255,0.12); border:1.5px solid rgba(255,255,255,0.2); border-radius:20px; padding:20px 16px; text-align:center; transition:all 0.3s; backdrop-filter:blur(10px); }
+        .stat-premium:hover { transform:translateY(-4px); background:rgba(255,255,255,0.18); }
 
         .pairs-premium { background:linear-gradient(135deg,#ffffff 0%,#eff6ff 50%,#ffffff 100%); border:2px solid #BFDBFE; border-radius:24px; padding:28px 24px; box-shadow:0 8px 32px rgba(14,165,233,0.12); }
-        .pair-badge-premium { background:linear-gradient(135deg,#EFF6FF 0%,#DBEAFE 100%); color:var(--primary); padding:10px 16px; border-radius:12px; font-size:12px; font-weight:700; display:inline-block; margin:5px; border:1.5px solid #BFDBFE; transition:all 0.3s; }
+        .pair-badge-premium { background:linear-gradient(135deg,#EFF6FF 0%,#DBEAFE 100%); color:var(--primary); padding:10px 16px; border-radius:12px; font-size:12px; font-weight:700; display:inline-block; margin:5px; border:1.5px solid #BFDBFE; transition:all 0.3s; -webkit-text-stroke:0.3px rgba(14,165,233,0.3); }
         .pair-badge-premium:hover { transform:translateY(-3px) scale(1.05); }
-        .pair-badge-premium.vip { background:linear-gradient(135deg,var(--primary) 0%,#38bdf8 100%); color:white; border-color:var(--primary); }
+        .pair-badge-premium.vip { background:linear-gradient(135deg,var(--primary) 0%,#38bdf8 100%); color:white; border-color:var(--primary); -webkit-text-stroke:none; }
+
+        /* Section box dark bg for contrast */
+        .section-dark { background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%); border-radius:24px; padding:28px 24px; border:2px solid rgba(14,165,233,0.3); }
 
         .plan-premium { background:linear-gradient(135deg,#FFFEF0 0%,#FEF7E0 100%); border:2px solid #FDB022; border-radius:24px; padding:24px 20px; text-align:center; position:relative; overflow:hidden; transition:all 0.3s; box-shadow:0 8px 32px rgba(253,176,34,0.2); }
         .plan-premium:hover { transform:translateY(-6px); box-shadow:0 16px 48px rgba(253,176,34,0.3); }
@@ -81,7 +86,6 @@
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
         @keyframes rotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
         @keyframes vpulse { 0%,100%{opacity:0.6;transform:scale(1)} 50%{opacity:1;transform:scale(1.2)} }
-        @keyframes revealUp { from{opacity:0;transform:translateX(-50%) translateY(-30px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
 
         .float-premium { animation:float 3s ease-in-out infinite; }
         .reveal-premium { opacity:0; transform:translateY(40px); transition:all 0.6s cubic-bezier(0.4,0,0.2,1); }
@@ -89,16 +93,28 @@
 
         .loader-spin { width:22px; height:22px; border:3px solid rgba(255,255,255,0.3); border-top:3px solid white; border-radius:50%; animation:rotate 0.7s linear infinite; display:inline-block; }
 
-        @media (max-width:640px) { .hero-premium{padding:24px 20px;} .btn-premium{padding:14px 24px;font-size:12px;} }
+        @media (max-width:640px) { .hero-premium{padding:28px 20px;} .btn-premium{padding:14px 24px;font-size:12px;} }
 
         .auth-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(8px); z-index:99999; display:flex; align-items:center; justify-content:center; padding:16px; }
         .auth-box { background:#fff; border-radius:24px; padding:32px 28px 28px; max-width:460px; width:100%; box-shadow:0 24px 80px rgba(0,0,0,0.3); max-height:92vh; overflow-y:auto; position:relative; }
         .auth-close { position:absolute; top:14px; right:14px; width:32px; height:32px; border-radius:50%; background:#f1f5f9; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:#64748b; transition:0.2s; }
         .auth-close:hover { background:#e2e8f0; color:#0f172a; }
 
-        .trust-badge { display:flex; align-items:center; gap:8px; padding:12px 16px; background:rgba(255,255,255,0.7); border:1.5px solid rgba(14,165,233,0.2); border-radius:14px; }
+        .trust-badge { display:flex; align-items:center; gap:8px; padding:10px 14px; background:rgba(255,255,255,0.15); border:1.5px solid rgba(255,255,255,0.25); border-radius:14px; backdrop-filter:blur(8px); }
+
+        /* Logo circle */
+        .logo-circle { width:42px; height:42px; border-radius:50%; overflow:hidden; border:2px solid rgba(14,165,233,0.5); flex-shrink:0; }
+        .logo-circle img { width:100%; height:100%; object-fit:cover; }
 
         @keyframes fadeInUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+
+        /* Dark section text helpers */
+        .dark-section-title { color:#38bdf8; font-weight:900; }
+        .dark-section-sub { color:#94a3b8; }
+        .dark-text { color:#e2e8f0; }
+
+        /* Text stroke for readability on light bg */
+        .stroke-text { -webkit-text-stroke:0.5px rgba(0,0,0,0.15); }
     </style>
 </head>
 <body>
@@ -107,8 +123,8 @@
 <header class="bg-white/95 backdrop-blur-xl border-b-2 border-slate-200/80 sticky top-0 z-50 px-4 py-3 shadow-lg">
     <div class="flex justify-between items-center max-w-6xl mx-auto">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-sky-400 to-sky-600 rounded-xl items-center justify-center shadow-lg float-premium flex">
-                <i data-lucide="trending-up" class="w-5 h-5 text-white"></i>
+            <div class="logo-circle float-premium">
+                <img src="logo.jpg" alt="Silver X Trader" onerror="this.parentNode.style.background='#0ea5e9'">
             </div>
             <div>
                 <h1 class="text-base font-black outfit text-premium uppercase tracking-tight leading-none">SILVER X</h1>
@@ -127,49 +143,56 @@
     <div class="hero-premium">
         <div class="text-center relative z-10">
 
-            <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/80 border-2 border-sky-200 rounded-full mb-5 shadow-lg">
-                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span class="text-xs font-bold text-sky-700 uppercase tracking-wider">AI-Powered Trading Bot • Live Now</span>
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 border-2 border-white/30 rounded-full mb-5 shadow-lg backdrop-blur-sm">
+                <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span class="text-xs font-bold text-white uppercase tracking-wider stroke-text">AI-Powered Trading Bot • Live Now</span>
             </div>
 
-            <h2 class="text-4xl md:text-6xl font-black outfit text-premium uppercase leading-tight mb-3">
+            <!-- Logo in hero -->
+            <div class="flex justify-center mb-5">
+                <div class="w-20 h-20 rounded-full overflow-hidden border-4 border-sky-400/50 shadow-2xl float-premium">
+                    <img src="logo.jpg" alt="Silver X Trader" class="w-full h-full object-cover" onerror="this.parentNode.style.background='#0ea5e9'">
+                </div>
+            </div>
+
+            <h2 class="text-4xl md:text-6xl font-black outfit uppercase leading-tight mb-3" style="color:#fff; text-shadow:0 2px 20px rgba(56,189,248,0.5);">
                 SILVER X TRADER
             </h2>
-            <p class="text-sm md:text-base font-bold text-slate-600 mb-6">
+            <p class="text-sm md:text-base font-bold mb-6" style="color:#7dd3fc;">
                 Best Quotex Signal Bot &amp; Investment Opportunity
             </p>
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 max-w-2xl mx-auto">
                 <div class="stat-premium">
-                    <div class="text-2xl font-black outfit text-premium mb-1">CALL/PUT</div>
-                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Live Signals</div>
+                    <div class="text-2xl font-black outfit mb-1" style="color:#38bdf8;">CALL/PUT</div>
+                    <div class="text-[9px] font-bold uppercase tracking-widest" style="color:#94a3b8;">Live Signals</div>
                 </div>
                 <div class="stat-premium">
-                    <div class="text-2xl font-black outfit text-green-600 mb-1">20%</div>
-                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Daily Profit</div>
+                    <div class="text-2xl font-black outfit text-green-400 mb-1">15%</div>
+                    <div class="text-[9px] font-bold uppercase tracking-widest" style="color:#94a3b8;">Daily Profit</div>
                 </div>
                 <div class="stat-premium">
-                    <div class="text-2xl font-black outfit text-premium mb-1">98%</div>
-                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Accuracy</div>
+                    <div class="text-2xl font-black outfit mb-1" style="color:#38bdf8;">98%</div>
+                    <div class="text-[9px] font-bold uppercase tracking-widest" style="color:#94a3b8;">Accuracy</div>
                 </div>
-                <div class="stat-premium border-green-400 bg-gradient-to-br from-green-50 to-emerald-50">
-                    <div class="text-2xl font-black outfit text-green-600 mb-1">15K+</div>
-                    <div class="text-[9px] text-green-600 font-bold uppercase tracking-widest">Active Users</div>
+                <div class="stat-premium" style="border-color:rgba(52,211,153,0.4);background:rgba(16,185,129,0.15);">
+                    <div class="text-2xl font-black outfit text-green-400 mb-1">15K+</div>
+                    <div class="text-[9px] text-green-400 font-bold uppercase tracking-widest">Active Users</div>
                 </div>
             </div>
 
             <div class="flex flex-wrap justify-center gap-3 mb-6">
-                <div class="trust-badge"><i data-lucide="shield-check" class="w-4 h-4 text-green-600"></i><span class="text-xs font-bold text-slate-700">Secure Platform</span></div>
-                <div class="trust-badge"><i data-lucide="zap" class="w-4 h-4 text-yellow-500"></i><span class="text-xs font-bold text-slate-700">Instant Signals</span></div>
-                <div class="trust-badge"><i data-lucide="clock" class="w-4 h-4 text-sky-500"></i><span class="text-xs font-bold text-slate-700">24/7 Active</span></div>
+                <div class="trust-badge"><i data-lucide="shield-check" class="w-4 h-4 text-green-400"></i><span class="text-xs font-bold text-white">Secure Platform</span></div>
+                <div class="trust-badge"><i data-lucide="zap" class="w-4 h-4 text-yellow-400"></i><span class="text-xs font-bold text-white">Instant Signals</span></div>
+                <div class="trust-badge"><i data-lucide="clock" class="w-4 h-4 text-sky-400"></i><span class="text-xs font-bold text-white">24/7 Active</span></div>
             </div>
 
             <div class="flex flex-col sm:flex-row gap-3 justify-center">
                 <button onclick="openAuthPopup('signup')" class="btn-premium px-8 py-4">
-                    &#x1F680; GET STARTED FREE
+                    🚀 GET STARTED FREE
                 </button>
-                <button onclick="document.getElementById('plans-section').scrollIntoView({behavior:'smooth'})" class="px-8 py-4 rounded-2xl border-2 border-sky-300 text-sky-700 font-bold text-sm hover:bg-sky-50 transition">
-                    View Plans &#x2193;
+                <button onclick="document.getElementById('plans-section').scrollIntoView({behavior:'smooth'})" class="px-8 py-4 rounded-2xl border-2 border-white/30 text-white font-bold text-sm hover:bg-white/10 transition backdrop-blur-sm">
+                    View Plans ↓
                 </button>
             </div>
         </div>
@@ -178,10 +201,10 @@
 
 <!-- ── TRADING PAIRS ── -->
 <section class="px-4 py-6 max-w-6xl mx-auto reveal-premium">
-    <div class="glass-premium p-7">
+    <div class="section-dark">
         <div class="text-center mb-5">
-            <h3 class="text-2xl font-black outfit text-premium uppercase mb-1">TRADING PAIRS</h3>
-            <p class="text-xs text-slate-500 font-bold">Free: 8 Pairs | VIP: 16 Pairs</p>
+            <h3 class="text-2xl font-black outfit uppercase mb-1 dark-section-title stroke-text">TRADING PAIRS</h3>
+            <p class="text-xs font-bold dark-section-sub">Free: 8 Pairs | VIP: 16 Pairs</p>
         </div>
         <div class="pairs-premium">
             <div class="flex flex-wrap justify-center mb-3">
@@ -196,7 +219,7 @@
             </div>
             <div class="h-px bg-gradient-to-r from-transparent via-sky-400 to-transparent my-4"></div>
             <div class="text-center mb-3">
-                <span class="inline-block px-4 py-1.5 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-full text-xs font-bold uppercase shadow-lg">&#x1F512; VIP Premium Pairs</span>
+                <span class="inline-block px-4 py-1.5 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-full text-xs font-bold uppercase shadow-lg">🔒 VIP Premium Pairs</span>
             </div>
             <div class="flex flex-wrap justify-center">
                 <span class="pair-badge-premium vip">EUR/GBP</span>
@@ -216,72 +239,72 @@
 <section id="plans-section" class="px-4 py-6 max-w-6xl mx-auto reveal-premium">
     <div class="text-center mb-6">
         <div class="inline-block px-4 py-2 bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300 rounded-full mb-3 shadow-lg">
-            <span class="text-xs font-bold uppercase tracking-wider text-amber-700">&#x1F4B0; Investment Plans</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-700">💰 Investment Plans</span>
         </div>
         <h3 class="text-3xl font-black outfit uppercase mb-1" style="color:#F59E0B;">1-DAY PLANS</h3>
-        <p class="text-xs font-bold text-slate-600 uppercase">20% Profit Automatically After 24 Hours</p>
+        <p class="text-xs font-bold text-slate-600 uppercase">15% Profit Automatically After 24 Hours</p>
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
         <div class="plan-premium">
-            <div class="plan-tag-premium">Starter &#x1F525;</div>
+            <div class="plan-tag-premium">Starter 🔥</div>
             <div class="plan-invest-amount outfit mb-1">$20</div>
             <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
             <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
-            <div class="plan-return-amount outfit mb-1">$24</div>
+            <div class="plan-return-amount outfit mb-1">$23</div>
             <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
-            <div class="plan-profit-box"><div class="plan-profit-amount">+$4</div><div class="text-[9px] text-green-700 font-bold">20% PROFIT</div></div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$3</div><div class="text-[9px] text-green-700 font-bold">15% PROFIT</div></div>
         </div>
         <div class="plan-premium">
-            <div class="plan-tag-premium">Popular &#x2B50;</div>
+            <div class="plan-tag-premium">Popular ⭐</div>
             <div class="plan-invest-amount outfit mb-1">$40</div>
             <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
             <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
-            <div class="plan-return-amount outfit mb-1">$48</div>
+            <div class="plan-return-amount outfit mb-1">$46</div>
             <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
-            <div class="plan-profit-box"><div class="plan-profit-amount">+$8</div><div class="text-[9px] text-green-700 font-bold">20% PROFIT</div></div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$6</div><div class="text-[9px] text-green-700 font-bold">15% PROFIT</div></div>
         </div>
         <div class="plan-premium">
-            <div class="plan-tag-premium">Best &#x1F48E;</div>
+            <div class="plan-tag-premium">Best 💎</div>
             <div class="plan-invest-amount outfit mb-1">$80</div>
             <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
             <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
-            <div class="plan-return-amount outfit mb-1">$96</div>
+            <div class="plan-return-amount outfit mb-1">$92</div>
             <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
-            <div class="plan-profit-box"><div class="plan-profit-amount">+$16</div><div class="text-[9px] text-green-700 font-bold">20% PROFIT</div></div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$12</div><div class="text-[9px] text-green-700 font-bold">15% PROFIT</div></div>
         </div>
         <div class="plan-premium">
-            <div class="plan-tag-premium">Pro &#x1F680;</div>
+            <div class="plan-tag-premium">Pro 🚀</div>
             <div class="plan-invest-amount outfit mb-1">$160</div>
             <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
             <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
-            <div class="plan-return-amount outfit mb-1">$192</div>
+            <div class="plan-return-amount outfit mb-1">$184</div>
             <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
-            <div class="plan-profit-box"><div class="plan-profit-amount">+$32</div><div class="text-[9px] text-green-700 font-bold">20% PROFIT</div></div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$24</div><div class="text-[9px] text-green-700 font-bold">15% PROFIT</div></div>
         </div>
         <div class="plan-premium">
-            <div class="plan-tag-premium">Elite &#x1F451;</div>
+            <div class="plan-tag-premium">Elite 👑</div>
             <div class="plan-invest-amount outfit mb-1">$320</div>
             <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
             <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
-            <div class="plan-return-amount outfit mb-1">$384</div>
+            <div class="plan-return-amount outfit mb-1">$368</div>
             <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
-            <div class="plan-profit-box"><div class="plan-profit-amount">+$64</div><div class="text-[9px] text-green-700 font-bold">20% PROFIT</div></div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$48</div><div class="text-[9px] text-green-700 font-bold">15% PROFIT</div></div>
         </div>
         <div class="plan-premium border-4 border-yellow-400">
-            <div class="plan-tag-premium" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">Supreme &#x1F3C6;</div>
+            <div class="plan-tag-premium" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">Supreme 🏆</div>
             <div class="plan-invest-amount outfit mb-1">$640</div>
             <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
             <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
-            <div class="plan-return-amount outfit mb-1">$768</div>
+            <div class="plan-return-amount outfit mb-1">$736</div>
             <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
-            <div class="plan-profit-box"><div class="plan-profit-amount">+$128</div><div class="text-[9px] text-green-700 font-bold">20% PROFIT</div></div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$96</div><div class="text-[9px] text-green-700 font-bold">15% PROFIT</div></div>
         </div>
     </div>
 
     <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-2xl p-4 text-center">
-        <p class="text-sm font-black text-green-700">&#x26A1; Capital + 20% Profit Auto-Credited to Your Main Balance After 24 Hours!</p>
-        <p class="text-xs text-green-600 font-bold mt-1">Min Deposit: $10 | Min Withdrawal: $10 (requires $20 deposit first)</p>
+        <p class="text-sm font-black text-green-700">⚡ Capital + 15% Profit Automatically Credited to Your Balance in 24 Hours!</p>
+        <p class="text-xs text-green-600 font-bold mt-1">Min Deposit: $10 | Min Withdrawal: $10</p>
     </div>
 </section>
 
@@ -291,7 +314,7 @@
 <section class="px-4 py-6 max-w-6xl mx-auto reveal-premium">
     <div class="text-center mb-6">
         <h3 class="text-2xl font-black outfit text-premium uppercase mb-1">MULTIPLE WAYS TO EARN</h3>
-        <p class="text-xs font-bold text-slate-500">Earn from referrals, ads, promos &amp; more</p>
+        <p class="text-xs font-bold text-slate-500">Referrals, ads, promos &amp; more — all in your Earn Wallet</p>
     </div>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div class="glass-premium p-5 text-center border-2 border-sky-300">
@@ -314,7 +337,7 @@
             <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-3 float-premium">
                 <i data-lucide="gift" class="w-6 h-6 text-white"></i>
             </div>
-            <div class="text-2xl font-black outfit text-yellow-600 mb-1">$0.50</div>
+            <div class="text-2xl font-black outfit text-yellow-600 mb-1">Up to $10</div>
             <div class="text-xs font-bold text-yellow-700 uppercase mb-1">Promo Code</div>
             <div class="text-[10px] text-slate-500 font-semibold">Daily codes</div>
         </div>
@@ -328,7 +351,7 @@
         </div>
     </div>
     <div class="mt-4 bg-gradient-to-r from-green-50 to-teal-50 border-2 border-green-200 rounded-2xl p-4 text-center">
-        <p class="text-sm font-black text-green-700">&#x1F4BC; All earnings go to your <span class="text-green-800 underline">Earn Wallet</span> — Transfer to Main Balance at $120</p>
+        <p class="text-sm font-bold text-green-700">All earnings go to your Earn Wallet — Transfer to Main Balance at $120</p>
     </div>
 </section>
 
@@ -340,9 +363,9 @@
         <div class="vip-glow-premium"></div>
         <div class="relative z-20">
             <div class="text-center mb-6">
-                <div class="inline-block px-4 py-2 bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded-full text-xs font-bold uppercase mb-3 shadow-lg">&#x2B50; Premium Access</div>
+                <div class="inline-block px-4 py-2 bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded-full text-xs font-bold uppercase mb-3 shadow-lg">⭐ Premium Access</div>
                 <h3 class="text-3xl font-black outfit uppercase mb-2" style="color:#C4B5FD;">VIP ELITE</h3>
-                <div class="text-5xl font-black outfit text-white mb-1" style="text-shadow:0 0 40px rgba(167,139,250,0.5);">$250</div>
+                <div class="text-5xl font-black outfit text-white mb-1" style="text-shadow:0 0 40px rgba(167,139,250,0.5);">$199</div>
                 <div class="text-sm font-bold uppercase tracking-wider" style="color:#C4B5FD;">30 Days Access</div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -352,11 +375,11 @@
                 <div class="benefit-premium"><div class="benefit-icon-premium"><i data-lucide="shield-check" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">2 Recovery Sessions</div><div class="text-xs text-gray-300">Trade protection</div></div></div>
                 <div class="benefit-premium"><div class="benefit-icon-premium"><i data-lucide="message-circle" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">WhatsApp Support</div><div class="text-xs text-gray-300">Direct 24/7 help</div></div></div>
                 <div class="benefit-premium"><div class="benefit-icon-premium"><i data-lucide="clock" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">Fast Withdrawals</div><div class="text-xs text-gray-300">15min – 3 hours</div></div></div>
-                <div class="benefit-premium benefit-double-bonus" class="sm:col-span-2"><div class="benefit-icon-premium"><i data-lucide="gift" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-base text-white">Double Referral Bonus</div><div class="text-sm text-green-300">Earn $2 per invite (instead of $1)</div></div></div>
+                <div class="benefit-premium benefit-double-bonus sm:col-span-2"><div class="benefit-icon-premium"><i data-lucide="gift" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-base text-white">Double Referral Bonus</div><div class="text-sm text-green-300">Earn $2 per invite (instead of $1)</div></div></div>
             </div>
             <div class="mt-5 text-center">
                 <button onclick="openAuthPopup('signup')" class="px-10 py-4 bg-gradient-to-r from-purple-500 to-violet-600 text-white font-black text-sm rounded-2xl uppercase tracking-wide shadow-2xl hover:opacity-90 transition">
-                    GET VIP ACCESS — $250
+                    GET VIP ACCESS — $199
                 </button>
             </div>
         </div>
@@ -397,8 +420,8 @@
         </div>
     </div>
     <div class="text-center">
-        <div class="inline-block bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 py-4 rounded-2xl font-black text-base shadow-xl">
-            All referral earnings &#x2192; &#x1F4BC; Earn Wallet (Transfer at $120)
+        <div class="inline-block bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 py-3 rounded-2xl font-bold text-sm shadow-xl">
+            Referral earnings go to Earn Wallet — Transfer at $120 threshold
         </div>
     </div>
 </section>
@@ -420,12 +443,12 @@
         <div class="glass-premium p-6 text-center border-2 border-green-200">
             <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white font-black text-xl outfit">2</div>
             <h4 class="font-black text-black mb-2">Deposit &amp; Invest</h4>
-            <p class="text-xs text-slate-600 font-semibold">Deposit min $10. Choose a 24-hour plan. 20% profit guaranteed.</p>
+            <p class="text-xs text-slate-600 font-semibold">Deposit min $10. Choose a 24-hour plan. 15% profit guaranteed.</p>
         </div>
         <div class="glass-premium p-6 text-center border-2 border-amber-200">
             <div class="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white font-black text-xl outfit">3</div>
             <h4 class="font-black text-black mb-2">Earn &amp; Withdraw</h4>
-            <p class="text-xs text-slate-600 font-semibold">Profit auto-credited after 24 hours. Withdraw min $10 (requires $20 deposit first).</p>
+            <p class="text-xs text-slate-600 font-semibold">Profit auto-credited after 24 hours. Withdraw min $10 to your wallet.</p>
         </div>
     </div>
 </section>
@@ -436,7 +459,7 @@
         <h3 class="text-3xl font-black outfit text-premium uppercase mb-3">JOIN 15,000+ TRADERS</h3>
         <p class="text-sm font-bold text-slate-600 mb-6">Start earning today. 100% automated. Zero experience needed.</p>
         <button onclick="openAuthPopup('signup')" class="btn-premium px-12 py-4 text-sm">
-            &#x1F680; CREATE FREE ACCOUNT
+            🚀 CREATE FREE ACCOUNT
         </button>
     </div>
 </section>
@@ -445,8 +468,8 @@
 <footer class="bg-gradient-to-br from-slate-900 to-slate-800 text-white py-10 mt-8">
     <div class="px-4 max-w-6xl mx-auto">
         <div class="text-center mb-6">
-            <div class="w-14 h-14 bg-gradient-to-br from-sky-400 to-sky-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-xl">
-                <i data-lucide="trending-up" class="w-7 h-7 text-white"></i>
+            <div class="w-16 h-16 rounded-full overflow-hidden mx-auto mb-3 border-2 border-sky-400/50 shadow-xl">
+                <img src="logo.jpg" alt="Silver X" class="w-full h-full object-cover" onerror="this.parentNode.style.background='#0ea5e9'">
             </div>
             <h2 class="text-xl font-black outfit mb-1 text-premium">SILVER X TRADER</h2>
             <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Best Quotex Signal Bot</p>
@@ -467,7 +490,7 @@
             <div class="flex justify-center gap-4">
                 <a href="#" onclick="openPrivacyModal('privacy');return false;" class="hover:text-sky-400 transition font-semibold">Privacy Policy</a>
                 <span>&bull;</span>
-                <a href="#" onclick="openPrivacyModal('terms');return false;" class="hover:text-sky-400 transition font-semibold">Terms of Service</a>
+                <a href="#" onclick="openPrivacyModal('terms');return false;" class="hover:text-sky-400 transition font-semibold">Terms &amp; Conditions</a>
                 <span>&bull;</span>
                 <a href="https://wa.me/923294007913" class="hover:text-sky-400 transition font-semibold">Contact</a>
             </div>
@@ -483,8 +506,11 @@
         <!-- SIGNUP -->
         <div id="auth-signup">
             <div class="text-center mb-5">
+                <div class="w-14 h-14 rounded-full overflow-hidden mx-auto mb-2 border-2 border-sky-200">
+                    <img src="logo.jpg" alt="Silver X" class="w-full h-full object-cover" onerror="this.parentNode.style.background='#0ea5e9'">
+                </div>
                 <h3 class="text-2xl font-black outfit text-premium uppercase mb-1">CREATE ACCOUNT</h3>
-                <p class="text-xs text-slate-500 font-bold">Join Silver X Community</p>
+                <p class="text-xs text-slate-500 font-bold">Join Silver X Community • Get $10 Joining Bonus</p>
             </div>
             <div class="space-y-3">
                 <div class="grid grid-cols-2 gap-3">
@@ -517,6 +543,9 @@
         <!-- LOGIN -->
         <div id="auth-login" class="hidden">
             <div class="text-center mb-5">
+                <div class="w-14 h-14 rounded-full overflow-hidden mx-auto mb-2 border-2 border-sky-200">
+                    <img src="logo.jpg" alt="Silver X" class="w-full h-full object-cover" onerror="this.parentNode.style.background='#0ea5e9'">
+                </div>
                 <h3 class="text-2xl font-black outfit text-slate-800 uppercase mb-1">WELCOME BACK</h3>
                 <p class="text-xs text-slate-500 font-bold">Sign in to your account</p>
             </div>
@@ -539,6 +568,17 @@
 <!-- Toast -->
 <div id="toast-el" style="position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:999999;display:none;padding:14px 28px;border-radius:16px;font-size:13px;font-weight:700;color:white;box-shadow:0 12px 40px rgba(0,0,0,0.3);white-space:nowrap;"></div>
 
+<!-- ── PRIVACY/TERMS MODAL ── -->
+<div id="policy-modal-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:9999999;display:none;align-items:center;justify-content:center;padding:16px;">
+    <div style="background:#fff;border-radius:24px;padding:28px 24px;max-width:500px;width:100%;max-height:88vh;overflow-y:auto;position:relative;box-shadow:0 24px 80px rgba(0,0,0,0.4);">
+        <button onclick="document.getElementById('policy-modal-overlay').style.display='none'" style="position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;background:#f1f5f9;border:none;cursor:pointer;font-size:18px;font-weight:700;color:#64748b;">&#x2715;</button>
+        <h2 id="policy-modal-title" style="font-size:20px;font-weight:900;color:#0ea5e9;margin-bottom:4px;font-family:'Space Grotesk',sans-serif;"></h2>
+        <p style="font-size:10px;color:#94a3b8;font-weight:700;margin-bottom:16px;">Silver X Trader — 2026</p>
+        <div id="policy-modal-body" style="font-size:12.5px;color:#475569;line-height:1.8;font-weight:500;"></div>
+        <button onclick="document.getElementById('su-privacy').checked=true;document.getElementById('policy-modal-overlay').style.display='none'" style="margin-top:20px;width:100%;background:#0ea5e9;color:#fff;padding:14px;border:none;border-radius:14px;font-weight:700;font-size:13px;cursor:pointer;">I Agree ✓</button>
+    </div>
+</div>
+
 <script src="firebase-config.js"></script>
 <script>
 lucide.createIcons();
@@ -546,15 +586,15 @@ lucide.createIcons();
 // Scroll reveal
 const revealObserver = new IntersectionObserver(entries => {
     entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('active'); });
-}, {threshold:0.08});
+}, {threshold:0.06});
 document.querySelectorAll('.reveal-premium').forEach(el => revealObserver.observe(el));
 
-// Check auth: if already logged in → go to app
+// Check auth
 firebase.auth().onAuthStateChanged(user => {
     if (user) window.location.replace("app.html");
 });
 
-// ── URL ref param pre-fill ──
+// URL ref param pre-fill
 (function(){
     const r = new URLSearchParams(window.location.search).get('ref');
     if(r) {
@@ -642,12 +682,13 @@ async function handleSignup() {
 
         // Process referral
         let referrerId = null;
+        let referrerData = null;
         if(refCode && refCode.length > 3) {
             const snap = await db.collection('users').where('ref_code', '==', refCode).limit(1).get();
             if(!snap.empty && snap.docs[0].id !== uid) {
                 referrerId = snap.docs[0].id;
-                const rData = snap.docs[0].data();
-                const isVIP = rData.is_vip && rData.vip_expiry > Date.now();
+                referrerData = snap.docs[0].data();
+                const isVIP = referrerData.is_vip && referrerData.vip_expiry > Date.now();
                 const bonus = isVIP ? 2 : 1;
                 await db.collection('users').doc(referrerId).update({
                     referrals: firebase.firestore.FieldValue.increment(1),
@@ -686,10 +727,21 @@ async function handleSignup() {
             created_at: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // ✅ JOINING BONUS $0.50 auto
-await db.collection('users').doc(uid).update({ earn_wallet: firebase.firestore.FieldValue.increment(0.50), joining_bonus_given: true });
-await db.collection('transactions').add({ user_id: uid, transaction_type: 'JOINING_BONUS', amount: 0.50, status: 'approved', notes: 'Welcome joining bonus', created_at: firebase.firestore.FieldValue.serverTimestamp() });
-toast('🎉 Account Created! $0.50 joining bonus added!', 'success');
+        // $10 joining bonus
+        await db.collection('users').doc(uid).update({
+            earn_wallet: firebase.firestore.FieldValue.increment(10),
+            joining_bonus_given: true
+        });
+        await db.collection('transactions').add({
+            user_id: uid,
+            transaction_type: 'JOINING_BONUS',
+            amount: 10,
+            status: 'approved',
+            notes: 'Welcome joining bonus',
+            created_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        toast('🎉 Account Created! $10 joining bonus added!', 'success');
         setTimeout(() => window.location.replace("app.html"), 1400);
 
     } catch(err) {
@@ -734,25 +786,89 @@ async function handleLogin() {
         toast(msgs[err.code] || 'Login failed!', 'error');
     }
 }
-</script>
 
-<!-- ── PRIVACY/TERMS MODAL ── -->
-<div id="policy-modal-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:9999999;display:none;align-items:center;justify-content:center;padding:16px;">
-    <div style="background:#fff;border-radius:24px;padding:28px 24px;max-width:480px;width:100%;max-height:85vh;overflow-y:auto;position:relative;box-shadow:0 24px 80px rgba(0,0,0,0.4);">
-        <button onclick="document.getElementById('policy-modal-overlay').style.display='none'" style="position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;background:#f1f5f9;border:none;cursor:pointer;font-size:18px;font-weight:700;color:#64748b;">&#x2715;</button>
-        <h2 id="policy-modal-title" style="font-size:20px;font-weight:900;color:#0ea5e9;margin-bottom:4px;font-family:'Space Grotesk',sans-serif;"></h2>
-        <p style="font-size:10px;color:#94a3b8;font-weight:700;margin-bottom:16px;">Silver X Trader — 2026</p>
-        <div id="policy-modal-body" style="font-size:12px;color:#475569;line-height:1.8;font-weight:500;"></div>
-        <button onclick="document.getElementById('su-privacy').checked=true;document.getElementById('policy-modal-overlay').style.display='none'" style="margin-top:20px;width:100%;background:#0ea5e9;color:#fff;padding:14px;border:none;border-radius:14px;font-weight:700;font-size:13px;cursor:pointer;">I Agree ✓</button>
-    </div>
-</div>
-
-<script>
+// ── Privacy/Terms Modal ──
 function openPrivacyModal(type) {
-    const PRIVACY = `<strong>1. Information We Collect</strong><br>Name, email, phone number, and usage data on registration.<br><br><strong>2. How We Use It</strong><br>To manage accounts, process transactions, and improve services. We do not sell your data.<br><br><strong>3. Data Security</strong><br>Firebase/Google Cloud encryption. Passwords are securely hashed.<br><br><strong>4. Financial Data</strong><br>Deposit and withdrawal records stored securely. Wallet addresses used only for processing.<br><br><strong>5. Your Rights</strong><br>Request account deletion via WhatsApp.<br><br><strong>6. Contact</strong><br><a href="https://wa.me/923294007913" style="color:#0ea5e9">WhatsApp Support</a>`;
-    const TERMS = `<strong>1. Platform Nature</strong><br>Silver X Trader provides algorithmic signals for educational use — not financial advice.<br><br><strong>2. Risk Disclaimer</strong><br>Binary options trading involves significant risk. Never invest money you cannot afford to lose.<br><br><strong>3. Eligibility</strong><br>Must be 18+ to use this platform.<br><br><strong>4. Deposits & Withdrawals</strong><br>Min deposit $10 (USDT TRC20 or Binance Pay). Min withdrawal $10 (requires $20 total deposit). Processing: 15min–24hrs.<br><br><strong>5. Earn Wallet</strong><br>Referral, ad claims, promo codes credited to Earn Wallet. Min $120 to transfer to main balance.<br><br><strong>6. Prohibited Activities</strong><br>Fraud, multi-accounting, fake referrals = immediate suspension without refund.<br><br><strong>7. Contact</strong><br><a href="https://wa.me/923294007913" style="color:#0ea5e9">WhatsApp Support</a>`;
+    const TERMS_HTML = `
+<div style="space-y:12px;">
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">1. Platform Nature</p>
+<p style="margin-bottom:14px;">Silver X Trader is an AI-powered algorithmic signal and investment simulation platform. All signals and investment returns are generated by our proprietary algorithm and are provided for educational and simulation purposes. Results are not guaranteed and trading binary options involves significant financial risk.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">2. Risk Disclaimer &amp; Financial Warning</p>
+<p style="margin-bottom:14px;">Binary options and forex trading involves substantial risk of loss. Never invest money you cannot afford to lose. Silver X Trader is not a licensed financial institution or investment advisor. All investment decisions are made solely at the user's discretion and risk. Past performance does not guarantee future results.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">3. Eligibility &amp; Age Requirement</p>
+<p style="margin-bottom:14px;">Users must be 18 years or older to use this platform. By creating an account, you confirm that you meet the minimum age requirement in your jurisdiction and that use of this platform is legal in your country. Underage users will be immediately suspended without refund.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">4. Deposits &amp; Withdrawals</p>
+<p style="margin-bottom:14px;">Minimum deposit is $10 via USDT TRC20 or Binance Pay. Minimum withdrawal is $10. First withdrawal requires a minimum deposit of $20 in your account history. Withdrawal processing takes 15 minutes to 24 hours. All crypto transactions are irreversible — double-check all wallet addresses before sending.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">5. Earn Wallet System</p>
+<p style="margin-bottom:14px;">Earnings from referrals, ad claims, promo codes, deposit commissions, and milestone bonuses are credited to your Earn Wallet. A minimum of $120 is required to transfer Earn Wallet balance to your Main Balance. This policy exists to prevent abuse and ensure platform sustainability.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">6. Joining Bonus</p>
+<p style="margin-bottom:14px;">New users receive a one-time $10 joining bonus credited to their Earn Wallet upon account creation. This bonus is subject to Earn Wallet transfer rules and cannot be withdrawn directly. The joining bonus is non-transferable and forfeited upon account suspension.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">7. Referral Program Rules</p>
+<p style="margin-bottom:14px;">Users earn $1 (Free) or $2 (VIP) for each successful referral signup, plus 3% commission on every deposit made by their referred users. Self-referrals, fake accounts, and multi-accounting are strictly prohibited and will result in immediate suspension of all associated accounts without refund.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">8. VIP Membership</p>
+<p style="margin-bottom:14px;">VIP access costs $199 for 30 days. VIP membership expires automatically after 30 days and must be renewed manually. VIP provides 16 trading pairs, ad-free experience, priority withdrawals, double referral bonuses, and WhatsApp support. VIP fees are non-refundable once activated.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">9. Promo Codes</p>
+<p style="margin-bottom:14px;">Promo codes are created by the admin and distributed via official channels (YouTube, TikTok). Each code has a set reward value (up to $10), expiry date, and maximum redemption limit. Sharing, selling, or distributing codes without authorization is prohibited. Expired or fully redeemed codes cannot be applied.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">10. Investment Plans</p>
+<p style="margin-bottom:14px;">Investment plans offer 15% fixed ROI in 24 hours. Capital plus profit is automatically credited to your Main Balance after 24 hours. Plans are automatically renewed and users can invest multiple times. Minimum investment is $20. Plan returns are based on simulated algorithmic performance and are not guaranteed in any financial sense.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">11. Prohibited Activities</p>
+<p style="margin-bottom:14px;">The following are strictly prohibited: creating multiple accounts, fake referrals, manipulating the platform through browser tools or code injection, attempting to hack or reverse-engineer platform security, fraudulent deposit claims, chargeback abuse, and any other activity intended to defraud the platform or its users. Violations result in permanent ban and potential legal action.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">12. Account Termination &amp; Admin Rights</p>
+<p style="margin-bottom:14px;">Silver X Trader reserves the right to suspend, restrict, or terminate any account at any time without notice, for any reason including suspected fraud, violations of these terms, or at admin discretion. Suspended accounts forfeit all balances. Admin decisions are final and non-appealable. By continuing to use the platform, you accept all policies in their entirety.</p>
+</div>`;
+
+    const PRIVACY_HTML = `
+<div>
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">1. Information We Collect</p>
+<p style="margin-bottom:14px;">We collect name, email address, phone number, device information, and usage data when you register and use Silver X Trader. We also collect transaction data including deposits, withdrawals, and investment activity for account management and security purposes.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">2. How We Use Your Information</p>
+<p style="margin-bottom:14px;">Your information is used to manage your account, process transactions, send important notifications, prevent fraud, improve our services, and comply with legal obligations. We do not sell, trade, or rent your personal information to third parties for marketing purposes.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">3. Data Security</p>
+<p style="margin-bottom:14px;">All user data is stored on Google Firebase's secure cloud infrastructure with industry-standard encryption. Passwords are securely hashed and never stored in plain text. We implement Firestore security rules to prevent unauthorized data access. However, no online system is 100% secure — use a strong, unique password.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">4. Financial Data Protection</p>
+<p style="margin-bottom:14px;">Deposit and withdrawal records are securely stored with full audit trails. Wallet addresses are used solely for processing transactions. We do not store credit card information. All crypto transactions are irreversible once confirmed on the blockchain — always verify address before sending.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">5. Cookies &amp; Tracking</p>
+<p style="margin-bottom:14px;">We use Firebase Analytics to understand user behavior and improve the platform. Basic session data may be stored locally for performance. We do not use invasive tracking cookies or share analytics data with advertising networks.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">6. Third-Party Services</p>
+<p style="margin-bottom:14px;">We use Google Firebase for backend infrastructure, Binance Pay and USDT TRC20 for payment processing, and ad networks for monetization. These services have their own privacy policies. Silver X Trader is not responsible for the data practices of third-party services.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">7. Security Monitoring</p>
+<p style="margin-bottom:14px;">For platform security, we monitor and log suspicious activities including unusual login attempts, console tampering, DOM manipulation, and abnormal transaction patterns. Security logs are stored to protect all users and the platform integrity.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">8. User Rights</p>
+<p style="margin-bottom:14px;">You may request account deletion or data export by contacting us via WhatsApp. Account deletion will remove personal data within 30 days, subject to any legal retention requirements. Transaction records may be retained for compliance purposes.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">9. Children's Privacy</p>
+<p style="margin-bottom:14px;">Silver X Trader is strictly for users 18 years and older. We do not knowingly collect information from minors. If we discover that a user is under 18, the account will be immediately terminated and data deleted.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">10. Data Retention</p>
+<p style="margin-bottom:14px;">Account data is retained as long as your account is active. Transaction records are retained for a minimum of 2 years for security and compliance purposes. Security logs may be retained for up to 1 year.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">11. International Users</p>
+<p style="margin-bottom:14px;">Silver X Trader operates globally. By using our platform, you consent to the transfer and processing of your data on Google Firebase servers. Users in regions with specific data protection laws (GDPR, CCPA, etc.) acknowledge that use of this platform constitutes consent to these terms.</p>
+
+<p style="font-weight:800;color:#0ea5e9;margin-bottom:6px;">12. Contact &amp; Updates</p>
+<p style="margin-bottom:14px;">For privacy concerns, data requests, or questions, contact us via <a href="https://wa.me/923294007913" style="color:#0ea5e9;">WhatsApp Support</a>. We reserve the right to update this privacy policy at any time. Continued use of the platform after changes constitutes acceptance of the updated policy.</p>
+</div>`;
+
     document.getElementById('policy-modal-title').innerText = type === 'privacy' ? 'Privacy Policy' : 'Terms & Conditions';
-    document.getElementById('policy-modal-body').innerHTML = type === 'privacy' ? PRIVACY : TERMS;
+    document.getElementById('policy-modal-body').innerHTML = type === 'privacy' ? PRIVACY_HTML : TERMS_HTML;
     document.getElementById('policy-modal-overlay').style.display = 'flex';
 }
 </script>
