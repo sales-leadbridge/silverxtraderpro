@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silver X | Ad Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family:'Plus Jakarta Sans',sans-serif; box-sizing:border-box; }
+        .outfit { font-family:'Space Grotesk',sans-serif; }
+        body { background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%); min-height:100vh; color:#fff; }
+        .ad-frame-container { border-radius:16px; overflow:hidden; border:2px solid rgba(14,165,233,0.3); box-shadow:0 0 40px rgba(14,165,233,0.15); }
+        .progress-bar { height:6px; background:rgba(255,255,255,0.15); border-radius:100px; overflow:hidden; }
+        .progress-fill { height:100%; background:linear-gradient(90deg,#0ea5e9,#38bdf8); border-radius:100px; transition:width 0.5s; }
+        .reward-card { background:rgba(16,185,129,0.15); border:2px solid rgba(16,185,129,0.4); border-radius:20px; padding:20px; text-align:center; }
+        .reward-badge { display:inline-block; background:linear-gradient(135deg,#059669,#10B981); color:#fff; padding:6px 18px; border-radius:100px; font-weight:800; font-size:13px; }
+        .timer-circle { width:90px; height:90px; border-radius:50%; border:4px solid rgba(14,165,233,0.3); display:flex; align-items:center; justify-content:center; margin:0 auto; position:relative; background:rgba(14,165,233,0.05); }
+        .timer-circle::before { content:''; position:absolute; inset:-4px; border-radius:50%; border:4px solid transparent; border-top-color:#0ea5e9; animation:spin 2s linear infinite; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+
+        /* Ad size slots */
+        .ad-slot { background:rgba(255,255,255,0.05); border:1.5px dashed rgba(255,255,255,0.15); border-radius:12px; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.3); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; min-height:80px; overflow:hidden; }
+        .ad-slot.active { border-color:rgba(14,165,233,0.4); background:transparent; }
+    </style>
+</head>
+<body>
+
+<div class="max-w-lg mx-auto px-4 py-6">
+    
+    <!-- Header -->
+    <div class="text-center mb-6">
+        <div class="w-14 h-14 rounded-full overflow-hidden mx-auto mb-3 border-2 border-sky-400/50">
+            <img src="logo.jpg" alt="Silver X" class="w-full h-full object-cover" onerror="this.parentNode.style.background='#0ea5e9'">
+        </div>
+        <h1 class="text-2xl font-black outfit uppercase" style="color:#38bdf8;">Ad Center</h1>
+        <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mt-1">Watch ads • Earn $2 per session</p>
+    </div>
+
+    <!-- Timer & Progress -->
+    <div class="bg-white/5 border border-white/10 rounded-2xl p-5 mb-5 text-center">
+        <p class="text-xs text-slate-400 font-bold uppercase mb-3">Session Timer</p>
+        <div class="timer-circle mb-3">
+            <span id="timer-display" class="text-2xl font-black outfit" style="color:#38bdf8;">5:00</span>
+        </div>
+        <div class="progress-bar mb-2">
+            <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+        <p class="text-xs text-slate-500 font-semibold">Keep this page open for the full 5 minutes</p>
+    </div>
+
+    <!-- Reward Info -->
+    <div class="reward-card mb-5">
+        <p class="text-xs text-green-400 font-bold uppercase mb-2">Session Reward</p>
+        <div class="text-4xl font-black outfit text-green-400 mb-2">$2.00</div>
+        <span class="reward-badge">Earn Wallet Reward</span>
+        <p class="text-xs text-green-300 mt-3 font-semibold">Reward is automatically credited after 5 minutes</p>
+    </div>
+
+    <!-- AD SLOTS — Admin can configure these with any ad network -->
+    <!-- Slot 1: Large Banner (728x90 / Responsive) -->
+    <div class="mb-4">
+        <p class="text-[9px] text-slate-500 font-bold uppercase mb-2">Advertisement</p>
+        <div class="ad-slot active" id="ad-slot-1" style="min-height:90px;">
+            <!-- INSERT YOUR AD CODE HERE — e.g., Google AdSense, Adsterra, Propeller, etc. -->
+            <!-- Example: <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> -->
+            <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX" data-ad-format="auto"></ins> -->
+            <span>Ad Slot 1 (728×90 Banner)</span>
+        </div>
+    </div>
+
+    <!-- Slot 2: Medium Rectangle (300x250) -->
+    <div class="mb-4">
+        <div class="ad-slot active" id="ad-slot-2" style="min-height:250px; max-width:300px; margin:0 auto;">
+            <!-- INSERT YOUR AD CODE HERE -->
+            <span>Ad Slot 2 (300×250 Rectangle)</span>
+        </div>
+    </div>
+
+    <!-- Slot 3: Inline Rectangle / Native -->
+    <div class="mb-4">
+        <div class="ad-slot active" id="ad-slot-3" style="min-height:120px;">
+            <!-- INSERT YOUR AD CODE HERE -->
+            <!-- Popup/Popunder ad trigger can go here as a script -->
+            <span>Ad Slot 3 (Inline / Native)</span>
+        </div>
+    </div>
+
+    <!-- Slot 4: Interstitial Trigger -->
+    <div class="mb-4">
+        <div class="ad-slot active" id="ad-slot-4" style="min-height:60px;">
+            <!-- INSERT YOUR POPUP AD SCRIPT HERE — e.g., Adsterra, Adcash, Propeller -->
+            <!-- <script type="text/javascript"> var _pop = {"key":"XXXXXXXX","format":"iframe"}; </script> -->
+            <span>Ad Slot 4 (Popup / Interstitial)</span>
+        </div>
+    </div>
+
+    <!-- Status -->
+    <div id="status-box" class="text-center py-4">
+        <p class="text-slate-400 text-sm font-semibold">⏳ Session running... Keep this page open</p>
+    </div>
+
+    <!-- Complete Message (hidden until done) -->
+    <div id="complete-box" class="hidden bg-green-500/20 border-2 border-green-500 rounded-2xl p-6 text-center">
+        <div class="text-5xl mb-3">🎉</div>
+        <h2 class="text-2xl font-black outfit text-green-400 mb-2">Session Complete!</h2>
+        <p class="text-green-300 text-sm font-semibold mb-4">$2.00 has been added to your Earn Wallet</p>
+        <p class="text-xs text-green-400/70 font-semibold">You can close this tab now</p>
+        <button onclick="window.close()" class="mt-4 bg-green-500 text-white px-8 py-3 rounded-xl font-bold text-sm uppercase">Close Tab</button>
+    </div>
+
+</div>
+
+<script>
+let secondsLeft = 300; // 5 minutes
+const totalSeconds = 300;
+
+function updateTimer() {
+    const m = Math.floor(secondsLeft / 60);
+    const s = secondsLeft % 60;
+    document.getElementById('timer-display').innerText = m + ':' + (s < 10 ? '0' : '') + s;
+    const pct = ((totalSeconds - secondsLeft) / totalSeconds) * 100;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    
+    if (secondsLeft <= 0) {
+        clearInterval(timerInterval);
+        document.getElementById('status-box').classList.add('hidden');
+        document.getElementById('complete-box').classList.remove('hidden');
+        document.getElementById('timer-display').innerText = '✓';
+        // Notify parent window if opened from app
+        if (window.opener) {
+            try { window.opener.postMessage('ad_complete', '*'); } catch(e) {}
+        }
+        return;
+    }
+    secondsLeft--;
+}
+
+const timerInterval = setInterval(updateTimer, 1000);
+updateTimer();
+
+// Trigger popup ad on load (if configured)
+window.addEventListener('load', function() {
+    // Your popup ad trigger can go here
+    // Example: window._taboola = window._taboola || []; _taboola.push({mode:'thumbnails-a', container:'taboola-below-article-thumbnails', placement:'Below Article Thumbnails', target_type:'mix'});
+});
+</script>
+</body>
+</html>
