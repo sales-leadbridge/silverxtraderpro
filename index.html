@@ -1,2044 +1,767 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/jpeg" href="logo.jpg">
-    <link rel="apple-touch-icon" href="logo.jpg">
-    <meta name="description" content="Silver X Trader - Advanced AI Binary Options Trading Bot for Quotex & Pocket Option. 95-98% accuracy signals, automated trading strategies, VIP features.">
-    <meta name="keywords" content="binary bot, quotex bot, pocket option bot, trading bot, binary options, automated trading, quotex signals, binary signals, ai trading, forex bot, crypto bot, trading signals">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silver X Trader - Best Quotex Signal Bot &amp; Investment Platform | 98% Accuracy</title>
+    <meta name="description" content="Silver X Trader - AI-powered Quotex signal bot with 98% accuracy. Invest with 20% daily returns in 24 hours. Join 15,000+ traders today!">
+    <meta name="keywords" content="quotex signals, binary options bot, quotex signal bot, AI trading signals, investment opportunity, daily profit, CALL PUT signals, forex trading, crypto signals, referral program, daily claim">
     <meta name="author" content="Silver X Trader">
     <meta name="robots" content="index, follow">
-    <meta property="og:title" content="Silver X Trader - AI Binary Trading Bot">
-    <meta property="og:description" content="95-98% Accuracy AI Trading Bot for Quotex & Pocket Option">
+    <link rel="canonical" href="https://silverxtrader.com/">
     <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SILVER X | SUPREME ELITE TERMINAL</title>
+    <meta property="og:url" content="https://silverxtrader.com/">
+    <meta property="og:title" content="Silver X Trader - Best Quotex Signal Bot">
+    <meta property="og:description" content="98% accuracy AI signals. 20% daily profit. Join today!">
+    <meta property="twitter:card" content="summary_large_image">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Silver X Trader","applicationCategory":"FinanceApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","ratingCount":"15000"}}</script>
 
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <link rel="apple-touch-icon" href="logo.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
-    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
     <style>
-        :root { --primary:#0ea5e9; --bg:#F8FAFC; --black:#0F172A; --card:#FFFFFF; --buy:#10B981; --sell:#EF4444; }
-        * { -webkit-tap-highlight-color:transparent; outline:none; box-sizing:border-box; }
-        body { background:var(--bg); color:var(--black); font-family:'Plus Jakarta Sans',sans-serif; overflow-x:hidden; user-select:none; -webkit-user-select:none; }
+        :root { --primary:#0ea5e9; --secondary:#8B5CF6; --accent:#F59E0B; --success:#10B981; --bg:#F8FAFC; }
+        * { font-family:'Plus Jakarta Sans',sans-serif; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         .outfit { font-family:'Space Grotesk',sans-serif; }
+        body { background:linear-gradient(135deg,#F8FAFC 0%,#EFF6FF 100%); color:#0F172A; margin:0; padding:0; overflow-x:hidden; }
 
-        /* ── SKY TEXT: subtle black stroke + light sky glow ── */
-        .sky-text {
-            color: var(--primary);
-            font-weight: 800;
-            -webkit-text-stroke: 0.35px rgba(15,23,42,0.2);
-            text-shadow: 0 0 10px rgba(14,165,233,0.2);
-        }
+        .text-premium { background:linear-gradient(135deg,#0369a1 0%,#0ea5e9 50%,#0369a1 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; font-weight:900; filter:drop-shadow(0 1px 2px rgba(3,105,161,0.3)); }
 
-        .glass-card { background:var(--card); border:1px solid #E2E8F0; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,0.04); }
-        .btn-supreme { background:var(--primary); color:#fff; font-weight:700; border-radius:16px; box-shadow:0 6px 18px rgba(14,165,233,0.3); transition:transform 0.15s; }
-        .btn-supreme:active { transform:scale(0.96); }
-        .btn-supreme:disabled { opacity:0.5; cursor:not-allowed; }
-        .loader { border:3px solid #e5e7eb; border-top:3px solid var(--primary); border-radius:50%; width:18px; height:18px; animation:spin 0.7s linear infinite; display:inline-block; }
-        @keyframes spin { to { transform:rotate(360deg); } }
+        .glass-premium { background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); border:1.5px solid rgba(226,232,240,0.8); border-radius:24px; box-shadow:0 10px 40px rgba(0,0,0,0.08),0 0 80px rgba(14,165,233,0.1); position:relative; overflow:hidden; }
+        .glass-premium::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent); transition:0.8s; }
+        .glass-premium:hover::before { left:100%; }
 
-        /* AI Chip */
-        .ai-chip-hub { width:72px; height:72px; display:flex; align-items:center; justify-content:center; position:relative; }
-        .chorus-rings { position:absolute; inset:0; border:2.5px solid transparent; border-top-color:var(--primary); border-bottom-color:var(--primary); border-radius:50%; animation:spin 3.5s linear infinite; }
-        .ai-core-unit { width:40px; height:40px; background:#000; border-radius:12px; display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-weight:900; color:var(--primary); font-size:11px; box-shadow:0 0 20px rgba(14,165,233,0.4); z-index:10; border:2px solid var(--primary); animation:aiP 2s infinite; }
-        @keyframes aiP { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+        .btn-premium { background:linear-gradient(135deg,#0ea5e9 0%,#38bdf8 100%); color:white; font-weight:700; padding:16px 32px; border-radius:16px; border:none; cursor:pointer; text-transform:uppercase; letter-spacing:1px; font-size:13px; box-shadow:0 8px 24px rgba(14,165,233,0.4); transition:all 0.3s; position:relative; overflow:hidden; }
+        .btn-premium:active { transform:scale(0.96); }
+        .btn-premium:disabled { opacity:0.6; cursor:not-allowed; }
 
-        /* Ad Gate */
-        #ad-gate-master { position:fixed; inset:0; z-index:99999; background:#FFF; display:none; flex-direction:column; }
-        .ad-timer-label { position:absolute; top:24px; right:16px; background:#000; color:#FFF; padding:8px 16px; border-radius:12px; font-weight:800; font-size:12px; font-family:'Space Grotesk'; z-index:100000; }
-        .ad-terminate-btn { position:absolute; top:24px; left:16px; background:#EF4444; color:#FFF; padding:8px 16px; border-radius:12px; font-weight:800; font-size:11px; display:none; z-index:100000; cursor:pointer; }
+        .input-premium { width:100%; background:linear-gradient(135deg,#F8FAFC 0%,#EFF6FF 100%); border:2px solid #E2E8F0; padding:15px 18px; border-radius:14px; font-weight:600; font-size:14px; color:#0F172A; transition:all 0.3s; outline:none; }
+        .input-premium:focus { border-color:var(--primary); background:white; box-shadow:0 0 0 4px rgba(14,165,233,0.1); }
+        .input-premium::placeholder { color:#94a3b8; font-weight:500; }
 
-        /* Sidebar - MOBILE OPTIMIZED */
-        .sidebar { position:fixed; inset-y:0; left:0; width:280px; background:#fff; z-index:80000; transform:translateX(-100%); transition:0.4s cubic-bezier(.4,0,.2,1); box-shadow:30px 0 80px rgba(0,0,0,0.12); overflow-y:auto; }
-        @media (max-width: 640px) {
-            .sidebar { width:260px; }
-        }
-        .sidebar.active { transform:translateX(0); }
-        .sidebar-dim { position:fixed; inset:0; background:rgba(0,0,0,0.55); backdrop-filter:blur(6px); z-index:75000; display:none; }
-        .hidden { display:none !important; }
-        .nav-active { color:var(--primary) !important; }
+        .hero-premium { background:linear-gradient(rgba(239,246,255,0.95),rgba(219,234,254,0.9)); border-radius:28px; padding:32px 24px; position:relative; overflow:hidden; border:2px solid rgba(14,165,233,0.2); }
 
-        /* Badges */
-        .badge-pending { background:#FFF7ED; color:#EA580C; border:1px solid #FFEDD5; padding:3px 10px; border-radius:8px; font-size:9px; font-weight:800; text-transform:uppercase; }
-        .badge-success { background:#ECFDF5; color:#10B981; border:1px solid #D1FAE5; padding:3px 10px; border-radius:8px; font-size:9px; font-weight:800; text-transform:uppercase; }
-        .badge-rejected { background:#FEF2F2; color:#EF4444; border:1px solid #FEE2E2; padding:3px 10px; border-radius:8px; font-size:9px; font-weight:800; text-transform:uppercase; }
+        .stat-premium { background:linear-gradient(135deg,#ffffff 0%,#f8fafc 100%); border:2px solid #E2E8F0; border-radius:20px; padding:20px 16px; text-align:center; transition:all 0.3s; box-shadow:0 4px 16px rgba(0,0,0,0.06); }
+        .stat-premium:hover { transform:translateY(-6px); box-shadow:0 12px 32px rgba(14,165,233,0.15); border-color:var(--primary); }
 
-        .box-call { border-color:var(--buy) !important; background:#ECFDF5 !important; }
-        .box-put  { border-color:var(--sell) !important; background:#FEF2F2 !important; }
+        .pairs-premium { background:linear-gradient(135deg,#ffffff 0%,#eff6ff 50%,#ffffff 100%); border:2px solid #BFDBFE; border-radius:24px; padding:28px 24px; box-shadow:0 8px 32px rgba(14,165,233,0.12); }
+        .pair-badge-premium { background:linear-gradient(135deg,#EFF6FF 0%,#DBEAFE 100%); color:var(--primary); padding:10px 16px; border-radius:12px; font-size:12px; font-weight:700; display:inline-block; margin:5px; border:1.5px solid #BFDBFE; transition:all 0.3s; }
+        .pair-badge-premium:hover { transform:translateY(-3px) scale(1.05); }
+        .pair-badge-premium.vip { background:linear-gradient(135deg,var(--primary) 0%,#38bdf8 100%); color:white; border-color:var(--primary); }
 
-        .recovery-badge { background:linear-gradient(135deg,#10B981,#059669); color:#fff; padding:3px 10px; border-radius:10px; font-size:9px; font-weight:800; text-transform:uppercase; }
-        .recovery-locked { background:linear-gradient(135deg,#64748B,#475569); color:#fff; padding:3px 10px; border-radius:10px; font-size:9px; font-weight:800; text-transform:uppercase; }
+        .plan-premium { background:linear-gradient(135deg,#FFFEF0 0%,#FEF7E0 100%); border:2px solid #FDB022; border-radius:24px; padding:24px 20px; text-align:center; position:relative; overflow:hidden; transition:all 0.3s; box-shadow:0 8px 32px rgba(253,176,34,0.2); }
+        .plan-premium:hover { transform:translateY(-6px); box-shadow:0 16px 48px rgba(253,176,34,0.3); }
+        .plan-tag-premium { position:absolute; top:12px; right:12px; background:linear-gradient(135deg,#F59E0B,#FDB022); color:white; padding:5px 12px; border-radius:10px; font-size:9px; font-weight:800; text-transform:uppercase; }
+        .plan-invest-amount { color:#F59E0B; font-size:2.2rem; font-weight:900; }
+        .plan-return-amount { color:#059669; font-size:1.8rem; font-weight:900; }
+        .plan-profit-box { background:linear-gradient(135deg,#ECFDF5 0%,#D1FAE5 100%); border:2px solid #10B981; border-radius:14px; padding:10px 14px; margin-top:8px; }
+        .plan-profit-amount { color:#059669; font-size:1.4rem; font-weight:900; }
 
-        .leaderboard-rank { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:13px; }
-        .rank-1 { background:linear-gradient(135deg,#FFD700,#FFA500); color:#000; }
-        .rank-2 { background:linear-gradient(135deg,#C0C0C0,#808080); color:#000; }
-        .rank-3 { background:linear-gradient(135deg,#CD7F32,#8B4513); color:#FFF; }
-        .rank-other { background:#E2E8F0; color:#64748B; }
+        .vip-premium { background:linear-gradient(135deg,#2D1B69 0%,#3730A3 50%,#2D1B69 100%); border:2px solid #7C3AED; border-radius:28px; padding:32px 28px; position:relative; overflow:hidden; box-shadow:0 16px 64px rgba(124,58,237,0.35); }
+        .vip-premium::before { content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%; background:radial-gradient(circle,rgba(124,58,237,0.15) 0%,transparent 70%); animation:rotate 15s linear infinite; }
+        .vip-glow-premium { position:absolute; top:0; right:0; width:250px; height:250px; background:radial-gradient(circle,rgba(124,58,237,0.4),transparent); border-radius:50%; filter:blur(50px); animation:vpulse 4s ease-in-out infinite; }
+        .benefit-premium { display:flex; align-items:center; gap:14px; padding:14px 16px; background:rgba(139,92,246,0.15); border:1.5px solid rgba(139,92,246,0.3); border-radius:14px; margin-bottom:10px; transition:all 0.3s; }
+        .benefit-premium:hover { background:rgba(139,92,246,0.25); transform:translateX(6px); }
+        .benefit-icon-premium { width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,#7C3AED,#A78BFA); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 6px 20px rgba(124,58,237,0.5); }
+        .benefit-double-bonus { background:linear-gradient(135deg,rgba(16,185,129,0.25),rgba(16,185,129,0.15)) !important; border:2px solid #10B981 !important; }
+        .benefit-double-bonus .benefit-icon-premium { background:linear-gradient(135deg,#059669,#10B981); }
 
-        /* Popups */
-        .popup-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(6px); z-index:100000; display:flex; align-items:center; justify-content:center; padding:16px; }
-        .popup-box { background:#fff; border-radius:22px; padding:28px 24px 24px; max-width:420px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:popUp 0.25s ease-out; max-height:90vh; overflow-y:auto; position:relative; }
-        @keyframes popUp { from{transform:scale(0.88);opacity:0} to{transform:scale(1);opacity:1} }
+        .ref-premium { background:linear-gradient(135deg,#ffffff 0%,#f0fdf4 100%); border:2px solid var(--success); border-radius:24px; padding:28px 24px; text-align:center; box-shadow:0 8px 32px rgba(16,185,129,0.2); transition:all 0.3s; }
+        .ref-premium:hover { transform:translateY(-6px); box-shadow:0 16px 48px rgba(16,185,129,0.3); }
+        .milestone-premium { background:linear-gradient(135deg,#FAF5FF 0%,#F3E8FF 100%); border:2px solid var(--secondary); border-radius:24px; padding:28px 24px; box-shadow:0 8px 32px rgba(139,92,246,0.2); }
 
-        /* X close button on popups */
-        .popup-x-btn { position:absolute; top:12px; right:14px; width:28px; height:28px; border-radius:50%; background:#f1f5f9; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:5; transition:background 0.15s; }
-        .popup-x-btn:hover { background:#e2e8f0; }
-        .popup-x-btn:active { transform:scale(0.92); }
+        .divider-premium { height:2px; background:linear-gradient(90deg,transparent,var(--primary),transparent); margin:48px 0; position:relative; }
+        .divider-premium::before { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:12px; height:12px; background:var(--primary); border-radius:50%; box-shadow:0 0 20px rgba(14,165,233,0.6); }
 
-        .popup-progress { display:flex; gap:8px; margin-bottom:20px; }
-        .popup-progress-dot { width:11px; height:11px; border-radius:50%; background:#E2E8F0; transition:0.3s; }
-        .popup-progress-dot.active { background:var(--primary); transform:scale(1.2); }
-        .popup-btn-primary { width:100%; background:var(--primary); color:#fff; font-weight:700; border-radius:14px; padding:14px; font-size:13px; text-transform:uppercase; letter-spacing:1px; margin-top:4px; cursor:pointer; border:none; transition:transform 0.15s; }
-        .popup-btn-primary:active { transform:scale(0.96); }
-        .popup-btn-secondary { width:100%; background:#F1F5F9; color:#475569; font-weight:700; border-radius:14px; padding:14px; font-size:13px; text-transform:uppercase; cursor:pointer; border:none; }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+        @keyframes rotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        @keyframes vpulse { 0%,100%{opacity:0.6;transform:scale(1)} 50%{opacity:1;transform:scale(1.2)} }
+        @keyframes revealUp { from{opacity:0;transform:translateX(-50%) translateY(-30px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
 
-        .vip-benefit-item { display:flex; align-items:flex-start; gap:12px; padding:11px 12px; background:#f8fafc; border-radius:13px; border:1px solid #eef2f7; }
-        .vip-benefit-icon { width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,var(--primary),#38bdf8); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .float-premium { animation:float 3s ease-in-out infinite; }
+        .reveal-premium { opacity:0; transform:translateY(40px); transition:all 0.6s cubic-bezier(0.4,0,0.2,1); }
+        .reveal-premium.active { opacity:1; transform:translateY(0); }
 
-        .plan-calc-row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed #e2e8f0; font-size:11px; }
-        .plan-calc-day { font-weight:800; color:#64748b; }
-        .plan-calc-amount { font-weight:800; color:#10B981; }
+        .loader-spin { width:22px; height:22px; border:3px solid rgba(255,255,255,0.3); border-top:3px solid white; border-radius:50%; animation:rotate 0.7s linear infinite; display:inline-block; }
 
-        /* Auth input */
-        .auth-input { width:100%; background:#f8fafc; border:1.5px solid #E2E8F0; padding:14px 16px; border-radius:14px; font-weight:700; font-size:13px; color:#0F172A; transition:0.2s; }
-        .auth-input:focus { border-color:var(--primary); background:#fff; }
-        .auth-input::placeholder { color:#94a3b8; }
+        @media (max-width:640px) { .hero-premium{padding:24px 20px;} .btn-premium{padding:14px 24px;font-size:12px;} }
 
-        /* Method pill */
-        .method-pill { padding:10px 18px; border-radius:12px; border:2px solid #E2E8F0; background:#fff; font-weight:700; font-size:12px; cursor:pointer; transition:0.2s; text-align:center; }
-        .method-pill.active { border-color:var(--primary); background:#eff6ff; color:var(--primary); }
-        .method-pill:active { transform:scale(0.96); }
+        .auth-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(8px); z-index:99999; display:flex; align-items:center; justify-content:center; padding:16px; }
+        .auth-box { background:#fff; border-radius:24px; padding:32px 28px 28px; max-width:460px; width:100%; box-shadow:0 24px 80px rgba(0,0,0,0.3); max-height:92vh; overflow-y:auto; position:relative; }
+        .auth-close { position:absolute; top:14px; right:14px; width:32px; height:32px; border-radius:50%; background:#f1f5f9; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:#64748b; transition:0.2s; }
+        .auth-close:hover { background:#e2e8f0; color:#0f172a; }
 
-        /* Milestone claim */
-        .milestone-row { display:flex; align-items:center; justify-content:space-between; background:#f8fafc; padding:12px 14px; border-radius:14px; border:1px solid #eef2f7; }
-        .milestone-claimed { background:#ecfdf5; border-color:#bbf7d0; }
-        .claim-btn { background:var(--primary); color:#fff; padding:6px 16px; border-radius:10px; font-weight:800; font-size:11px; text-transform:uppercase; cursor:pointer; border:none; }
-        .claim-btn:active { transform:scale(0.95); }
+        .trust-badge { display:flex; align-items:center; gap:8px; padding:12px 16px; background:rgba(255,255,255,0.7); border:1.5px solid rgba(14,165,233,0.2); border-radius:14px; }
 
-        /* Tab pills */
-        .tx-tab { padding:8px 14px; border-radius:10px; font-weight:700; font-size:11px; text-transform:uppercase; color:#94a3b8; cursor:pointer; transition:0.2s; border:none; background:transparent; }
-        .tx-tab.active { background:var(--primary); color:#fff; }
-
-        /* Sidebar nav link */
-        .sb-nav-link { display:flex; align-items:center; gap:11px; padding:11px 13px; border-radius:13px; font-size:13px; font-weight:700; color:#1e293b; cursor:pointer; transition:background 0.15s; border:none; background:transparent; width:100%; text-align:left; }
-        .sb-nav-link:hover { background:#f1f5f9; }
-        .sb-nav-link:active { background:#e2e8f0; }
-        .sb-nav-link .vip-lock { font-size:9px; background:#0ea5e9; color:#fff; padding:2px 7px; border-radius:6px; font-weight:800; margin-left:auto; text-transform:uppercase; }
-        .sb-nav-link .sb-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-        
-        /* Body scroll lock */
-        body.modal-open { overflow:hidden; }
-
-        /* Join Buttons */
-        .join-btn { display:flex; align-items:center; justify-content:center; gap:7px; padding:12px 10px; border-radius:16px; font-weight:800; font-size:11px; text-transform:uppercase; color:#fff; text-decoration:none; box-shadow:0 4px 14px rgba(0,0,0,0.2); transition:transform 0.15s; letter-spacing:0.5px; }
-        .join-btn:active { transform:scale(0.94); }
-        .join-btn-quotex { background:linear-gradient(135deg,#2563eb,#3b82f6); }
-        .join-btn-pocket  { background:linear-gradient(135deg,#dc2626,#ef4444); }
-
-        /* ── VIP CELEBRATION ── */
-        .vip-cel-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px); z-index:200000; display:flex; align-items:center; justify-content:center; padding:20px; animation:celFade 0.35s ease; }
-        @keyframes celFade { from{opacity:0} to{opacity:1} }
-        .vip-cel-box { background:linear-gradient(160deg,#0f172a 0%,#1e293b 60%,#0f172a 100%); border-radius:28px; padding:30px 22px 26px; max-width:400px; width:100%; text-align:center; position:relative; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,0.5); }
-        .vip-cel-box::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% -10%,rgba(14,165,233,0.18) 0%,transparent 65%); pointer-events:none; }
-
-        .vip-glow-ring { width:96px; height:96px; border-radius:50%; margin:0 auto 18px; display:flex; align-items:center; justify-content:center; background:conic-gradient(from 0deg,var(--primary),#38bdf8,#7dd3fc,var(--primary)); padding:4px; animation:ringSpin 3s linear infinite; position:relative; z-index:1; }
-        @keyframes ringSpin { to{transform:rotate(360deg)} }
-        .vip-glow-inner { width:100%; height:100%; border-radius:50%; background:#0f172a; display:flex; align-items:center; justify-content:center; }
-
-        .cel-benefit { display:flex; align-items:center; gap:12px; padding:9px 0; position:relative; z-index:1; opacity:0; transform:translateX(-24px); animation:celSlide 0.45s ease forwards; }
-        @keyframes celSlide { to{opacity:1;transform:translateX(0)} }
-        .cel-ben-icon { width:34px; height:34px; border-radius:9px; background:rgba(14,165,233,0.12); border:1px solid rgba(14,165,233,0.22); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-        .cel-ben-text { text-align:left; }
-        .cel-ben-text .cel-title { color:#fff; font-weight:700; font-size:13px; }
-        .cel-ben-text .cel-sub { color:#7dd3fc; font-size:11px; font-weight:600; }
-
-        /* Confetti */
-        .confetti-piece { position:absolute; width:8px; height:8px; opacity:0; animation:confDrop 2.8s ease-in forwards; z-index:0; }
-        @keyframes confDrop { 0%{opacity:1;transform:translateY(0) rotate(0deg)} 100%{opacity:0;transform:translateY(300px) rotate(900deg)} }
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
     </style>
 </head>
 <body>
 
-
-<div id="splash" class="fixed inset-0 z-[100000] bg-white flex flex-col items-center justify-center">
-    <div class="w-14 h-14 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
-    <h1 class="mt-6 text-3xl font-black outfit sky-text uppercase tracking-tight">Silver X</h1>
-    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-4">Initializing...</p>
-</div>
-
-
-<div id="auth-screen" class="hidden fixed inset-0 z-[90000] bg-white flex items-center justify-center p-5 overflow-y-auto">
-    <div class="w-full max-w-sm glass-card p-6 sm:p-8 text-center border shadow-xl my-8">
-        <h2 id="auth-title" class="text-3xl font-black outfit mb-1 sky-text uppercase">LOGIN</h2>
-        <p id="auth-subtitle" class="text-[10px] text-slate-400 font-bold uppercase mb-6 tracking-wide">Secure Terminal Access</p>
-        
-        <div id="login-block" class="space-y-3">
-            <input type="email" id="login-email" placeholder="Email" class="auth-input">
-            <input type="password" id="login-pass" placeholder="Password" class="auth-input">
-            <button onclick="handleLogin()" class="w-full btn-supreme py-4 text-[12px] mt-2 tracking-widest uppercase flex items-center justify-center gap-2" id="login-btn">
-                <span id="login-btn-text">Login Now</span>
-                <div id="login-btn-loader" class="loader hidden"></div>
-            </button>
-            <button onclick="showForgotPassword()" class="sky-text text-[10px] font-bold uppercase tracking-wide">Forgot Password?</button>
-            <p class="text-[11px] font-bold mt-4 text-black"><span class="text-slate-400">New here?</span> <button onclick="showSignup()" class="sky-text underline">Create Account</button></p>
-        </div>
-        
-        <div id="signup-block" class="hidden space-y-3">
-            <div class="grid grid-cols-2 gap-3">
-                <input type="text" id="su-fname" placeholder="First Name" class="auth-input">
-                <input type="text" id="su-lname" placeholder="Last Name" class="auth-input">
+<!-- ── HEADER ── -->
+<header class="bg-white/95 backdrop-blur-xl border-b-2 border-slate-200/80 sticky top-0 z-50 px-4 py-3 shadow-lg">
+    <div class="flex justify-between items-center max-w-6xl mx-auto">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full overflow-hidden shadow-lg flex-shrink-0 border-2 border-sky-200">
+                <img src="logo.jpg" alt="Silver X" class="w-10 h-10 object-cover">
             </div>
-            <input type="tel" id="su-phone" placeholder="Phone Number" class="auth-input">
-            <input type="email" id="su-email" placeholder="Email" class="auth-input">
-            <input type="password" id="su-pass" placeholder="Password" class="auth-input">
-            <input type="password" id="su-cpass" placeholder="Confirm Password" class="auth-input">
-            <input type="text" id="su-ref" placeholder="Referral Code (Optional)" class="auth-input" style="border-color:#bae6fd; color:var(--primary);">
-            <div class="flex items-start gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200 text-left">
-                <input type="checkbox" id="su-privacy" class="mt-0.5 w-4 h-4 accent-sky-500 flex-shrink-0">
-                <p class="text-[10px] text-slate-600 font-bold">I have read and accept the <button onclick="openPrivacyPolicy()" class="sky-text underline">Privacy Policy & Terms</button></p>
             </div>
-            <button onclick="handleSignup()" class="w-full btn-supreme py-4 text-[12px] mt-2 tracking-widest uppercase flex items-center justify-center gap-2" id="signup-btn">
-                <span id="signup-btn-text">Signup Now</span>
-                <div id="signup-btn-loader" class="loader hidden"></div>
-            </button>
-            <p class="text-[11px] font-bold mt-2 text-black"><span class="text-slate-400">Already have account?</span> <button onclick="showLogin()" class="sky-text underline">Login</button></p>
-        </div>
-    </div>
-</div>
-
-
-<div id="ad-gate-master">
-    <div class="ad-timer-label" id="ad-timer-val">15s REMAINING</div>
-    <button onclick="terminateAdStream()" class="ad-terminate-btn flex items-center gap-2"><i data-lucide="power" class="w-3 h-3"></i> EXIT</button>
-    <iframe id="ad-frame" src="" class="w-full h-full border-none bg-white" allow="autoplay"></iframe>
-</div>
-
-
-<div id="main-layout" class="hidden min-h-screen pb-24">
-
-    
-    <div id="sb-overlay" class="sidebar-dim" onclick="toggleSidebar()"></div>
-
-    
-    <aside id="sidebar-main" class="sidebar" style="padding:10px; padding-bottom:60px;">
-        
-        <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-2">
-                <img src="logo.jpg" alt="Silver X" class="w-8 h-8 rounded-lg object-cover" onerror="this.style.display='none'">
-                <h2 class="text-lg font-black outfit sky-text uppercase tracking-tight">Silver X</h2>
+            <div>
+                <h1 class="text-base font-black outfit text-premium uppercase tracking-tight leading-none">SILVER X</h1>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Supreme Elite</p>
             </div>
-            <button onclick="toggleSidebar()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"><i data-lucide="x" class="w-4 h-4"></i></button>
-        </div>
-
-        
-        <div class="glass-card p-3 mb-3 border border-sky-100">
-            
-            <div class="flex items-center gap-2 mb-2 pb-2" style="border-bottom:1px solid #eef2f7;">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-white flex-shrink-0">
-                    <i data-lucide="user" class="w-4 h-4"></i>
-                </div>
-                <div class="min-w-0 flex-1">
-                    <p id="sidebar-name" class="text-[12px] font-black text-black truncate">Loading...</p>
-                    <p id="sidebar-email" class="text-[9px] text-slate-400 font-bold truncate">—</p>
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-2 mb-2">
-                <div class="bg-slate-50 rounded-xl p-2 text-center border border-slate-100">
-                    <p class="text-[8px] text-slate-400 font-bold uppercase">Main</p>
-                    <p id="sidebar-balance" class="text-[12px] font-black text-green-600 mt-0.5">$0.00</p>
-                </div>
-                <div class="bg-yellow-50 rounded-xl p-2 text-center border border-yellow-100">
-                    <p class="text-[8px] text-yellow-500 font-bold uppercase">Earn</p>
-                    <p id="sidebar-earn" class="text-[12px] font-black text-yellow-600 mt-0.5">$0.00</p>
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-2 mb-2">
-                <div class="bg-slate-50 rounded-xl p-2 text-center border border-slate-100">
-                    <p class="text-[8px] text-slate-400 font-bold uppercase">Status</p>
-                    <p id="sidebar-vip-status" class="text-[10px] font-black text-slate-400 mt-0.5">FREE</p>
-                </div>
-                <div class="bg-slate-50 rounded-xl p-2 text-center border border-slate-100">
-                    <p class="text-[8px] text-slate-400 font-bold uppercase">Refs</p>
-                    <p id="sidebar-refs" class="text-[12px] font-black sky-text mt-0.5">0</p>
-                </div>
-            </div>
-            
-            <button onclick="handleLogout()" class="w-full bg-red-50 text-red-600 py-2 rounded-xl font-bold text-[10px] uppercase flex items-center justify-center gap-2 border border-red-200 hover:bg-red-100 transition-colors">
-                <i data-lucide="log-out" class="w-3 h-3"></i> Logout
-            </button>
-        </div>
-
-        
-        <nav class="space-y-1 mb-2">
-            <a href="https://www.youtube.com/@silverxtrader" target="_blank" class="sb-nav-link">
-                <div class="sb-icon" style="background:#fef2f2;"><i data-lucide="youtube" class="w-4 h-4 text-red-600"></i></div>
-                YouTube / Support
-            </a>
-            <a href="https://www.tiktok.com/@silverxtrader" target="_blank" class="sb-nav-link">
-                <div class="sb-icon" style="background:#f1f5f9;"><i data-lucide="music-2" class="w-4 h-4 text-slate-700"></i></div>
-                TikTok / Training
-            </a>
-            <button onclick="openSupport()" class="sb-nav-link">
-                <div class="sb-icon" style="background:#ecfdf5;"><i data-lucide="message-circle" class="w-4 h-4 text-green-600"></i></div>
-                WhatsApp Support
-                <span class="vip-lock">VIP</span>
-            </button>
-            <button onclick="contactForRecovery()" class="sb-nav-link">
-                <div class="sb-icon" style="background:#fef3c7;"><i data-lucide="shield-check" class="w-4 h-4 text-yellow-600"></i></div>
-                Recovery Session
-                <span class="vip-lock">VIP</span>
-            </button>
-            <button onclick="openPrivacyPolicy()" class="sb-nav-link">
-                <div class="sb-icon" style="background:#eff6ff;"><i data-lucide="shield" class="w-4 h-4 text-sky-600"></i></div>
-                Privacy Policy
-            </button>
-            <button onclick="openAboutModal()" class="sb-nav-link">
-                <div class="sb-icon" style="background:#eff6ff;"><i data-lucide="info" class="w-4 h-4 text-sky-600"></i></div>
-                About Silver X
-            </button>
-        </nav>
-    </aside>
-
-    
-    <header class="bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-[5000] px-4 py-3 flex items-center justify-between">
-        <button onclick="toggleSidebar()" class="text-slate-500"><i data-lucide="menu" class="w-5 h-5"></i></button>
-        <div class="flex items-center gap-2">
-            <img src="logo.jpg" alt="Silver X" class="w-7 h-7 rounded-lg object-cover" onerror="this.style.display='none'">
-            <h1 class="text-base font-black outfit sky-text uppercase tracking-tight">Silver X</h1>
         </div>
         <div class="flex items-center gap-2">
-            <span id="header-bal" class="text-[12px] font-black text-green-600">$0.00</span>
-            <button onclick="handleVipClick()" id="vip-main-btn" class="px-3 py-1.5 rounded-xl text-[9px] shadow-md btn-supreme uppercase font-bold">GET VIP</button>
-        </div>
-    </header>
-
-    
-    <div class="px-4 pt-4">
-        <div class="grid grid-cols-2 gap-3">
-            <a href="https://broker-qx.pro/sign-up/?lid=1696715" target="_blank" class="join-btn join-btn-quotex">
-                <i data-lucide="link" class="w-3.5 h-3.5"></i> Join Quotex
-            </a>
-            <a href="https://po-ru4.click/register?utm_campaign=835777&utm_source=affiliate&utm_medium=sr&a=JbsX5mZ1ZchgeZ&ac=pak_users_2026" target="_blank" class="join-btn join-btn-pocket">
-                <i data-lucide="link" class="w-3.5 h-3.5"></i> Join Pocket
-            </a>
+            <button onclick="openAuthPopup('login')" class="text-xs font-bold text-sky-600 px-4 py-2 rounded-xl bg-sky-50 border-2 border-sky-200 hover:border-sky-400 transition">LOGIN</button>
+            <button onclick="openAuthPopup('signup')" class="text-xs font-bold text-white px-4 py-2 rounded-xl btn-premium">SIGNUP</button>
         </div>
     </div>
+</header>
 
-    
-    <main class="px-4 pt-4">
+<!-- ── HERO ── -->
+<section class="px-4 pt-8 pb-6 max-w-6xl mx-auto reveal-premium">
+    <div class="hero-premium">
+        <div class="text-center relative z-10">
 
-        
-        <div id="sec-bot">
-            <div id="sec-bot-grid" class="grid grid-cols-2 gap-3"></div>
-        </div>
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/80 border-2 border-sky-200 rounded-full mb-5 shadow-lg">
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span class="text-xs font-bold text-sky-700 uppercase tracking-wider">AI-Powered Trading Bot • Live Now</span>
+            </div>
 
-        
-        <div id="sec-wallet" class="hidden">
-            <div class="glass-card p-5 mb-4 border-2 border-sky-500">
-                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mb-1 text-center">Main Balance</p>
-                <h2 class="text-4xl font-black outfit sky-text text-center" id="wallet-balance">$0.00</h2>
-                <p class="text-[9px] text-slate-400 text-center mt-1">Trading & Investment Capital</p>
-                <div class="grid grid-cols-2 gap-3 mt-4">
-                    <button onclick="showDepositModal()" class="bg-green-600 text-white py-3 rounded-2xl font-bold uppercase text-[11px] shadow-lg">Deposit</button>
-                    <button onclick="showWithdrawModal()" class="bg-red-600 text-white py-3 rounded-2xl font-bold uppercase text-[11px] shadow-lg">Withdraw</button>
+            <h2 class="text-4xl md:text-6xl font-black outfit text-premium uppercase leading-tight mb-3">
+                SILVER X TRADER
+            </h2>
+            <p class="text-sm md:text-base font-bold text-slate-600 mb-6">
+                Best Quotex Signal Bot &amp; Investment Opportunity
+            </p>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 max-w-2xl mx-auto">
+                <div class="stat-premium">
+                    <div class="text-2xl font-black outfit text-premium mb-1">CALL/PUT</div>
+                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Live Signals</div>
+                </div>
+                <div class="stat-premium">
+                    <div class="text-2xl font-black outfit text-green-600 mb-1">20%</div>
+                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Daily Profit</div>
+                </div>
+                <div class="stat-premium">
+                    <div class="text-2xl font-black outfit text-premium mb-1">98%</div>
+                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Accuracy</div>
+                </div>
+                <div class="stat-premium border-green-400 bg-gradient-to-br from-green-50 to-emerald-50">
+                    <div class="text-2xl font-black outfit text-green-600 mb-1">15K+</div>
+                    <div class="text-[9px] text-green-600 font-bold uppercase tracking-widest">Active Users</div>
                 </div>
             </div>
-            <div class="glass-card p-5 mb-4 border-2 border-yellow-400">
-                <div class="flex items-center justify-between mb-2">
-                    <div>
-                        <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Earn Wallet</p>
-                        <h2 class="text-3xl font-black outfit text-yellow-600" id="earn-wallet-balance">$0.00</h2>
-                        <p class="text-[9px] text-slate-400 mt-0.5">Referrals, Commissions, Ad Claims</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-2xl bg-yellow-100 flex items-center justify-center">
-                        <i data-lucide="star" class="w-6 h-6 text-yellow-500"></i>
-                    </div>
-                </div>
-                <button onclick="showTransferToMain()" class="w-full mt-2 bg-yellow-500 text-white py-3 rounded-2xl font-bold uppercase text-[11px] shadow-lg">Transfer to Main</button>
-                <p class="text-[9px] text-slate-400 text-center mt-2">Min $120 required to transfer</p>
-            </div>
-            
-            <div class="glass-card p-4 mb-4">
-                <h3 class="outfit text-base font-black sky-text uppercase tracking-tight mb-3">History</h3>
-                <div class="flex gap-2 mb-3 flex-wrap">
-                    <button onclick="switchTxTab('all')" id="txtab-all" class="tx-tab active">All</button>
-                    <button onclick="switchTxTab('deposit')" id="txtab-deposit" class="tx-tab">Deposit</button>
-                    <button onclick="switchTxTab('withdraw')" id="txtab-withdraw" class="tx-tab">Withdraw</button>
-                    <button onclick="switchTxTab('plan')" id="txtab-plan" class="tx-tab">Plan</button>
-                    <button onclick="switchTxTab('referral')" id="txtab-referral" class="tx-tab">Referral</button>
-                </div>
-                <div id="tx-list" class="space-y-3"></div>
-            </div>
-        </div>
 
-        
-        <div id="sec-invest" class="hidden">
-            <div id="sec-invest-grid" class="space-y-4"></div>
-        </div>
-
-        
-        <div id="sec-invite" class="hidden">
-            <div class="glass-card p-4 mb-4 border-2 border-yellow-400">
-                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mb-1">Earn Wallet</p>
-                <h2 class="text-3xl font-black outfit text-yellow-600" id="earn-wallet-invite">$0.00</h2>
-                <p class="text-[9px] text-slate-400 mt-0.5">Referrals · Commissions · Ad Claims</p>
-                <button onclick="showTransferToMain()" class="w-full mt-3 bg-yellow-500 text-white py-2.5 rounded-2xl font-bold uppercase text-[11px] shadow-lg">Transfer to Main</button>
+            <div class="flex flex-wrap justify-center gap-3 mb-6">
+                <div class="trust-badge"><i data-lucide="shield-check" class="w-4 h-4 text-green-600"></i><span class="text-xs font-bold text-slate-700">Secure Platform</span></div>
+                <div class="trust-badge"><i data-lucide="zap" class="w-4 h-4 text-yellow-500"></i><span class="text-xs font-bold text-slate-700">Instant Signals</span></div>
+                <div class="trust-badge"><i data-lucide="clock" class="w-4 h-4 text-sky-500"></i><span class="text-xs font-bold text-slate-700">24/7 Active</span></div>
             </div>
-            
-            <div class="glass-card p-4 mb-4 border border-sky-200">
-                <div class="flex items-center justify-between mb-3">
-                    <h3 class="outfit text-[13px] font-black sky-text uppercase tracking-tight">Daily Ad Claim</h3>
-                    <span id="ad-claim-badge" class="text-[9px] font-bold bg-sky-100 text-sky-700 px-2 py-1 rounded-lg">0/1 Today</span>
-                </div>
-                <p class="text-[10px] text-slate-500 mb-3">Watch a 5-min ad to earn <strong class="text-green-600">$2.00</strong> in your Earn Wallet. Resets daily.</p>
-                <button onclick="window.location.href='adclaim.html'" id="ad-claim-btn" class="w-full btn-supreme py-3 rounded-2xl font-bold uppercase text-[11px] flex items-center justify-center gap-2">
-                    <i data-lucide="play-circle" class="w-4 h-4"></i>
-                    <span id="ad-claim-btn-txt">Claim $2 Now</span>
+
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <button onclick="openAuthPopup('signup')" class="btn-premium px-8 py-4">
+                    &#x1F680; GET STARTED FREE
                 </button>
-                <div class="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between">
-                    <div>
-                        <p class="text-[10px] font-black text-amber-800">🚀 Claim Booster</p>
-                        <p class="text-[9px] text-amber-600" id="booster-status-txt">Unlock 3 claims/day ($6 total)</p>
-                    </div>
-                    <button onclick="handleBuyBooster()" id="booster-btn" class="bg-amber-500 text-white px-3 py-2 rounded-xl font-bold text-[10px] uppercase">$30 / 30d</button>
-                </div>
-            </div>
-
-            <!-- 3% DEPOSIT COMMISSION -->
-            <div class="glass-card p-4 mb-4 border border-green-300" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);">
-                <div class="flex items-center justify-between mb-2">
-                    <h3 class="outfit text-[13px] font-black text-green-700 uppercase tracking-tight">3% Deposit Commission</h3>
-                    <span class="text-[9px] font-bold bg-green-200 text-green-800 px-2 py-1 rounded-lg">AUTO</span>
-                </div>
-                <p class="text-[10px] text-green-700 mb-3">Earn <strong>3% commission</strong> every time your referred friend makes a deposit. Automatically added to your Earn Wallet!</p>
-                <div class="grid grid-cols-3 gap-2 text-center">
-                    <div class="bg-white p-2 rounded-xl border border-green-200"><p class="text-[9px] text-slate-500 font-bold">Friend Deposits</p><p class="text-sm font-black text-green-600">$100</p></div>
-                    <div class="bg-white p-2 rounded-xl border border-green-200 flex items-center justify-center"><p class="text-lg font-black text-green-700">→</p></div>
-                    <div class="bg-white p-2 rounded-xl border border-green-200"><p class="text-[9px] text-slate-500 font-bold">You Earn</p><p class="text-sm font-black text-green-600">$3.00</p></div>
-                </div>
-                <p class="text-[9px] text-green-600 mt-2 text-center font-bold">✅ VIP Only Feature — Upgrade to activate</p>
-            </div>
-
-            <!-- PROMO CODE -->
-            <div class="glass-card p-4 mb-4 border border-yellow-200">
-                <div class="flex items-center justify-between mb-3">
-                    <h3 class="outfit text-[13px] font-black text-yellow-700 uppercase tracking-tight">Promo Code</h3>
-                    <span class="text-[9px] font-bold bg-yellow-100 text-yellow-700 px-2 py-1 rounded-lg">+$0.50 Each</span>
-                </div>
-                <p class="text-[10px] text-slate-500 mb-3">Enter a valid promo code to earn <strong class="text-yellow-600">$0.50</strong> in Earn Wallet. New codes daily on YouTube &amp; TikTok.</p>
-                <div class="flex gap-2">
-                    <input type="text" id="promo-input" placeholder="Enter promo code..." class="flex-1 auth-input text-xs uppercase" style="border-color:#fde68a;letter-spacing:2px;">
-                    <button onclick="redeemPromoCode()" id="promo-btn" class="bg-yellow-500 text-white px-4 py-2 rounded-xl font-bold text-[11px] uppercase flex items-center gap-1 flex-shrink-0">
-                        <i data-lucide="tag" class="w-3 h-3"></i> Redeem
-                    </button>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3 mb-4 text-center">
-                <div class="glass-card p-4"><p class="text-slate-400 text-[9px] font-bold uppercase">Invited</p><h2 class="text-2xl font-black mt-1 outfit" id="ref-count">0</h2></div>
-                <div class="glass-card p-4"><p class="text-slate-400 text-[9px] font-bold uppercase">Ref Earnings</p><h2 class="text-2xl font-black mt-1 text-green-600 outfit" id="ref-earnings">$0.00</h2></div>
-            </div>
-            <div class="glass-card p-4 mb-4 text-center border-dashed border-2 border-slate-200">
-                <p class="text-slate-400 text-[9px] font-bold uppercase mb-1">Your Referral Code</p>
-                <h2 class="text-xl font-black sky-text outfit tracking-widest" id="my-ref-code">—</h2>
-                <p class="text-[9px] text-slate-400 mt-2">Free: $1.00/invite | VIP: $2.00/invite + 3% deposit commission</p>
-                <button onclick="copyReferralLink()" class="w-full btn-supreme py-3 rounded-2xl text-[11px] uppercase mt-3">Copy Referral Link</button>
-            </div>
-            <div class="glass-card p-4 mb-4">
-                <h3 class="text-[11px] font-black text-black uppercase tracking-wide mb-3">Milestone Rewards</h3>
-                <div id="milestone-list" class="space-y-2"></div>
-            </div>
-            <div class="glass-card p-4">
-                <h3 class="text-[11px] font-black text-black uppercase tracking-wide mb-3 flex items-center gap-2">
-                    <i data-lucide="trophy" class="w-4 h-4 text-yellow-500"></i> Top Referrers
-                </h3>
-                <div id="leaderboard-list" class="space-y-2"></div>
+                <button onclick="document.getElementById('plans-section').scrollIntoView({behavior:'smooth'})" class="px-8 py-4 rounded-2xl border-2 border-sky-300 text-sky-700 font-bold text-sm hover:bg-sky-50 transition">
+                    View Plans &#x2193;
+                </button>
             </div>
         </div>
-    </main>
+    </div>
+</section>
 
-    
-    <nav class="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-slate-100 flex justify-around items-center z-[5000] px-4" style="height:72px;">
-        <button onclick="switchTab('bot')" id="nav-bot" class="nav-active flex flex-col items-center gap-0.5 text-sky-600 transition-all"><i data-lucide="cpu" class="w-5 h-5"></i><span class="text-[8px] font-bold uppercase">Bot</span></button>
-        <button onclick="switchTab('wallet')" id="nav-wallet" class="flex flex-col items-center gap-0.5 text-slate-300 transition-all"><i data-lucide="wallet" class="w-5 h-5"></i><span class="text-[8px] font-bold uppercase">Wallet</span></button>
-        <button onclick="switchTab('invest')" id="nav-invest" class="flex flex-col items-center gap-0.5 text-slate-300 transition-all"><i data-lucide="vault" class="w-5 h-5"></i><span class="text-[8px] font-bold uppercase">Invest</span></button>
-        <button onclick="switchTab('invite')" id="nav-invite" class="flex flex-col items-center gap-0.5 text-slate-300 transition-all"><i data-lucide="users" class="w-5 h-5"></i><span class="text-[8px] font-bold uppercase">Earn</span></button>
-    </nav>
-</div>
+<!-- ── TRADING PAIRS ── -->
+<section class="px-4 py-6 max-w-6xl mx-auto reveal-premium">
+    <div class="glass-premium p-7">
+        <div class="text-center mb-5">
+            <h3 class="text-2xl font-black outfit text-premium uppercase mb-1">TRADING PAIRS</h3>
+            <p class="text-xs text-slate-500 font-bold">Free: 8 Pairs | VIP: 16 Pairs</p>
+        </div>
+        <div class="pairs-premium">
+            <div class="flex flex-wrap justify-center mb-3">
+                <span class="pair-badge-premium">EUR/USD</span>
+                <span class="pair-badge-premium">GBP/USD</span>
+                <span class="pair-badge-premium">USD/JPY</span>
+                <span class="pair-badge-premium">USD/CHF</span>
+                <span class="pair-badge-premium">AUD/USD</span>
+                <span class="pair-badge-premium">USD/CAD</span>
+                <span class="pair-badge-premium">BTC/USDT</span>
+                <span class="pair-badge-premium">ETH/USDT</span>
+            </div>
+            <div class="h-px bg-gradient-to-r from-transparent via-sky-400 to-transparent my-4"></div>
+            <div class="text-center mb-3">
+                <span class="inline-block px-4 py-1.5 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-full text-xs font-bold uppercase shadow-lg">&#x1F512; VIP Premium Pairs</span>
+            </div>
+            <div class="flex flex-wrap justify-center">
+                <span class="pair-badge-premium vip">EUR/GBP</span>
+                <span class="pair-badge-premium vip">GBP/JPY</span>
+                <span class="pair-badge-premium vip">EUR/JPY</span>
+                <span class="pair-badge-premium vip">AUD/CAD</span>
+                <span class="pair-badge-premium vip">NZD/USD</span>
+                <span class="pair-badge-premium vip">EUR/AUD</span>
+                <span class="pair-badge-premium vip">SOL/USDT</span>
+                <span class="pair-badge-premium vip">BNB/USDT</span>
+            </div>
+        </div>
+    </div>
+</section>
 
+<!-- ── INVESTMENT PLANS ── -->
+<section id="plans-section" class="px-4 py-6 max-w-6xl mx-auto reveal-premium">
+    <div class="text-center mb-6">
+        <div class="inline-block px-4 py-2 bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300 rounded-full mb-3 shadow-lg">
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-700">&#x1F4B0; Investment Plans</span>
+        </div>
+        <h3 class="text-3xl font-black outfit uppercase mb-1" style="color:#F59E0B;">1-DAY PLANS</h3>
+        <p class="text-xs font-bold text-slate-600 uppercase">20% Profit Automatically After 24 Hours</p>
+    </div>
 
-<div id="modal-overlay" class="hidden fixed inset-0 z-[95000] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-    <div id="modal-container" class="w-full max-w-md glass-card p-5 sm:p-7 relative bg-white max-h-[90vh] overflow-y-auto" style="border-radius:22px;">
-        <button onclick="closeModal()" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 cursor-pointer"><i data-lucide="x" class="w-4 h-4"></i></button>
-        <div id="modal-body"></div>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+        <div class="plan-premium">
+            <div class="plan-tag-premium">Starter &#x1F525;</div>
+            <div class="plan-invest-amount outfit mb-1">$20</div>
+            <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
+            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
+            <div class="plan-return-amount outfit mb-1">$24</div>
+            <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$4</div><div class="text-[9px] text-green-700 font-bold">20% PROFIT</div></div>
+        </div>
+        <div class="plan-premium">
+            <div class="plan-tag-premium">Popular &#x2B50;</div>
+            <div class="plan-invest-amount outfit mb-1">$40</div>
+            <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
+            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
+            <div class="plan-return-amount outfit mb-1">$48</div>
+            <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$8</div><div class="text-[9px] text-green-700 font-bold">20% PROFIT</div></div>
+        </div>
+        <div class="plan-premium">
+            <div class="plan-tag-premium">Best &#x1F48E;</div>
+            <div class="plan-invest-amount outfit mb-1">$80</div>
+            <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
+            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
+            <div class="plan-return-amount outfit mb-1">$96</div>
+            <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$16</div><div class="text-[9px] text-green-700 font-bold">20% PROFIT</div></div>
+        </div>
+        <div class="plan-premium">
+            <div class="plan-tag-premium">Pro &#x1F680;</div>
+            <div class="plan-invest-amount outfit mb-1">$160</div>
+            <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
+            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
+            <div class="plan-return-amount outfit mb-1">$192</div>
+            <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$32</div><div class="text-[9px] text-green-700 font-bold">20% PROFIT</div></div>
+        </div>
+        <div class="plan-premium">
+            <div class="plan-tag-premium">Elite &#x1F451;</div>
+            <div class="plan-invest-amount outfit mb-1">$320</div>
+            <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
+            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
+            <div class="plan-return-amount outfit mb-1">$384</div>
+            <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$64</div><div class="text-[9px] text-green-700 font-bold">20% PROFIT</div></div>
+        </div>
+        <div class="plan-premium border-4 border-yellow-400">
+            <div class="plan-tag-premium" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">Supreme &#x1F3C6;</div>
+            <div class="plan-invest-amount outfit mb-1">$640</div>
+            <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
+            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
+            <div class="plan-return-amount outfit mb-1">$768</div>
+            <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$128</div><div class="text-[9px] text-green-700 font-bold">20% PROFIT</div></div>
+        </div>
+    </div>
+
+    <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-2xl p-4 text-center">
+        <p class="text-sm font-black text-green-700">&#x26A1; Capital + 20% Profit Auto-Credited to Your Main Balance After 24 Hours!</p>
+        <p class="text-xs text-green-600 font-bold mt-1">Min Deposit: $10 | Min Withdrawal: $10 (requires $20 deposit first)</p>
+    </div>
+</section>
+
+<div class="divider-premium max-w-6xl mx-auto px-4"></div>
+
+<!-- ── EARN FEATURES ── -->
+<section class="px-4 py-6 max-w-6xl mx-auto reveal-premium">
+    <div class="text-center mb-6">
+        <h3 class="text-2xl font-black outfit text-premium uppercase mb-1">MULTIPLE WAYS TO EARN</h3>
+        <p class="text-xs font-bold text-slate-500">Earn from referrals, ads, promos &amp; more</p>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="glass-premium p-5 text-center border-2 border-sky-300">
+            <div class="w-12 h-12 bg-gradient-to-br from-sky-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-3 float-premium">
+                <i data-lucide="play-circle" class="w-6 h-6 text-white"></i>
+            </div>
+            <div class="text-2xl font-black outfit text-sky-600 mb-1">$2</div>
+            <div class="text-xs font-bold text-sky-700 uppercase mb-1">Ad-Claim</div>
+            <div class="text-[10px] text-slate-500 font-semibold">Daily reward</div>
+        </div>
+        <div class="glass-premium p-5 text-center border-2 border-purple-300">
+            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center mx-auto mb-3 float-premium">
+                <i data-lucide="zap" class="w-6 h-6 text-white"></i>
+            </div>
+            <div class="text-2xl font-black outfit text-purple-600 mb-1">$6/day</div>
+            <div class="text-xs font-bold text-purple-700 uppercase mb-1">Booster</div>
+            <div class="text-[10px] text-slate-500 font-semibold">$30 for 30 days</div>
+        </div>
+        <div class="glass-premium p-5 text-center border-2 border-yellow-300">
+            <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-3 float-premium">
+                <i data-lucide="gift" class="w-6 h-6 text-white"></i>
+            </div>
+            <div class="text-2xl font-black outfit text-yellow-600 mb-1">$0.50</div>
+            <div class="text-xs font-bold text-yellow-700 uppercase mb-1">Promo Code</div>
+            <div class="text-[10px] text-slate-500 font-semibold">Daily codes</div>
+        </div>
+        <div class="glass-premium p-5 text-center border-2 border-green-300">
+            <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-3 float-premium">
+                <i data-lucide="users" class="w-6 h-6 text-white"></i>
+            </div>
+            <div class="text-2xl font-black outfit text-green-600 mb-1">$2</div>
+            <div class="text-xs font-bold text-green-700 uppercase mb-1">Referral</div>
+            <div class="text-[10px] text-slate-500 font-semibold">Per invite</div>
+        </div>
+    </div>
+    <div class="mt-4 bg-gradient-to-r from-green-50 to-teal-50 border-2 border-green-200 rounded-2xl p-4 text-center">
+        <p class="text-sm font-black text-green-700">&#x1F4BC; All earnings go to your <span class="text-green-800 underline">Earn Wallet</span> — Transfer to Main Balance at $120</p>
+    </div>
+</section>
+
+<div class="divider-premium max-w-6xl mx-auto px-4"></div>
+
+<!-- ── VIP SECTION ── -->
+<section class="px-4 py-6 max-w-6xl mx-auto reveal-premium">
+    <div class="vip-premium relative z-10">
+        <div class="vip-glow-premium"></div>
+        <div class="relative z-20">
+            <div class="text-center mb-6">
+                <div class="inline-block px-4 py-2 bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded-full text-xs font-bold uppercase mb-3 shadow-lg">&#x2B50; Premium Access</div>
+                <h3 class="text-3xl font-black outfit uppercase mb-2" style="color:#C4B5FD;">VIP ELITE</h3>
+                <div class="text-5xl font-black outfit text-white mb-1" style="text-shadow:0 0 40px rgba(167,139,250,0.5);">$250</div>
+                <div class="text-sm font-bold uppercase tracking-wider" style="color:#C4B5FD;">30 Days Access</div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-2">
+                <div class="benefit-premium"><div class="benefit-icon-premium"><i data-lucide="zap" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">Ad-Free Experience</div><div class="text-xs text-gray-300">Zero interruptions</div></div></div>
+                <div class="benefit-premium"><div class="benefit-icon-premium"><i data-lucide="trending-up" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">16 Premium Pairs</div><div class="text-xs text-gray-300">All pairs unlocked</div></div></div>
+                <div class="benefit-premium"><div class="benefit-icon-premium"><i data-lucide="target" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">98% Accuracy</div><div class="text-xs text-gray-300">Premium signals</div></div></div>
+                <div class="benefit-premium"><div class="benefit-icon-premium"><i data-lucide="shield-check" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">2 Recovery Sessions</div><div class="text-xs text-gray-300">Trade protection</div></div></div>
+                <div class="benefit-premium"><div class="benefit-icon-premium"><i data-lucide="message-circle" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">WhatsApp Support</div><div class="text-xs text-gray-300">Direct 24/7 help</div></div></div>
+                <div class="benefit-premium"><div class="benefit-icon-premium"><i data-lucide="clock" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-sm text-white">Fast Withdrawals</div><div class="text-xs text-gray-300">15min – 3 hours</div></div></div>
+                <div class="benefit-premium benefit-double-bonus" style="grid-column:span 2 / span 2;"><div class="benefit-icon-premium"><i data-lucide="gift" class="w-5 h-5 text-white"></i></div><div><div class="font-bold text-base text-white">Double Referral Bonus</div><div class="text-sm text-green-300">Earn $2 per invite (instead of $1)</div></div></div>
+            </div>
+            <div class="mt-5 text-center">
+                <button onclick="openAuthPopup('signup')" class="px-10 py-4 bg-gradient-to-r from-purple-500 to-violet-600 text-white font-black text-sm rounded-2xl uppercase tracking-wide shadow-2xl hover:opacity-90 transition">
+                    GET VIP ACCESS — $250
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider-premium max-w-6xl mx-auto px-4"></div>
+
+<!-- ── REFERRAL PROGRAM ── -->
+<section class="px-4 py-6 max-w-6xl mx-auto reveal-premium">
+    <div class="text-center mb-6">
+        <h3 class="text-2xl font-black outfit text-premium uppercase mb-1">REFERRAL PROGRAM</h3>
+        <p class="text-xs font-bold text-slate-500">Invite friends &amp; earn forever</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div class="ref-premium">
+            <div class="float-premium mb-3"><i data-lucide="users" class="w-14 h-14 text-green-600 mx-auto"></i></div>
+            <div class="text-4xl font-black outfit text-green-600 mb-2">$2</div>
+            <div class="text-sm font-bold text-green-700 uppercase mb-1">Per Invite</div>
+            <div class="text-xs text-slate-600 font-semibold">Free: $1 | VIP: $2 per signup</div>
+        </div>
+        <div class="ref-premium" style="border-color:#F59E0B;background:linear-gradient(135deg,#fffbf0,#fff9e0);">
+            <div class="float-premium mb-3"><i data-lucide="percent" class="w-14 h-14 text-amber-600 mx-auto"></i></div>
+            <div class="text-4xl font-black outfit text-amber-600 mb-2">3%</div>
+            <div class="text-sm font-bold text-amber-700 uppercase mb-1">Deposit Commission</div>
+            <div class="text-xs text-slate-600 font-semibold">Every time your referral deposits</div>
+        </div>
+        <div class="milestone-premium text-center">
+            <i data-lucide="trophy" class="w-12 h-12 mx-auto mb-3" style="color:#8B5CF6;"></i>
+            <div class="text-sm font-black outfit uppercase mb-3" style="color:#8B5CF6;">Milestone Bonuses</div>
+            <div class="grid grid-cols-2 gap-2">
+                <div class="bg-white/60 rounded-xl p-2"><div class="text-xl font-black outfit" style="color:#8B5CF6;">$10</div><div class="text-[9px] font-bold text-slate-600">25 Refs</div></div>
+                <div class="bg-white/60 rounded-xl p-2"><div class="text-xl font-black outfit" style="color:#8B5CF6;">$20</div><div class="text-[9px] font-bold text-slate-600">50 Refs</div></div>
+                <div class="bg-white/60 rounded-xl p-2"><div class="text-xl font-black outfit" style="color:#8B5CF6;">$30</div><div class="text-[9px] font-bold text-slate-600">100 Refs</div></div>
+                <div class="bg-white/60 rounded-xl p-2"><div class="text-xl font-black outfit" style="color:#8B5CF6;">$50</div><div class="text-[9px] font-bold text-slate-600">500 Refs</div></div>
+            </div>
+        </div>
+    </div>
+    <div class="text-center">
+        <div class="inline-block bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 py-4 rounded-2xl font-black text-base shadow-xl">
+            All referral earnings &#x2192; &#x1F4BC; Earn Wallet (Transfer at $120)
+        </div>
+    </div>
+</section>
+
+<div class="divider-premium max-w-6xl mx-auto px-4"></div>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="px-4 py-6 max-w-6xl mx-auto reveal-premium">
+    <div class="text-center mb-6">
+        <h3 class="text-2xl font-black outfit text-premium uppercase mb-1">HOW IT WORKS</h3>
+        <p class="text-xs font-bold text-slate-500">Simple 3-step process</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="glass-premium p-6 text-center border-2 border-sky-200">
+            <div class="w-14 h-14 bg-gradient-to-br from-sky-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white font-black text-xl outfit">1</div>
+            <h4 class="font-black text-black mb-2">Sign Up Free</h4>
+            <p class="text-xs text-slate-600 font-semibold">Create account in seconds. No KYC required. Start immediately.</p>
+        </div>
+        <div class="glass-premium p-6 text-center border-2 border-green-200">
+            <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white font-black text-xl outfit">2</div>
+            <h4 class="font-black text-black mb-2">Deposit &amp; Invest</h4>
+            <p class="text-xs text-slate-600 font-semibold">Deposit min $10. Choose a 24-hour plan. 20% profit guaranteed.</p>
+        </div>
+        <div class="glass-premium p-6 text-center border-2 border-amber-200">
+            <div class="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white font-black text-xl outfit">3</div>
+            <h4 class="font-black text-black mb-2">Earn &amp; Withdraw</h4>
+            <p class="text-xs text-slate-600 font-semibold">Profit auto-credited after 24 hours. Withdraw min $10 (requires $20 deposit first).</p>
+        </div>
+    </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="px-4 py-8 max-w-4xl mx-auto reveal-premium">
+    <div class="glass-premium p-8 border-2 border-sky-400 text-center" style="background:linear-gradient(135deg,rgba(14,165,233,0.05),rgba(56,189,248,0.05));">
+        <h3 class="text-3xl font-black outfit text-premium uppercase mb-3">JOIN 15,000+ TRADERS</h3>
+        <p class="text-sm font-bold text-slate-600 mb-6">Start earning today. 100% automated. Zero experience needed.</p>
+        <button onclick="openAuthPopup('signup')" class="btn-premium px-12 py-4 text-sm">
+            &#x1F680; CREATE FREE ACCOUNT
+        </button>
+    </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer class="bg-gradient-to-br from-slate-900 to-slate-800 text-white py-10 mt-8">
+    <div class="px-4 max-w-6xl mx-auto">
+        <div class="text-center mb-6">
+            <div class="w-14 h-14 rounded-full overflow-hidden mx-auto mb-3 shadow-xl border-2 border-sky-400">
+                <img src="logo.jpg" alt="Silver X" class="w-14 h-14 object-cover">
+            </div>
+            <h2 class="text-xl font-black outfit mb-1 text-premium">SILVER X TRADER</h2>
+            <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Best Quotex Signal Bot</p>
+        </div>
+        <div class="flex justify-center gap-4 mb-6">
+            <a href="https://www.youtube.com/@silverxtrader" target="_blank" class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-700 transition-all shadow-lg hover:scale-110">
+                <i data-lucide="youtube" class="w-6 h-6 text-red-500"></i>
+            </a>
+            <a href="https://www.tiktok.com/@silverxtrader" target="_blank" class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-700 transition-all shadow-lg hover:scale-110">
+                <i data-lucide="music-2" class="w-6 h-6 text-slate-300"></i>
+            </a>
+            <a href="https://wa.me/923294007913" target="_blank" class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-700 transition-all shadow-lg hover:scale-110">
+                <i data-lucide="message-circle" class="w-6 h-6 text-green-500"></i>
+            </a>
+        </div>
+        <div class="text-center text-xs text-slate-400">
+            <p class="mb-2">&copy; 2026 Silver X Trader. All Rights Reserved.</p>
+            <div class="flex justify-center gap-4">
+                <a href="#" onclick="showPrivacyModal('privacy');return false;" class="hover:text-sky-400 transition font-semibold">Privacy Policy</a>
+                <span>&bull;</span>
+                <a href="#" onclick="showPrivacyModal('terms');return false;" class="hover:text-sky-400 transition font-semibold">Terms of Service</a>
+                <span>&bull;</span>
+                <a href="https://wa.me/923294007913" class="hover:text-sky-400 transition font-semibold">Contact</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- ══ AUTH POPUP ══ -->
+<div id="auth-overlay" class="auth-overlay hidden" onclick="if(event.target===this)closeAuthPopup()">
+    <div class="auth-box">
+        <button class="auth-close" onclick="closeAuthPopup()">&#x2715;</button>
+
+        <!-- SIGNUP -->
+        <div id="auth-signup">
+            <div class="text-center mb-5">
+                <h3 class="text-2xl font-black outfit text-premium uppercase mb-1">CREATE ACCOUNT</h3>
+                <p class="text-xs text-slate-500 font-bold">Join Silver X Community</p>
+            </div>
+            <div class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" id="su-fname" placeholder="First Name" class="input-premium">
+                    <input type="text" id="su-lname" placeholder="Last Name" class="input-premium">
+                </div>
+                <input type="tel" id="su-phone" placeholder="Phone Number" class="input-premium">
+                <input type="email" id="su-email" placeholder="Email Address" class="input-premium">
+                <input type="password" id="su-pass" placeholder="Password (min 6 chars)" class="input-premium">
+                <input type="password" id="su-cpass" placeholder="Confirm Password" class="input-premium">
+                <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-2xl p-3">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i data-lucide="gift" class="w-5 h-5 text-green-600"></i>
+                        <span class="text-xs font-bold text-green-700">Have a Referral Code? Get a Bonus!</span>
+                    </div>
+                    <input type="text" id="su-ref" placeholder="Referral Code (Optional)" class="input-premium" style="border-color:#10B981; background:white;">
+                </div>
+                <div class="flex items-start gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <input type="checkbox" id="su-privacy" class="mt-0.5 w-4 h-4 accent-sky-500 flex-shrink-0">
+                    <label for="su-privacy" class="text-xs text-slate-600 font-semibold">I accept the <button type="button" onclick="showPrivacyModal('terms')" class="text-sky-600 font-bold underline cursor-pointer">Terms &amp; Conditions</button> and <button type="button" onclick="showPrivacyModal('privacy')" class="text-sky-600 font-bold underline cursor-pointer">Privacy Policy</button></label>
+                </div>
+                <button onclick="handleSignup()" id="signup-btn" class="btn-premium w-full py-4">
+                    <span id="signup-text">CREATE ACCOUNT</span>
+                    <span id="signup-loader" class="loader-spin hidden"></span>
+                </button>
+            </div>
+            <p class="text-center text-xs text-slate-500 mt-4">Already have an account? <button onclick="switchToLogin()" class="text-sky-600 font-bold hover:underline">Login Here</button></p>
+        </div>
+
+        <!-- LOGIN -->
+        <div id="auth-login" class="hidden">
+            <div class="text-center mb-5">
+                <h3 class="text-2xl font-black outfit text-slate-800 uppercase mb-1">WELCOME BACK</h3>
+                <p class="text-xs text-slate-500 font-bold">Sign in to your account</p>
+            </div>
+            <div class="space-y-3">
+                <input type="email" id="login-email" placeholder="Email Address" class="input-premium">
+                <input type="password" id="login-pass" placeholder="Password" class="input-premium">
+                <button onclick="handleLogin()" id="login-btn" class="btn-premium w-full py-4">
+                    <span id="login-text">LOGIN NOW</span>
+                    <span id="login-loader" class="loader-spin hidden"></span>
+                </button>
+                <div class="text-center">
+                    <button onclick="handleForgotPassword()" class="text-xs font-bold text-sky-600 hover:underline">Forgot Password?</button>
+                </div>
+            </div>
+            <p class="text-center text-xs text-slate-500 mt-4">New to Silver X? <button onclick="switchToSignup()" class="text-sky-600 font-bold hover:underline">Create Account</button></p>
+        </div>
     </div>
 </div>
 
+<!-- Toast -->
+<div id="toast-el" style="position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:999999;display:none;padding:14px 28px;border-radius:16px;font-size:13px;font-weight:700;color:white;box-shadow:0 12px 40px rgba(0,0,0,0.3);white-space:nowrap;"></div>
 
-<div id="toast" class="fixed top-10 left-1/2 -translate-x-1/2 bg-black text-white px-6 py-3 rounded-full font-bold uppercase text-[10px] tracking-widest shadow-2xl -translate-y-40 transition-all duration-500 z-[99999] border border-slate-800">Alert</div>
-
+<!-- Privacy/Terms Modal -->
+<div id="policy-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:999999;display:none;align-items:center;justify-content:center;padding:16px;">
+    <div style="background:#fff;border-radius:24px;padding:28px 24px;max-width:480px;width:100%;max-height:85vh;overflow-y:auto;position:relative;box-shadow:0 24px 80px rgba(0,0,0,0.4);">
+        <button onclick="document.getElementById('policy-overlay').style.display='none'" style="position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;background:#f1f5f9;border:none;cursor:pointer;font-size:18px;font-weight:700;color:#64748b;">&#x2715;</button>
+        <h2 id="policy-title" style="font-size:20px;font-weight:900;color:#0ea5e9;margin-bottom:4px;font-family:'Space Grotesk',sans-serif;">Privacy Policy</h2>
+        <p style="font-size:10px;color:#94a3b8;font-weight:700;margin-bottom:20px;">Last Updated: January 2026</p>
+        <div id="policy-body" style="font-size:12px;color:#475569;line-height:1.8;font-weight:500;"></div>
+        <button onclick="document.getElementById('su-privacy').checked=true;document.getElementById('policy-overlay').style.display='none'" style="margin-top:20px;width:100%;background:#0ea5e9;color:#fff;padding:14px;border:none;border-radius:14px;font-weight:700;font-size:13px;cursor:pointer;">I Agree ✓</button>
+    </div>
+</div>
 
 <script src="firebase-config.js"></script>
 <script>
-// ─── CONFIG ──────────────────────────────────────────────────
-const adsCollection = [
-    "https://www.effectivegatecpm.com/zu9fwwufi?key=5c01f6e26f4b9943913f0d36bfa48f6d",
-    "https://www.effectivegatecpm.com/m3re02atee?key=cebdb997452acac01a6d39d48dcb0e68",
-    "https://www.effectivegatecpm.com/njujpaga3n?key=2636c1fb3975328fd5e16e532dda0482",
-    "https://www.effectivegatecpm.com/u03w5rk4?key=d5c708947384bde96b27f42a724b41d9",
-    "https://www.effectivegatecpm.com/szh2badub?key=8aef9f0adbfa95686459aaeeea7db26a",
-    "https://www.effectivegatecpm.com/wzb0ven1?key=87866ac53935e941e61c53d03338eb0a",
-    "https://www.effectivegatecpm.com/d29maviwb?key=f03e146f78029f3a63200d7d63db6e42",
-    "https://www.effectivegatecpm.com/p85rfz3v8?key=b50205713bdb8a8e9b85dc14013c31f7"
-];
-const WALLETS = { binance:"403009858", trc20:"TGzsm8guzbaBsbNa9JLPR3WTRzFRy6B6FG" };
-const VIP_PRICE = 250;
-const PLANS = [
-    {name:"MICRO",price:20,roi:20},{name:"STARTER",price:40,roi:20},{name:"BASIC",price:80,roi:20},
-    {name:"PRO",price:160,roi:20},{name:"ELITE",price:320,roi:20},{name:"SUPREME",price:640,roi:20}
-];
-const MILESTONES = [{count:25,bonus:10},{count:50,bonus:20},{count:100,bonus:30},{count:250,bonus:40},{count:500,bonus:50}];
-// Promo codes config (admin manages codes in Firestore 'promo_codes' collection)
-const PROMO_REWARD = 0.50; // default reward per promo code
-const PAIRS = ["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD","USD/CAD","BTC/USDT","ETH/USDT","EUR/GBP","GBP/JPY","EUR/JPY","AUD/CAD","NZD/USD","EUR/AUD","SOL/USDT","BNB/USDT"];
+lucide.createIcons();
 
-// ─── STATE ───────────────────────────────────────────────────
-let currentUser=null, userData=null, unsubscribeUser=null, unsubscribeTx=null;
-let isProcessing=false, currentTxFilter='all', claimedMilestones=[];
-let state={isVIP:false,vipExpiry:0,adIdx:0,activePair:null,balance:0,earnWallet:0,plans:{},refCode:'',referrals:0,recoverySessions:[true,true],transactions:[],leaderboard:[],adClaimsToday:0,lastAdClaimDate:'',boosterActive:false,boosterExpiry:0,totalDeposited:0};
+// Scroll reveal
+const revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('active'); });
+}, {threshold:0.08});
+document.querySelectorAll('.reveal-premium').forEach(el => revealObserver.observe(el));
 
-// ─── OBFUSCATED SIGNAL ENGINE ────────────────────────────────
-const _SIG=(function(){
-    let _s=(Date.now()^0xDEADBEEF)|1;
-    function _x(){_s^=_s<<13;_s^=_s>>17;_s^=_s<<5;return(_s>>>0);}
-    function _gen(pairIdx){
-        _s=((pairIdx*0x5DEECE66D)^Date.now()^0xCAFEBABE)|1;
-        for(let i=0;i<(pairIdx+3);i++)_x();
-        const r=_x();
-        return{isCall:(r%2)===0, accRaw:(_x()%500)};
+// Check auth: if already logged in → go to app (only if not already redirecting)
+let _authRedirecting = false;
+firebase.auth().onAuthStateChanged(user => {
+    if (user && !_authRedirecting) {
+        _authRedirecting = true;
+        window.location.replace('app.html');
     }
-    return{generate:_gen};
-})();
-
-// ─── URL PARAM ───────────────────────────────────────────────
-function getUrlParam(n){const r=new RegExp('[\\?&]'+n+'=([^&#]*)');const m=r.exec(location.search);return m?decodeURIComponent(m[1].replace(/\+/g,' ')):''}
-
-// ─── INIT ────────────────────────────────────────────────────
-window.addEventListener('load',async()=>{
-    lucide.createIcons();
-    const urlRef=getUrlParam('ref');
-    if(urlRef){showSignup();setTimeout(()=>{document.getElementById('su-ref').value=urlRef;},300);}
-
-    firebase.auth().onAuthStateChanged(async(user)=>{
-        if(user){
-            currentUser=user;
-            await loadUserData();
-            document.getElementById('splash').classList.add('hidden');
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.getElementById('main-layout').classList.remove('hidden');
-            renderBotCards();renderPlans();renderMilestones();
-            // Auto-check 24hr plan maturation on load
-            await autoMaturePlans();
-        } else {
-            window.location.href='index.html';
-        }
-    });
-    
-    // ✅ CHECK VIP EXPIRY + BOOSTER EXPIRY + AUTO MATURE PLANS EVERY 30 SECONDS
-    setInterval(async()=>{
-        await checkVipExpiry();
-        await checkBoosterExpiry();
-        await autoMaturePlans();
-    }, 30000);
 });
 
-// ─── AUTH SWITCHERS ──────────────────────────────────────────
-function showLogin(){document.getElementById('login-block').classList.remove('hidden');document.getElementById('signup-block').classList.add('hidden');document.getElementById('auth-title').innerText='LOGIN';document.getElementById('auth-subtitle').innerText='Secure Terminal Access';}
-function showSignup(){document.getElementById('login-block').classList.add('hidden');document.getElementById('signup-block').classList.remove('hidden');document.getElementById('auth-title').innerText='CREATE';document.getElementById('auth-subtitle').innerText='Join Silver X Elite';}
-
-// ─── LOGIN ───────────────────────────────────────────────────
-async function handleLogin(){
-    if(isProcessing)return;
-    const email=document.getElementById('login-email').value.trim();
-    const pass=document.getElementById('login-pass').value;
-    if(!email||!pass)return toast('Fill all fields');
-    isProcessing=true;setBtn('login-btn','login-btn-text','login-btn-loader',false);
-    try{
-        await firebase.auth().signInWithEmailAndPassword(email,pass);
-        toast('Login Successful');
+// ── URL ref param pre-fill ──
+(function(){
+    const r = new URLSearchParams(window.location.search).get('ref');
+    if(r) {
+        openAuthPopup('signup');
+        setTimeout(()=>{ const el=document.getElementById('su-ref'); if(el) el.value=r; }, 300);
     }
-    catch(e){
-        isProcessing=false;setBtn('login-btn','login-btn-text','login-btn-loader',true);
-        // ✅ FIX 1: Enhanced error handling for non-existent users
-        if(e.code === 'auth/user-not-found'){
-            toast('Account doesn\'t exist, please sign up');
-            setTimeout(()=>showSignup(), 1500);
-        } else if(e.code === 'auth/wrong-password'){
-            toast('Incorrect password');
-        } else if(e.code === 'auth/invalid-email'){
-            toast('Invalid email format');
-        } else if(e.code === 'auth/user-disabled'){
-            toast('Account suspended. Contact support.');
-        } else {
-            toast('Login failed: ' + (e.message || 'Unknown error'));
-        }
-    }
-}
-
-// ─── SIGNUP ──────────────────────────────────────────────────
-async function handleSignup(){
-    if(isProcessing)return;
-    const fname=document.getElementById('su-fname').value.trim();
-    const lname=document.getElementById('su-lname').value.trim();
-    const phone=document.getElementById('su-phone').value.trim();
-    const email=document.getElementById('su-email').value.trim();
-    const pass=document.getElementById('su-pass').value;
-    const cpass=document.getElementById('su-cpass').value;
-    const ref=document.getElementById('su-ref').value.trim();
-    const privacy=document.getElementById('su-privacy').checked;
-    if(!fname||!lname)return toast('Enter first & last name');
-    if(!phone||phone.length<7)return toast('Valid phone required');
-    if(!email)return toast('Enter email');
-    if(!pass||pass.length<6)return toast('Password min 6 chars');
-    if(pass!==cpass)return toast('Passwords do not match');
-    if(!privacy)return toast('Accept Privacy Policy');
-    isProcessing=true;setBtn('signup-btn','signup-btn-text','signup-btn-loader',false);
-    try{
-        const result=await firebase.auth().createUserWithEmailAndPassword(email,pass);
-        currentUser=result.user;
-        const refCode="SX-"+Math.floor(1000+Math.random()*9000);
-        
-        console.log('✅ User created:', currentUser.uid);
-        console.log('📝 Referral code entered:', ref);
-        
-        // ✅ AUTO CREATE USER PROFILE WITH ALL FIELDS
-        await db.collection('users').doc(currentUser.uid).set({
-            email,
-            first_name:fname,
-            last_name:lname,
-            phone,
-            ref_code:refCode,
-            referred_by:null,
-            referral_processed:false,
-            balance:0,
-            earn_wallet:0,
-            referrals:0,
-            is_vip:false,
-            vip_expiry:0,
-            recovery_session_1:true,
-            recovery_session_2:true,
-            suspended:false,
-            ad_claims_today:0,
-            last_ad_claim_date:'',
-            booster_active:false,
-            booster_expiry:0,
-            created_at:firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        console.log('✅ User profile created');
-        
-        // ✅ PROCESS REFERRAL BONUS - WAIT FOR COMPLETION
-        if(ref && ref.length > 3){
-            console.log('🎁 Processing referral bonus for code:', ref);
-            await processReferralBonus(ref);
-        } else {
-            console.log('ℹ️ No referral code provided');
-        }
-        
-        toast('Account Created!');
-    }catch(e){
-        console.error('Signup error:', e);
-        toast('Error: '+(e.message||'Unknown'));
-        isProcessing=false;
-        setBtn('signup-btn','signup-btn-text','signup-btn-loader',true);
-    }
-}
-
-// ─── FORGOT PASSWORD ─────────────────────────────────────────
-function showForgotPassword(){
-    const email=document.getElementById('login-email').value.trim();
-    if(!email)return toast('Enter email first');
-    
-    // ✅ FIX 2: Enhanced password reset with better UX
-    showPopupGeneric(`
-        <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
-        <h3 class="text-xl font-black outfit mb-3 text-center">🔐 Reset Password</h3>
-        <div class="bg-sky-50 p-4 rounded-xl border border-sky-200 mb-4">
-            <p class="text-xs text-sky-700 font-bold mb-2">📧 Reset Link will be sent to:</p>
-            <p class="text-sm text-black font-black text-center">${email}</p>
-        </div>
-        <div class="bg-orange-50 border-l-4 border-orange-500 p-3 rounded-lg mb-3">
-            <p class="text-xs text-orange-700 font-bold mb-1">⚠️ Important:</p>
-            <ul class="text-xs text-orange-600 space-y-1 list-disc list-inside">
-                <li>Check your spam/junk folder</li>
-                <li>Link expires in 1 hour</li>
-                <li>Click link from same device</li>
-            </ul>
-        </div>
-        <div class="flex gap-3">
-            <button onclick="closePopupGeneric()" class="popup-btn-secondary flex-1">Cancel</button>
-            <button onclick="sendPasswordResetEmail('${email}')" class="popup-btn-primary flex-1">Send Reset Link</button>
-        </div>
-    `);
-}
-
-async function sendPasswordResetEmail(email){
-    closePopupGeneric();
-    try{
-        await firebase.auth().sendPasswordResetEmail(email);
-        showPopupGeneric(`
-            <h3 class="text-xl font-black outfit mb-3 text-center text-green-600">✅ Email Sent!</h3>
-            <div class="bg-green-50 p-4 rounded-xl border-2 border-green-500 mb-3 text-center">
-                <i data-lucide="mail-check" class="w-12 h-12 text-green-600 mx-auto mb-2"></i>
-                <p class="text-sm text-green-700 font-bold">Password reset link sent to:</p>
-                <p class="text-xs text-green-600 mt-1">${email}</p>
-            </div>
-            <p class="text-xs text-slate-600 mb-3 text-center">Check your inbox (and spam folder) for the reset link.</p>
-            <button onclick="closePopupGeneric()" class="popup-btn-primary">Got It</button>
-        `);
-        lucide.createIcons();
-    }catch(e){
-        let errorMsg = 'Failed to send reset email';
-        if(e.code === 'auth/user-not-found'){
-            errorMsg = 'No account found with this email';
-        } else if(e.code === 'auth/invalid-email'){
-            errorMsg = 'Invalid email format';
-        }
-        toast(errorMsg);
-    }
-}
-
-// ─── LOAD USER DATA ──────────────────────────────────────────
-async function loadUserData(){
-    if(!currentUser)return;
-    if(unsubscribeUser)unsubscribeUser();
-    if(unsubscribeTx)unsubscribeTx();
-
-    unsubscribeUser=db.collection('users').doc(currentUser.uid).onSnapshot(async(doc)=>{
-        if(!doc.exists)return;
-        userData={id:doc.id,...doc.data()};
-        state.refCode=userData.ref_code;
-        state.balance=parseFloat(userData.balance)||0;
-        state.earnWallet=parseFloat(userData.earn_wallet)||0;
-        state.referrals=userData.referrals||0;
-        state.isVIP=userData.is_vip||false;
-        state.vipExpiry=userData.vip_expiry||0;
-        state.recoverySessions=[userData.recovery_session_1,userData.recovery_session_2];
-        state.adClaimsToday=userData.ad_claims_today||0;
-        state.lastAdClaimDate=userData.last_ad_claim_date||'';
-        state.boosterActive=userData.booster_active||false;
-        state.boosterExpiry=userData.booster_expiry||0;
-        state.totalDeposited=parseFloat(userData.total_deposited)||0;
-        
-        // ✅ AUTO CHECK VIP EXPIRY ON DATA LOAD
-        await checkVipExpiry();
-        // ✅ AUTO CHECK BOOSTER EXPIRY
-        await checkBoosterExpiry();
-        // ✅ RESET DAILY AD CLAIMS IF NEW DAY
-        checkDailyAdClaimReset();
-        
-        updateBalanceUI();updateVIPUI();updateSidebarInfo();
-        await loadPlans();await loadLeaderboard();await loadClaimedMilestones();
-        renderPlans();renderMilestones();
-    });
-
-    // Compute total deposited from approved deposits
-    db.collection('transactions').where('user_id','==',currentUser.uid)
-        .where('transaction_type','==','DEPOSIT')
-        .where('status','==','success')
-        .get().then(snap=>{
-            let total = 0;
-            snap.forEach(d=>{ total += parseFloat(d.data().amount)||0; });
-            state.totalDeposited = total;
-            // Update userData too so withdrawal check works
-            if(userData) userData.total_deposited = total;
-        });
-
-    unsubscribeTx=db.collection('transactions').where('user_id','==',currentUser.uid).orderBy('created_at','desc').limit(30).onSnapshot((snap)=>{
-        state.transactions=snap.docs.map(d=>({id:d.id,...d.data()}));
-        renderTransactions();
-    });
-}
-
-// ─── LOAD PLANS / LEADERBOARD / MILESTONES ──────────────────
-async function loadPlans(){
-    const snap=await db.collection('plans').where('user_id','==',currentUser.uid).where('status','==','active').get();
-    state.plans={};
-    snap.forEach(doc=>{
-        const p=doc.data();
-        state.plans[p.plan_index]={
-            docId:doc.id,
-            status:p.status,
-            startedAt:p.started_at,
-            withdrawAt:p.withdraw_available_at,
-            totalReturn:p.total_return
-        };
-    });
-    renderPlans();
-}
-
-async function loadLeaderboard(){
-    const snap=await db.collection('users').orderBy('referrals','desc').limit(10).get();
-    state.leaderboard=snap.docs.map((d,i)=>({rank:i+1,ref_code:d.data().ref_code,name:(d.data().first_name||'')+' '+(d.data().last_name||''),total_referrals:d.data().referrals||0}));
-    renderLeaderboard();
-}
-
-async function loadClaimedMilestones(){
-    const snap=await db.collection('referral_bonuses').where('user_id','==',currentUser.uid).get();
-    claimedMilestones=snap.docs.map(d=>d.data().milestone);
-}
-
-// ─── REFERRAL BONUS ──────────────────────────────────────────
-async function processReferralBonus(code){
-    if(!code || code.length < 3) return;
-    try{
-        console.log('🔍 Processing referral code:', code);
-        
-        // ✅ Get current user data
-        const currentUserDoc = await db.collection('users').doc(currentUser.uid).get();
-        const currentUserData = currentUserDoc.data();
-        
-        // ✅ SECURITY: Prevent duplicate processing
-        if(currentUserData.referral_processed === true) {
-            console.log('ℹ️ Referral already processed for this user');
-            return;
-        }
-        
-        // ✅ SECURITY: Check if already referred by different code
-        if(currentUserData.referred_by && currentUserData.referred_by !== code) {
-            console.log('⚠️ User already referred by someone else. Blocking duplicate referral.');
-            return;
-        }
-        
-        // Find the referrer
-        const snap = await db.collection('users').where('ref_code', '==', code).limit(1).get();
-        
-        if(snap.empty){
-            console.log('❌ Referral code not found:', code);
-            return;
-        }
-        
-        const refDoc = snap.docs[0];
-        const refData = refDoc.data();
-        
-        // ✅ SECURITY: Prevent self-referral
-        if(refDoc.id === currentUser.uid) {
-            console.log('⚠️ Self-referral blocked');
-            return;
-        }
-        
-        const isVIP = refData.is_vip && refData.vip_expiry > Date.now();
-        const reward = isVIP ? 2.00 : 1.00;
-        
-        console.log('✅ Found referrer:', refData.email, '| Reward: $' + reward);
-        
-        // ✅ UPDATE REFERRER'S EARN WALLET (Referral rewards go to earn wallet)
-        await db.collection('users').doc(refDoc.id).update({
-            referrals: firebase.firestore.FieldValue.increment(1),
-            earn_wallet: firebase.firestore.FieldValue.increment(reward)
-        });
-        
-        // ✅ CREATE TRANSACTION RECORD FOR REFERRER
-        await db.collection('transactions').add({
-            user_id: refDoc.id,
-            transaction_type: 'REFERRAL',
-            amount: reward,
-            status: 'approved',
-            notes: `Referral bonus from ${currentUserData.first_name || 'new user'} (${currentUserData.email})`,
-            created_at: firebase.firestore.FieldValue.serverTimestamp(),
-            approved_at: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        // ✅ MARK CURRENT USER AS PROCESSED
-        await db.collection('users').doc(currentUser.uid).update({
-            referred_by: code,
-            referral_processed: true
-        });
-        
-        console.log('✅ Referral bonus processed: $' + reward + ' credited to ' + refData.email);
-        console.log('✅ Transaction record created successfully!');
-        
-    } catch(e){
-        console.error('❌ Referral error:', e);
-    }
-}
-
-// ─── CLAIM MILESTONE ─────────────────────────────────────────
-async function claimMilestone(count,bonus){
-    if(isProcessing)return;
-    if(state.referrals<count)return toast('Not enough referrals');
-    if(claimedMilestones.includes(count))return toast('Already claimed');
-    isProcessing=true;
-    try{
-        await db.collection('users').doc(currentUser.uid).update({earn_wallet:firebase.firestore.FieldValue.increment(bonus)});
-        await db.collection('referral_bonuses').add({user_id:currentUser.uid,milestone:count,bonus_amount:bonus,claimed_at:firebase.firestore.FieldValue.serverTimestamp()});
-        claimedMilestones.push(count);isProcessing=false;
-        toast('$'+bonus+' Bonus added to Earn Wallet!');renderMilestones();
-    }catch(e){isProcessing=false;toast('Error: '+e.message);}
-}
-
-// ─── BOT CARDS ───────────────────────────────────────────────
-function renderBotCards(){
-    document.getElementById('sec-bot-grid').innerHTML=PAIRS.map((p,i)=>{
-        const isVip=i>=8;
-        return`<div onclick="launchAdGate(${i},${isVip})" id="card-${i}" class="glass-card p-3 flex flex-col items-center text-center cursor-pointer ${isVip&&!state.isVIP?'opacity-50 grayscale':''}" style="transition:0.15s;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">
-            <div class="ai-chip-hub mb-1" style="width:60px;height:60px;"><div class="chorus-rings"></div><div class="ai-core-unit" style="width:34px;height:34px;font-size:10px;">AI</div></div>
-            <h3 class="font-black text-black text-[13px] uppercase tracking-wider outfit">${p}</h3>
-            <div id="status-${i}" class="text-[8px] text-slate-400 font-bold uppercase mt-0.5 tracking-widest">${isVip&&!state.isVIP?'LOCKED':'SYNC'}</div>
-            <div id="sig-box-${i}" class="hidden mt-1"><span id="sig-txt-${i}" class="text-xl font-black outfit tracking-tighter">---</span><p class="text-[8px] sky-text font-bold mt-0.5">Acc: <span id="acc-${i}">0</span>%</p></div>
-        </div>`;
-    }).join('');
-}
-
-// ─── PLAN CARDS (24-Hour Cycle, Fixed 20% ROI) ───────────────
-function renderPlans(){
-    document.getElementById('sec-invest-grid').innerHTML=PLANS.map((pl,idx)=>{
-        const totalReturn=(pl.price+(pl.price*pl.roi/100)).toFixed(2);
-        const profit=(pl.price*pl.roi/100).toFixed(2);
-        const ap=state.plans[idx];
-        let btnHtml='';
-        if(ap){
-            const now=Date.now();
-            if(now>=ap.withdrawAt){
-                btnHtml=`<button onclick="withdrawPlanReturns(${idx})" class="w-full py-3 rounded-2xl font-bold uppercase text-[11px] shadow-lg text-white" style="background:#22C55E;">Collect ($${parseFloat(ap.totalReturn).toFixed(2)})</button>`;
-            } else {
-                const ms=ap.withdrawAt-now;
-                const h=Math.floor(ms/(1000*60*60));
-                const m=Math.floor((ms%(1000*60*60))/(1000*60));
-                btnHtml=`<button onclick="toast('Mining: ${h}h ${m}m remaining')" class="w-full py-3 rounded-2xl font-bold uppercase text-[11px] shadow-lg text-white" style="background:#64748B;">Mining (${h}h ${m}m)</button>`;
-            }
-        } else {
-            btnHtml=`<button onclick="handlePlanClick(${idx})" class="w-full bg-black text-white py-3 rounded-2xl font-bold uppercase text-[11px] shadow-lg">Activate Plan</button>`;
-        }
-        return`<div class="glass-card p-4 border-b-4 border-sky-500">
-            <div class="flex justify-between items-start mb-3">
-                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${pl.name} Plan</span>
-                <span class="text-[10px] bg-sky-100 px-2 py-0.5 rounded font-bold text-sky-700">24 Hours</span>
-            </div>
-            <p class="text-3xl font-black outfit sky-text tracking-tight">$${pl.price}</p>
-            <p class="text-green-600 font-bold text-[10px] mt-0.5 uppercase tracking-widest">${pl.roi}% Fixed ROI</p>
-            <p class="text-[9px] text-slate-400 leading-relaxed my-3">Return in 24h: <strong>$${totalReturn}</strong> <span class="text-green-600">(+$${profit})</span></p>
-            ${btnHtml}</div>`;
-    }).join('');
-}
-
-// ─── PLAN POPUP FLOW (3 steps, each with X) ─────────────────
-async function handlePlanClick(idx){
-    if(isProcessing)return;
-    const pl=PLANS[idx];
-    if(state.balance<pl.price)return toast('Insufficient balance! Need $'+pl.price);
-    if(state.plans[idx])return toast('Plan already active');
-    const profit=(pl.price*pl.roi/100).toFixed(2);
-    const tr=(pl.price+(pl.price*pl.roi/100)).toFixed(2);
-    showPopupGeneric(`
-        <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
-        <div class="popup-progress"><div class="popup-progress-dot active"></div><div class="popup-progress-dot"></div><div class="popup-progress-dot"></div></div>
-        <h3 class="text-xl font-black outfit mb-3 text-center">${pl.name} PLAN</h3>
-        <div class="space-y-2 mb-3">
-            <div class="flex justify-between p-3 bg-sky-50 rounded-xl border border-sky-200"><span class="text-xs font-bold text-sky-700 uppercase">Investment</span><span class="text-lg font-black">$${pl.price}</span></div>
-            <div class="flex justify-between p-3 bg-green-50 rounded-xl border border-green-200"><span class="text-xs font-bold text-green-700 uppercase">Fixed ROI</span><span class="text-lg font-black text-green-600">${pl.roi}%</span></div>
-            <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span class="text-xs font-bold text-slate-600 uppercase">Duration</span><span class="text-sm font-black">24 Hours</span></div>
-        </div>
-        <div class="bg-green-50 p-4 rounded-xl border-2 border-green-500 mb-3 text-center">
-            <p class="text-xs text-green-700 font-bold uppercase mb-1">⏱ After 24 Hours You Receive</p>
-            <p class="text-3xl font-black text-green-600">$${tr}</p>
-            <p class="text-xs text-green-600 font-bold mt-1">Net Profit: +$${profit}</p>
-        </div>
-        <div class="flex gap-3"><button onclick="closePopupGeneric()" class="popup-btn-secondary flex-1">Cancel</button><button onclick="closePopupGeneric();handlePlanClick2(${idx})" class="popup-btn-primary flex-1">Continue →</button></div>`);
-}
-
-async function handlePlanClick2(idx){
-    const pl=PLANS[idx];
-    showPopupGeneric(`
-        <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
-        <div class="popup-progress"><div class="popup-progress-dot active"></div><div class="popup-progress-dot active"></div><div class="popup-progress-dot"></div></div>
-        <h3 class="text-xl font-black outfit mb-3 text-center">📋 Requirements</h3>
-        <div class="space-y-3 mb-3">
-            <div class="p-3 bg-slate-50 rounded-xl"><p class="text-xs text-slate-500 font-bold uppercase">Your Balance</p><p class="text-2xl font-black">$${state.balance.toFixed(2)}</p></div>
-            <div class="p-3 bg-orange-50 rounded-xl border-2 border-orange-500"><p class="text-xs text-orange-600 font-bold uppercase">Required</p><p class="text-2xl font-black text-orange-600">$${pl.price}</p></div>
-            <div class="p-3 bg-green-50 rounded-xl border-2 border-green-500"><p class="text-xs text-green-700 font-bold uppercase">After</p><p class="text-2xl font-black text-green-600">$${(state.balance-pl.price).toFixed(2)}</p></div>
-        </div>
-        <div class="flex gap-3"><button onclick="closePopupGeneric();handlePlanClick(${idx})" class="popup-btn-secondary flex-1">← Back</button><button onclick="closePopupGeneric();handlePlanClick3(${idx})" class="popup-btn-primary flex-1">Activate →</button></div>`);
-}
-
-async function handlePlanClick3(idx){
-    if(isProcessing)return;isProcessing=true;
-    const pl=PLANS[idx];
-    const totalReturn=pl.price+(pl.price*pl.roi/100);
-    showPopupGeneric(`
-        <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
-        <div class="popup-progress"><div class="popup-progress-dot active"></div><div class="popup-progress-dot active"></div><div class="popup-progress-dot active"></div></div>
-        <h3 class="text-xl font-black outfit mb-3 text-center">⚡ Activating...</h3>
-        <div class="flex flex-col items-center py-6"><div class="w-14 h-14 border-4 border-sky-500 border-t-transparent rounded-full animate-spin mb-3"></div><p class="text-sm text-slate-600 font-bold">Processing...</p></div>`);
-    try{
-        await new Promise(r=>setTimeout(r,3000));
-        const now=Date.now(),withdrawAt=now+(24*60*60*1000); // 24 HOURS
-        const batch=db.batch();
-        
-        // ✅ DEDUCT BALANCE IMMEDIATELY
-        batch.update(db.collection('users').doc(currentUser.uid),{balance:firebase.firestore.FieldValue.increment(-pl.price)});
-        
-        const planRef=db.collection('plans').doc();
-        batch.set(planRef,{
-            user_id:currentUser.uid,
-            plan_index:idx,
-            plan_name:pl.name,
-            plan_price:pl.price,
-            plan_roi:pl.roi,
-            total_return:totalReturn,
-            status:'active',
-            started_at:now,
-            withdraw_available_at:withdrawAt,
-            created_at:firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        await batch.commit();
-        isProcessing=false;closePopupGeneric();await loadPlans();toast(pl.name+' Plan Activated! Returns in 24h!');
-    }catch(e){
-        isProcessing=false;closePopupGeneric();
-        toast('Error: '+e.message);
-    }
-}
-
-// ─── WITHDRAW PLAN ───────────────────────────────────────────
-async function withdrawPlanReturns(idx){
-    if(isProcessing)return;isProcessing=true;
-    try{
-        const snap=await db.collection('plans').where('user_id','==',currentUser.uid).where('plan_index','==',idx).where('status','==','active').limit(1).get();
-        if(snap.empty){isProcessing=false;return toast('Plan not found');}
-        const planDoc=snap.docs[0],planData=planDoc.data();
-        
-        // ✅ STRICT 24-HOUR VALIDATION
-        if(Date.now()<planData.withdraw_available_at){
-            isProcessing=false;
-            const ms=planData.withdraw_available_at-Date.now();
-            const h=Math.floor(ms/(1000*60*60));
-            const m=Math.floor((ms%(1000*60*60))/(1000*60));
-            return toast('Not ready yet! '+h+'h '+m+'m remaining');
-        }
-        
-        // ✅ ADD CAPITAL + PROFIT TO MAIN BALANCE AND MARK AS COMPLETED
-        await db.collection('users').doc(currentUser.uid).update({balance:firebase.firestore.FieldValue.increment(planData.total_return)});
-        await db.collection('plans').doc(planDoc.id).update({status:'completed'});
-        await db.collection('transactions').add({
-            user_id:currentUser.uid,
-            transaction_type:'PLAN_RETURN',
-            amount:planData.total_return,
-            status:'approved',
-            notes:`24h plan return: ${planData.plan_name} ($${planData.plan_price} + 20% ROI)`,
-            created_at:firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        isProcessing=false;await loadPlans();toast('$'+parseFloat(planData.total_return).toFixed(2)+' added to Main Balance!');
-    }catch(e){isProcessing=false;toast('Error: '+e.message);}
-}
-
-// ─── VIP POPUP FLOW (3 steps + X on each) ───────────────────
-async function handleVipClick(){
-    if(isProcessing)return;
-    
-    // ✅ CHECK IF VIP IS STILL ACTIVE
-    if(state.isVIP&&state.vipExpiry>Date.now()){
-        const d=Math.ceil((state.vipExpiry-Date.now())/(1000*60*60*24));
-        return toast('VIP Active: '+d+' Days Left');
-    }
-    
-    showPopupGeneric(`
-        <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
-        <div class="popup-progress"><div class="popup-progress-dot active"></div><div class="popup-progress-dot"></div><div class="popup-progress-dot"></div></div>
-        <h3 class="text-xl font-black outfit mb-3 text-center">✨ VIP ELITE ACCESS</h3>
-        <div class="space-y-2 mb-3">
-            ${[['sparkles','AD-FREE Experience','No interruptions at all'],['target','16 Premium Pairs','All exclusive pairs unlocked'],['trending-up','95–98% Accuracy','Premium signal accuracy'],['shield-check','2 Recovery Sessions','Protect your trades'],['message-circle','WhatsApp Support','Direct premium support'],['dollar-sign','$2.00 per Referral','Double the reward'],['zap','Fast Withdraw','15 min – 3 hours']].map(b=>`
-                <div class="vip-benefit-item">
-                    <div class="vip-benefit-icon"><i data-lucide="${b[0]}" class="w-4 h-4 text-white"></i></div>
-                    <div><p class="font-bold text-sm text-black">${b[1]}</p><p class="text-xs text-slate-500">${b[2]}</p></div>
-                </div>`).join('')}
-        </div>
-        <div class="bg-sky-50 p-3 rounded-xl border-2 border-sky-500 text-center mb-3">
-            <p class="text-xs text-sky-700 font-bold uppercase">Price</p>
-            <p class="text-3xl font-black sky-text">$${VIP_PRICE}</p>
-            <p class="text-xs text-slate-500">30 Days Full Access</p>
-        </div>
-        <button onclick="closePopupGeneric();handleVipClick2()" class="popup-btn-primary">Continue →</button>`);
-}
-
-async function handleVipClick2(){
-    const can=state.balance>=VIP_PRICE;
-    showPopupGeneric(`
-        <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
-        <div class="popup-progress"><div class="popup-progress-dot active"></div><div class="popup-progress-dot active"></div><div class="popup-progress-dot"></div></div>
-        <h3 class="text-xl font-black outfit mb-3 text-center">✅ Confirm VIP</h3>
-        <div class="space-y-3 mb-3">
-            <div class="p-3 bg-slate-50 rounded-xl"><p class="text-xs text-slate-500 font-bold uppercase">Balance</p><p class="text-2xl font-black">$${state.balance.toFixed(2)}</p></div>
-            <div class="p-3 bg-red-50 rounded-xl border-2 border-red-500"><p class="text-xs text-red-600 font-bold uppercase">VIP Cost</p><p class="text-2xl font-black text-red-600">-$${VIP_PRICE}</p></div>
-            <div class="p-3 rounded-xl border-2 ${can?'bg-green-50 border-green-500':'bg-red-50 border-red-500'}"><p class="text-xs font-bold uppercase ${can?'text-green-700':'text-red-700'}">After</p><p class="text-2xl font-black ${can?'text-green-600':'text-red-600'}">${can?'$'+(state.balance-VIP_PRICE).toFixed(2):'Insufficient'}</p></div>
-        </div>
-        <div class="bg-orange-50 p-3 rounded-xl border-l-4 border-orange-500 mb-3">
-            <p class="text-xs text-orange-700 font-bold">⚠️ $${VIP_PRICE} deducted immediately. 30 days, no auto-renewal.</p>
-        </div>
-        ${can
-            ? `<button onclick="activateVipNow()" id="vip-act-btn" class="popup-btn-primary flex items-center justify-center gap-2"><span id="vip-act-txt">ACTIVATE VIP</span><div id="vip-act-ldr" class="loader hidden"></div></button>`
-            : `<button class="popup-btn-primary opacity-50" disabled>Insufficient Balance</button>
-               <button onclick="closePopupGeneric();switchTab('wallet');showDepositModal();" class="popup-btn-primary mt-2" style="background:#16a34a;">Go Deposit</button>`
-        }`);
-}
-
-async function activateVipNow(){
-    if(isProcessing)return;isProcessing=true;
-    document.getElementById('vip-act-btn').disabled=true;
-    document.getElementById('vip-act-txt').classList.add('hidden');
-    document.getElementById('vip-act-ldr').classList.remove('hidden');
-    await new Promise(r=>setTimeout(r,3000));
-    try{
-        // ✅ VIP EXPIRES EXACTLY AFTER 30 DAYS
-        const vipExpiry=Date.now()+(30*24*60*60*1000);
-        await db.collection('users').doc(currentUser.uid).update({
-            balance:firebase.firestore.FieldValue.increment(-VIP_PRICE),
-            is_vip:true,
-            vip_expiry:vipExpiry
-        });
-        isProcessing=false;
-        closePopupGeneric();
-        showVipCelebration();
-    }catch(e){
-        isProcessing=false;
-        document.getElementById('vip-act-btn').disabled=false;
-        document.getElementById('vip-act-txt').classList.remove('hidden');
-        document.getElementById('vip-act-ldr').classList.add('hidden');
-        toast('Error: '+e.message);
-    }
-}
-
-// ─── VIP CELEBRATION SCREEN ──────────────────────────────────
-function showVipCelebration(){
-    const benefits=[
-        ['sparkles','Ad-Free Experience','All ads removed instantly'],
-        ['target','16 Trading Pairs','Premium pairs now unlocked'],
-        ['trending-up','95–98% Accuracy','Signal accuracy upgraded'],
-        ['shield-check','2 Recovery Sessions','Now available for you'],
-        ['message-circle','WhatsApp Support','Direct line opened'],
-        ['dollar-sign','$2.00 Referral Reward','Reward doubled'],
-        ['zap','Fast Withdrawals','Priority processing active']
-    ];
-    const colors=['#0ea5e9','#38bdf8','#fbbf24','#fb923c','#f472b6','#a78bfa','#34d399','#60a5fa','#fcd34d'];
-    let confettiHtml='';
-    for(let i=0;i<22;i++){
-        const l=Math.random()*90+3;
-        const delay=(Math.random()*1.4).toFixed(2);
-        const sz=Math.random()*7+5;
-        const isRound=Math.random()>0.4;
-        confettiHtml+=`<div class="confetti-piece" style="left:${l}%;top:${-sz}px;width:${sz}px;height:${isRound?sz:sz*0.6}px;background:${colors[i%colors.length]};animation-delay:${delay}s;border-radius:${isRound?'50%':'3px'};"></div>`;
-    }
-
-    const overlay=document.createElement('div');
-    overlay.className='vip-cel-overlay';
-    overlay.id='vip-celebrate';
-    overlay.innerHTML=`
-        <div class="vip-cel-box">
-            ${confettiHtml}
-            
-            <div class="vip-glow-ring">
-                <div class="vip-glow-inner">
-                    <i data-lucide="crown" class="w-11 h-11 text-yellow-400"></i>
-                </div>
-            </div>
-            <h2 class="text-2xl font-black text-white mb-1" style="position:relative;z-index:1;">VIP UNLOCKED!</h2>
-            <p class="text-sky-300 text-sm font-bold mb-4" style="position:relative;z-index:1;">Welcome to the Elite</p>
-            
-            <div style="position:relative;z-index:1;">
-                ${benefits.map((b,i)=>`
-                    <div class="cel-benefit" style="animation-delay:${0.2+i*0.12}s;">
-                        <div class="cel-ben-icon"><i data-lucide="${b[0]}" class="w-4 h-4 text-sky-400"></i></div>
-                        <div class="cel-ben-text"><p class="cel-title">${b[1]}</p><p class="cel-sub">${b[2]}</p></div>
-                    </div>`).join('')}
-            </div>
-            
-            <button onclick="closeVipCelebration()" class="w-full mt-5 py-3.5 rounded-2xl font-bold text-white uppercase text-sm" style="position:relative;z-index:1;background:linear-gradient(135deg,#0ea5e9,#38bdf8);box-shadow:0 6px 22px rgba(14,165,233,0.4);">Continue</button>
-        </div>`;
-    document.body.appendChild(overlay);
-    lucide.createIcons();
-}
-
-function closeVipCelebration(){
-    const el=document.getElementById('vip-celebrate');
-    if(el)el.remove();
-    updateVIPUI();updateSidebarInfo();renderBotCards();
-    toast('🎉 VIP is Active!');
-}
-
-// ─── DEPOSIT MODAL ───────────────────────────────────────────
-let selectedMethod='binance';
-function showDepositModal(){
-    document.getElementById('modal-overlay').classList.remove('hidden');
-    document.body.classList.add('modal-open');
-    document.getElementById('modal-body').innerHTML=`
-        <h2 class="text-xl font-black mb-3 outfit sky-text uppercase">Deposit Funds</h2>
-        <p class="text-[9px] text-slate-400 font-bold uppercase mb-3 text-center">Min: $10 | Max: $10,000</p>
-        <input type="number" id="dep-amount" placeholder="Amount ($)" min="10" max="10000" class="auth-input text-center mb-3">
-        <p class="text-[9px] text-slate-500 font-bold uppercase mb-2 text-center">Select Method</p>
-        <div class="flex gap-3 mb-3">
-            <div onclick="selectDepositMethod('binance')" id="pill-binance" class="method-pill active flex-1">💛 Binance</div>
-            <div onclick="selectDepositMethod('trc20')" id="pill-trc20" class="method-pill flex-1">💚 USDT TRC20</div>
-        </div>
-        <div id="dep-binance-info">
-            <p class="text-[9px] text-slate-400 font-bold uppercase mb-1 text-center">Binance Pay ID</p>
-            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 sky-text font-bold text-center text-sm mb-2 select-all">${WALLETS.binance}</div>
-            <img src="binance-qr.jpg" alt="Binance QR" class="w-40 h-40 mx-auto rounded-xl border-2 border-slate-200">
-        </div>
-        <div id="dep-trc20-info" class="hidden">
-            <p class="text-[9px] text-slate-400 font-bold uppercase mb-1 text-center">USDT TRC20 Address</p>
-            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 sky-text font-bold text-center text-[10px] mb-2 select-all break-all">${WALLETS.trc20}</div>
-            <img src="usdt-qr.jpg" alt="USDT QR" class="w-40 h-40 mx-auto rounded-xl border-2 border-slate-200">
-        </div>
-        <div class="bg-sky-50 border-l-4 border-sky-500 p-3 rounded-lg mb-3">
-            <p class="text-xs font-bold text-sky-700 mb-2">📚 HOW TO DEPOSIT:</p>
-            <ol class="text-xs text-sky-600 space-y-1 list-decimal list-inside">
-                <li>Send exact amount to wallet address shown</li>
-                <li>Copy transaction hash (TXID) from your wallet</li>
-                <li>Paste TXID here and submit for instant verification</li>
-            </ol>
-        </div>
-        <input type="text" id="dep-txid" placeholder="Transaction Hash / TXID" class="auth-input text-center text-xs mt-3 mb-3" style="color:var(--primary);">
-        <button onclick="submitDeposit()" id="dep-btn" class="w-full btn-supreme py-4 text-[11px] uppercase flex items-center justify-center gap-2">
-            <span id="dep-btn-txt">Submit Deposit</span><div id="dep-btn-ldr" class="loader hidden"></div></button>`;
-    lucide.createIcons();
-}
-
-function selectDepositMethod(m){
-    selectedMethod=m;
-    document.getElementById('pill-binance').className='method-pill flex-1'+(m==='binance'?' active':'');
-    document.getElementById('pill-trc20').className='method-pill flex-1'+(m==='trc20'?' active':'');
-    document.getElementById('dep-binance-info').classList.toggle('hidden',m!=='binance');
-    document.getElementById('dep-trc20-info').classList.toggle('hidden',m!=='trc20');
-}
-
-async function submitDeposit(){
-    if(isProcessing)return;
-    const amount=parseFloat(document.getElementById('dep-amount').value);
-    const txid=document.getElementById('dep-txid').value.trim();
-    if(!amount||amount<10)return toast('Min deposit $10');
-    if(amount>10000)return toast('Max deposit $10,000');
-    if(!txid||txid.length<6)return toast('Enter valid TXID');
-    isProcessing=true;setBtn('dep-btn','dep-btn-txt','dep-btn-ldr',false);
-    try{
-        await db.collection('transactions').add({
-            user_id:currentUser.uid,
-            user_email:currentUser.email,
-            transaction_type:'DEPOSIT',
-            amount,
-            status:'pending',
-            txid,
-            payment_method:selectedMethod,
-            created_at:firebase.firestore.FieldValue.serverTimestamp()
-        });
-        isProcessing=false;closeModal();toast('Deposit submitted! Awaiting approval.');
-    }catch(e){isProcessing=false;setBtn('dep-btn','dep-btn-txt','dep-btn-ldr',true);toast('Error: '+e.message);}
-}
-
-// ─── WITHDRAW MODAL ──────────────────────────────────────────
-let selectedWithdrawMethod='trc20';
-function showWithdrawModal(){
-    // ✅ WITHDRAWAL SECURITY: Check if user has deposited at least $20
-    const totalDeposited = userData && userData.total_deposited ? parseFloat(userData.total_deposited) : 0;
-    if(totalDeposited < 20){
-        showPopupGeneric(`
-            <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
-            <div class="flex flex-col items-center text-center py-2">
-                <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
-                    <i data-lucide="lock" class="w-8 h-8 text-red-500"></i>
-                </div>
-                <h3 class="text-xl font-black outfit text-red-600 mb-2">Withdrawal Locked!</h3>
-                <p class="text-sm text-slate-600 font-bold mb-4">You must deposit a minimum of <strong>$20</strong> first to unlock withdrawals.</p>
-                <div class="bg-red-50 border border-red-200 rounded-xl p-3 w-full mb-4">
-                    <p class="text-xs text-red-700 font-bold">💡 Deposit at least $20 to your account to enable withdrawals.</p>
-                    <p class="text-xs text-red-600 mt-1">Total Deposited: <strong>$${totalDeposited.toFixed(2)}</strong> / $20.00 required</p>
-                </div>
-                <div class="flex gap-3 w-full">
-                    <button onclick="closePopupGeneric()" class="popup-btn-secondary flex-1">Close</button>
-                    <button onclick="closePopupGeneric();showDepositModal()" class="popup-btn-primary flex-1">Deposit Now</button>
-                </div>
-            </div>`);
-        lucide.createIcons();
-        return;
-    }
-    if(state.balance<10)return toast('Min withdrawal $10');
-    document.getElementById('modal-overlay').classList.remove('hidden');
-    document.body.classList.add('modal-open');
-    document.getElementById('modal-body').innerHTML=`
-        <h2 class="text-xl font-black mb-3 outfit sky-text uppercase">Withdraw Funds</h2>
-        <div class="bg-slate-50 p-4 rounded-xl mb-3 text-center border border-slate-100">
-            <p class="text-[9px] font-bold text-slate-400 uppercase">Available</p>
-            <p class="text-2xl font-black">$${state.balance.toFixed(2)}</p>
-            <p class="text-[9px] text-slate-400">Min: $10 | Max: $${state.balance.toFixed(2)}</p>
-        </div>
-        <div class="bg-orange-50 border-l-4 border-orange-500 p-3 rounded-lg mb-3">
-            <p class="text-xs font-bold text-orange-700 mb-2">📚 HOW TO WITHDRAW:</p>
-            <ol class="text-xs text-orange-600 space-y-1 list-decimal list-inside">
-                <li>Enter withdrawal amount (min $50)</li>
-                <li>Provide your wallet address or Binance Pay ID</li>
-                <li>Submit request - processing takes 15min to 3 hours</li>
-            </ol>
-        </div>
-        <input type="number" id="wd-amount" placeholder="Amount ($)" min="10" max="${state.balance}" class="auth-input text-center mb-3">
-        
-        <p class="text-[9px] text-slate-500 font-bold uppercase mb-2 text-center">Select Withdrawal Method</p>
-        <div class="flex gap-3 mb-3">
-            <div onclick="selectWithdrawMethod('binance')" id="wd-pill-binance" class="method-pill flex-1">💛 Binance Pay</div>
-            <div onclick="selectWithdrawMethod('trc20')" id="wd-pill-trc20" class="method-pill active flex-1">💚 USDT TRC20</div>
-        </div>
-        
-        <div id="wd-binance-info" class="hidden">
-            <input type="text" id="wd-binance-id" placeholder="Your Binance Pay ID" class="auth-input text-center text-xs mb-3" style="color:var(--primary);">
-        </div>
-        <div id="wd-trc20-info">
-            <input type="text" id="wd-address" placeholder="Your USDT TRC20 Address" class="auth-input text-center text-xs mb-3" style="color:var(--primary);">
-        </div>
-        
-        <button onclick="submitWithdraw()" id="wd-btn" class="w-full btn-supreme py-4 text-[11px] uppercase flex items-center justify-center gap-2">
-            <span id="wd-btn-txt">Submit Withdrawal</span><div id="wd-btn-ldr" class="loader hidden"></div></button>`;
-    lucide.createIcons();
-}
-
-function selectWithdrawMethod(m){
-    selectedWithdrawMethod=m;
-    document.getElementById('wd-pill-binance').className='method-pill flex-1'+(m==='binance'?' active':'');
-    document.getElementById('wd-pill-trc20').className='method-pill flex-1'+(m==='trc20'?' active':'');
-    document.getElementById('wd-binance-info').classList.toggle('hidden',m!=='binance');
-    document.getElementById('wd-trc20-info').classList.toggle('hidden',m!=='trc20');
-}
-
-async function submitWithdraw(){
-    if(isProcessing)return;
-    const amount=parseFloat(document.getElementById('wd-amount').value);
-    let address='';
-    
-    if(selectedWithdrawMethod==='binance'){
-        address=document.getElementById('wd-binance-id').value.trim();
-        if(!address||address.length<5)return toast('Enter valid Binance Pay ID');
-    } else {
-        address=document.getElementById('wd-address').value.trim();
-        if(!address||address.length<10)return toast('Enter valid TRC20 address');
-    }
-    
-    if(!amount||amount<10)return toast('Min withdrawal $10');
-    if(amount>state.balance)return toast('Insufficient balance');
-    
-    isProcessing=true;setBtn('wd-btn','wd-btn-txt','wd-btn-ldr',false);
-    try{
-        // ✅ CUT AMOUNT IMMEDIATELY FROM BALANCE
-        await db.collection('users').doc(currentUser.uid).update({
-            balance:firebase.firestore.FieldValue.increment(-amount)
-        });
-        
-        await db.collection('transactions').add({
-            user_id:currentUser.uid,
-            user_email:currentUser.email,
-            transaction_type:'WITHDRAWAL',
-            amount,
-            status:'pending',
-            wallet_address:address,
-            payment_method:selectedWithdrawMethod,
-            created_at:firebase.firestore.FieldValue.serverTimestamp()
-        });
-        isProcessing=false;closeModal();toast('Withdrawal submitted!');
-    }catch(e){isProcessing=false;setBtn('wd-btn','wd-btn-txt','wd-btn-ldr',true);toast('Error: '+e.message);}
-}
-
-// ─── TRANSACTIONS ────────────────────────────────────────────
-function switchTxTab(f){currentTxFilter=f;['all','deposit','withdraw','plan','referral'].forEach(t=>{document.getElementById('txtab-'+t).className='tx-tab'+(t===f?' active':'');});renderTransactions();}
-
-function renderTransactions(){
-    const list=document.getElementById('tx-list');if(!list)return;
-    let txs=state.transactions;
-    if(currentTxFilter==='deposit')txs=txs.filter(t=>t.transaction_type==='DEPOSIT');
-    if(currentTxFilter==='withdraw')txs=txs.filter(t=>t.transaction_type==='WITHDRAWAL');
-    if(currentTxFilter==='plan')txs=txs.filter(t=>t.transaction_type==='PLAN'||t.transaction_type==='PLAN_RETURN');
-    if(currentTxFilter==='referral')txs=txs.filter(t=>['REFERRAL','DEPOSIT_COMMISSION','AD_CLAIM','TRANSFER','BOOSTER','PROMO_CODE'].includes(t.transaction_type));
-    if(txs.length===0){list.innerHTML='<p class="text-center text-slate-400 text-xs py-6">No transactions</p>';return;}
-    list.innerHTML=txs.map(t=>{
-        const badge=t.status==='approved'||t.status==='success'?'badge-success':t.status==='rejected'?'badge-rejected':'badge-pending';
-        const isIn=['DEPOSIT','REFERRAL','PLAN_RETURN','AD_CLAIM','DEPOSIT_COMMISSION','TRANSFER','PROMO_CODE'].includes(t.transaction_type);
-        const icon=isIn?'arrow-down':'arrow-up';
-        const color=isIn?'text-green-600':'text-red-600';
-        const date=t.created_at?new Date(t.created_at.toDate()).toLocaleDateString():'—';
-        const method=t.payment_method?' | '+t.payment_method.toUpperCase():'';
-        const typeLabel=t.transaction_type.replace(/_/g,' ');
-        let extra='';
-        if(t.status==='rejected'&&t.rejection_reason){
-            extra=`<button onclick="showRejectionReason(\`${t.rejection_reason.replace(/`/g,'\\`')}\`,\'${t.transaction_type}\',\'${t.id}\',${t.amount})" class="text-[9px] text-red-600 font-bold underline mt-1">View Reason</button>`;
-        }
-        return`<div class="bg-white p-3 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm">
-            <div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center"><i data-lucide="${icon}" class="w-4 h-4 ${color}"></i></div>
-            <div class="text-left"><p class="text-black font-bold uppercase text-[10px] outfit">${typeLabel}${method}</p><p class="text-[9px] text-slate-400 font-bold">${date}</p>${extra}</div></div>
-            <div class="text-right"><p class="text-sm font-black ${color}">$${t.amount.toFixed(2)}</p><span class="${badge}">${(t.status||'pending').toUpperCase()}</span></div></div>`;
-    }).join('');
-    lucide.createIcons();
-}
-
-function showRejectionReason(reason,type,txId,amount){
-    showPopupGeneric(`
-        <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
-        <h3 class="text-lg font-black outfit mb-3 text-center text-red-600">❌ Rejection Reason</h3>
-        <div class="bg-red-50 p-4 rounded-xl border border-red-200 mb-3"><p class="text-sm text-red-700 font-bold">${reason}</p></div>
-        <button onclick="closePopupGeneric()" class="popup-btn-secondary">Close</button>`);
-}
-
-// ─── MILESTONES ──────────────────────────────────────────────
-function renderMilestones(){
-    const el=document.getElementById('milestone-list');if(!el)return;
-    el.innerHTML=MILESTONES.map(m=>{
-        const claimed=claimedMilestones.includes(m.count);
-        const reachable=state.referrals>=m.count;
-        return`<div class="milestone-row ${claimed?'milestone-claimed':''}">
-            <div><p class="text-[11px] font-bold text-slate-700">${m.count} Referrals</p><p class="text-[9px] text-slate-400">+$${m.bonus}</p></div>
-            <div class="flex items-center gap-2">${claimed?`<span class="text-[9px] font-bold text-green-600">✓ Claimed</span>`:reachable?`<button onclick="claimMilestone(${m.count},${m.bonus})" class="claim-btn">Claim</button>`:`<span class="text-[9px] font-bold text-slate-400">${state.referrals}/${m.count}</span>`}</div></div>`;
-    }).join('');
-}
-
-// ─── LEADERBOARD ─────────────────────────────────────────────
-function renderLeaderboard(){
-    const el=document.getElementById('leaderboard-list');if(!el)return;
-    if(!state.leaderboard.length){el.innerHTML='<p class="text-center text-slate-400 text-xs py-3">No data</p>';return;}
-    el.innerHTML=state.leaderboard.map(item=>{
-        const rc=item.rank===1?'rank-1':item.rank===2?'rank-2':item.rank===3?'rank-3':'rank-other';
-        return`<div class="flex items-center gap-3 p-2"><div class="leaderboard-rank ${rc}">#${item.rank}</div><div class="flex-1"><p class="text-[11px] font-bold text-black">${item.name||item.ref_code}</p><p class="text-[9px] text-slate-400">${item.total_referrals} referrals</p></div></div>`;
-    }).join('');
-}
-
-// ─── AD GATE & SIGNALS ───────────────────────────────────────
-function launchAdGate(i,vip){
-    state.activePair=i;
-    if(vip&&!state.isVIP)return handleVipClick();
-    if(state.isVIP){showAnalyzingState(i);setTimeout(()=>revealSignal(i),1700);return;}
-    const adGate=document.getElementById('ad-gate-master');
-    const adFrame=document.getElementById('ad-frame');
-    const tmr=document.getElementById('ad-timer-val');
-    adGate.style.display='flex';
-    adFrame.src=adsCollection[state.adIdx];
-    state.adIdx=(state.adIdx+1)%adsCollection.length;
-    const termBtn=document.querySelector('.ad-terminate-btn');
-    if(termBtn)termBtn.style.display='none';
-    let t=15;
-    const c=setInterval(()=>{t--;tmr.innerText=t+'s REMAINING';if(t<=0){clearInterval(c);tmr.innerText='STREAM COMPLETE';if(termBtn)termBtn.style.display='flex';}},1000);
-}
-
-function terminateAdStream(){document.getElementById('ad-gate-master').style.display='none';document.getElementById('ad-frame').src='';showAnalyzingState(state.activePair);setTimeout(()=>revealSignal(state.activePair),3000);}
-
-function showAnalyzingState(i){
-    document.getElementById('sig-box-'+i).classList.add('hidden');
-    const card=document.getElementById('card-'+i);card.classList.remove('box-call','box-put');
-    const s=document.getElementById('status-'+i);s.classList.remove('hidden');s.innerText="ANALYZING...";
-    s.className="text-[9px] sky-text font-black uppercase mt-0.5 tracking-widest animate-pulse";
-}
-
-function revealSignal(i){
-    const sig=_SIG.generate(i);
-    const baseAcc=state.isVIP?94:84;
-    const accuracy=(baseAcc+(sig.accRaw/100)).toFixed(1);
-    document.getElementById('status-'+i).classList.add('hidden');
-    document.getElementById('sig-box-'+i).classList.remove('hidden');
-    const card=document.getElementById('card-'+i);card.classList.remove('box-call','box-put');
-    const txt=document.getElementById('sig-txt-'+i);
-    if(sig.isCall){card.classList.add('box-call');txt.innerText="CALL ↑";txt.className="text-xl font-black outfit text-green-600 animate-pulse tracking-tighter";}
-    else{card.classList.add('box-put');txt.innerText="PUT ↓";txt.className="text-xl font-black outfit text-red-600 animate-pulse tracking-tighter";}
-    document.getElementById('acc-'+i).innerText=accuracy;
-}
-
-// ─── UI UPDATES ──────────────────────────────────────────────
-function updateBalanceUI(){
-    const b='$'+state.balance.toFixed(2);
-    ['header-bal','sidebar-balance','wallet-balance'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerText=b;});
-    // Earn wallet displays
-    const ewb='$'+state.earnWallet.toFixed(2);
-    ['earn-wallet-balance','earn-wallet-invite','sidebar-earn'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerText=ewb;});
-    const rc=document.getElementById('ref-count');if(rc)rc.innerText=state.referrals;
-    const sr=document.getElementById('sidebar-refs');if(sr)sr.innerText=state.referrals;
-    const rate=state.isVIP?2.00:1.00;
-    const re=document.getElementById('ref-earnings');if(re)re.innerText='$'+(state.referrals*rate).toFixed(2);
-    const mc=document.getElementById('my-ref-code');if(mc)mc.innerText=state.refCode||'—';
-    // Update ad claim badge
-    updateAdClaimUI();
-}
-
-// ─── AUTO MATURE PLANS (24hr check on load) ──────────────────
-async function autoMaturePlans(){
-    if(!currentUser)return;
-    try{
-        const snap=await db.collection('plans').where('user_id','==',currentUser.uid).where('status','==','active').get();
-        const now=Date.now();
-        const batch=db.batch();
-        let maturedCount=0,totalMatured=0;
-        snap.forEach(doc=>{
-            const p=doc.data();
-            if(now>=p.withdraw_available_at){
-                // Auto-credit main balance and complete plan
-                batch.update(db.collection('users').doc(currentUser.uid),{balance:firebase.firestore.FieldValue.increment(p.total_return)});
-                batch.update(db.collection('plans').doc(doc.id),{status:'completed',auto_matured:true,matured_at:now});
-                maturedCount++;totalMatured+=p.total_return;
-            }
-        });
-        if(maturedCount>0){
-            await batch.commit();
-            await loadPlans();
-            toast('💰 $'+totalMatured.toFixed(2)+' auto-credited from '+maturedCount+' plan(s)!');
-        }
-    }catch(e){console.error('Auto mature error:',e);}
-}
-
-// ─── TRANSFER EARN WALLET TO MAIN ────────────────────────────
-function showTransferToMain(){
-    if(state.earnWallet<120){
-        showPopupGeneric(`
-            <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
-            <div class="flex flex-col items-center text-center py-2">
-                <div class="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center mb-4">
-                    <i data-lucide="alert-circle" class="w-8 h-8 text-yellow-500"></i>
-                </div>
-                <h3 class="text-xl font-black outfit text-yellow-600 mb-2">Minimum Not Met</h3>
-                <p class="text-sm text-slate-600 mb-3">You need at least <strong>$120.00</strong> in your Earn Wallet to transfer.</p>
-                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 w-full mb-3">
-                    <p class="text-xs text-yellow-700 font-bold">Current Earn Wallet: <span class="text-yellow-800 text-sm">$${state.earnWallet.toFixed(2)}</span></p>
-                    <p class="text-xs text-yellow-600 mt-1">Need $${(120-state.earnWallet).toFixed(2)} more</p>
-                </div>
-                <button onclick="closePopupGeneric()" class="popup-btn-secondary">Got It</button>
-            </div>`);
-        lucide.createIcons();
-        return;
-    }
-    showPopupGeneric(`
-        <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
-        <h3 class="text-xl font-black outfit mb-3 text-center">💸 Transfer to Main</h3>
-        <div class="space-y-3 mb-4">
-            <div class="p-3 bg-yellow-50 rounded-xl border border-yellow-200"><p class="text-xs text-yellow-600 font-bold uppercase">Earn Wallet</p><p class="text-2xl font-black text-yellow-600">$${state.earnWallet.toFixed(2)}</p></div>
-            <div class="flex items-center justify-center"><i data-lucide="arrow-down" class="w-6 h-6 text-slate-400"></i></div>
-            <div class="p-3 bg-sky-50 rounded-xl border border-sky-200"><p class="text-xs text-sky-600 font-bold uppercase">Main Balance (After)</p><p class="text-2xl font-black sky-text">$${(state.balance+state.earnWallet).toFixed(2)}</p></div>
-        </div>
-        <p class="text-xs text-slate-500 text-center mb-4">Full Earn Wallet balance will be transferred to your Main Balance.</p>
-        <div class="flex gap-3"><button onclick="closePopupGeneric()" class="popup-btn-secondary flex-1">Cancel</button><button onclick="executeTransferToMain()" class="popup-btn-primary flex-1">Transfer All</button></div>`);
-    lucide.createIcons();
-}
-
-async function executeTransferToMain(){
-    if(isProcessing)return;isProcessing=true;
-    closePopupGeneric();
-    try{
-        const amount=state.earnWallet;
-        await db.collection('users').doc(currentUser.uid).update({
-            balance:firebase.firestore.FieldValue.increment(amount),
-            earn_wallet:0
-        });
-        await db.collection('transactions').add({
-            user_id:currentUser.uid,
-            transaction_type:'TRANSFER',
-            amount:amount,
-            status:'approved',
-            notes:'Earn Wallet transferred to Main Balance',
-            created_at:firebase.firestore.FieldValue.serverTimestamp()
-        });
-        isProcessing=false;toast('$'+amount.toFixed(2)+' transferred to Main Balance!');
-    }catch(e){isProcessing=false;toast('Error: '+e.message);}
-}
-
-// ─── DAILY AD CLAIM ──────────────────────────────────────────
-function getTodayDateStr(){return new Date().toISOString().slice(0,10);}
-
-function checkDailyAdClaimReset(){
-    const today=getTodayDateStr();
-    if(state.lastAdClaimDate!==today){
-        state.adClaimsToday=0;
-        // Will be synced from DB on next relevant action
-    }
-}
-
-function updateAdClaimUI(){
-    const badge=document.getElementById('ad-claim-badge');
-    const btn=document.getElementById('ad-claim-btn');
-    const btnTxt=document.getElementById('ad-claim-btn-txt');
-    const boosterBtn=document.getElementById('booster-btn');
-    const boosterTxt=document.getElementById('booster-status-txt');
-    if(!badge)return;
-    const today=getTodayDateStr();
-    const claims=state.lastAdClaimDate===today?state.adClaimsToday:0;
-    const maxClaims=state.boosterActive&&state.boosterExpiry>Date.now()?3:1;
-    badge.innerText=claims+'/'+maxClaims+' Today';
-    const canClaim=claims<maxClaims;
-    if(btn){
-        btn.disabled=!canClaim;
-        btn.style.opacity=canClaim?'1':'0.5';
-    }
-    if(btnTxt)btnTxt.innerText=canClaim?'Claim $2 Now':'Claimed Today';
-    if(boosterBtn&&boosterTxt){
-        if(state.boosterActive&&state.boosterExpiry>Date.now()){
-            const d=Math.ceil((state.boosterExpiry-Date.now())/(1000*60*60*24));
-            boosterTxt.innerText='Active: '+d+'d left (3 claims/day)';
-            boosterBtn.innerText='Active';
-            boosterBtn.disabled=true;
-            boosterBtn.style.background='#22C55E';
-        } else {
-            boosterTxt.innerText='Unlock 3 claims/day ($6 total)';
-            boosterBtn.innerText='$30 / 30d';
-            boosterBtn.disabled=false;
-            boosterBtn.style.background='';
-        }
-    }
-}
-
-async function handleAdClaim(){
-    if(isProcessing)return;
-    const today=getTodayDateStr();
-    const claims=state.lastAdClaimDate===today?state.adClaimsToday:0;
-    const maxClaims=state.boosterActive&&state.boosterExpiry>Date.now()?3:1;
-    if(claims>=maxClaims)return toast('Daily claim limit reached!');
-    
-    // Launch a 5-min countdown ad
-    let secondsLeft=300; // 5 minutes
-    showPopupGeneric(`
-        <h3 class="text-xl font-black outfit mb-3 text-center sky-text">📺 Watch Ad</h3>
-        <div class="text-center py-4">
-            <div class="w-24 h-24 rounded-full bg-sky-50 border-4 border-sky-500 flex items-center justify-center mx-auto mb-4">
-                <span id="ad-countdown" class="text-2xl font-black sky-text">5:00</span>
-            </div>
-            <p class="text-sm font-bold text-slate-700 mb-1">Ad is playing...</p>
-            <p class="text-xs text-slate-400">Stay on this screen to earn <strong class="text-green-600">$2.00</strong></p>
-            <div class="w-full bg-slate-100 rounded-full h-2 mt-4">
-                <div id="ad-progress-bar" class="bg-sky-500 h-2 rounded-full transition-all" style="width:0%"></div>
-            </div>
-        </div>
-        <button id="ad-close-btn" disabled onclick="closePopupGeneric()" class="popup-btn-secondary mt-2 opacity-40">Please wait...</button>`);
-    
-    isProcessing=true;
-    const interval=setInterval(()=>{
-        secondsLeft--;
-        const pct=(1-(secondsLeft/300))*100;
-        const m=Math.floor(secondsLeft/60);
-        const s=secondsLeft%60;
-        const cd=document.getElementById('ad-countdown');
-        const pb=document.getElementById('ad-progress-bar');
-        const closeBtn=document.getElementById('ad-close-btn');
-        if(cd)cd.innerText=m+':'+(s<10?'0':'')+s;
-        if(pb)pb.style.width=pct+'%';
-        if(secondsLeft<=0){
-            clearInterval(interval);
-            creditAdClaim();
-        }
-    },1000);
-    
-    // Store interval for cleanup
-    window._adClaimInterval=interval;
-}
-
-async function creditAdClaim(){
-    const today=getTodayDateStr();
-    const newClaims=(state.lastAdClaimDate===today?state.adClaimsToday:0)+1;
-    try{
-        await db.collection('users').doc(currentUser.uid).update({
-            earn_wallet:firebase.firestore.FieldValue.increment(2),
-            ad_claims_today:newClaims,
-            last_ad_claim_date:today
-        });
-        await db.collection('transactions').add({
-            user_id:currentUser.uid,
-            transaction_type:'AD_CLAIM',
-            amount:2,
-            status:'approved',
-            notes:'Daily Ad Claim reward',
-            created_at:firebase.firestore.FieldValue.serverTimestamp()
-        });
-        isProcessing=false;
-        closePopupGeneric();
-        toast('🎉 $2.00 added to Earn Wallet!');
-    }catch(e){
-        isProcessing=false;
-        closePopupGeneric();
-        toast('Error: '+e.message);
-    }
-}
-
-// ─── CLAIM BOOSTER ────────────────────────────────────────────
-function handleBuyBooster(){
-    if(state.boosterActive&&state.boosterExpiry>Date.now())return toast('Booster already active!');
-    if(state.balance<30)return toast('Need $30 in Main Balance for booster');
-    showPopupGeneric(`
-        <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
-        <h3 class="text-xl font-black outfit mb-3 text-center">🚀 Claim Booster</h3>
-        <div class="space-y-2 mb-4">
-            <div class="p-3 bg-amber-50 rounded-xl border border-amber-200">
-                <p class="text-xs text-amber-700 font-bold uppercase mb-1">What You Get</p>
-                <ul class="text-xs text-amber-800 space-y-1">
-                    <li>✅ 3 ad claims per day (instead of 1)</li>
-                    <li>✅ Earn $6/day total from ads</li>
-                    <li>✅ Valid for 30 days</li>
-                    <li>✅ Auto-reverts after 30 days</li>
-                </ul>
-            </div>
-            <div class="flex justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
-                <span class="text-xs font-bold text-slate-600 uppercase">Cost</span>
-                <span class="text-lg font-black text-red-600">-$30.00</span>
-            </div>
-            <div class="flex justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
-                <span class="text-xs font-bold text-slate-600 uppercase">Your Balance</span>
-                <span class="text-lg font-black">$${state.balance.toFixed(2)}</span>
-            </div>
-        </div>
-        <div class="flex gap-3"><button onclick="closePopupGeneric()" class="popup-btn-secondary flex-1">Cancel</button><button onclick="activateBooster()" class="popup-btn-primary flex-1" style="background:#f59e0b;">Buy Booster</button></div>`);
-    lucide.createIcons();
-}
-
-async function activateBooster(){
-    if(isProcessing)return;isProcessing=true;
-    closePopupGeneric();
-    try{
-        const boosterExpiry=Date.now()+(30*24*60*60*1000);
-        await db.collection('users').doc(currentUser.uid).update({
-            balance:firebase.firestore.FieldValue.increment(-30),
-            booster_active:true,
-            booster_expiry:boosterExpiry
-        });
-        await db.collection('transactions').add({
-            user_id:currentUser.uid,
-            transaction_type:'BOOSTER',
-            amount:30,
-            status:'approved',
-            notes:'Claim Booster activated (30 days)',
-            created_at:firebase.firestore.FieldValue.serverTimestamp()
-        });
-        isProcessing=false;toast('🚀 Booster Active! 3 claims/day for 30 days!');
-    }catch(e){isProcessing=false;toast('Error: '+e.message);}
-}
-
-async function checkBoosterExpiry(){
-    if(!currentUser||!userData)return;
-    if(state.boosterActive&&state.boosterExpiry&&Date.now()>=state.boosterExpiry){
-        try{
-            await db.collection('users').doc(currentUser.uid).update({booster_active:false,booster_expiry:0});
-            state.boosterActive=false;state.boosterExpiry=0;
-            toast('⚠️ Ad Claim Booster expired');
-            updateAdClaimUI();
-        }catch(e){console.error('Booster expiry error:',e);}
-    }
-}
-
-// ─── 3% DEPOSIT COMMISSION FOR UPLINE ────────────────────────
-// Called after deposit is approved (admin flow) — here we expose a client trigger
-// that credits 3% of deposit amount to referrer's earn wallet
-async function triggerDepositCommission(userId, depositAmount){
-    try{
-        const userDoc=await db.collection('users').doc(userId).get();
-        if(!userDoc.exists)return;
-        const udata=userDoc.data();
-        if(!udata.referred_by)return;
-        // Find referrer by ref code
-        const snap=await db.collection('users').where('ref_code','==',udata.referred_by).limit(1).get();
-        if(snap.empty)return;
-        const refDoc=snap.docs[0];
-        const commission=parseFloat((depositAmount*0.03).toFixed(2));
-        await db.collection('users').doc(refDoc.id).update({
-            earn_wallet:firebase.firestore.FieldValue.increment(commission)
-        });
-        await db.collection('transactions').add({
-            user_id:refDoc.id,
-            transaction_type:'DEPOSIT_COMMISSION',
-            amount:commission,
-            status:'approved',
-            notes:`3% deposit commission from referral deposit of $${depositAmount}`,
-            created_at:firebase.firestore.FieldValue.serverTimestamp()
-        });
-    }catch(e){console.error('Deposit commission error:',e);}
-}
-
-// ✅ AUTO-CHECK VIP EXPIRY - RUNS EVERY 30 SECONDS
-// ─── PROMO CODE REDEMPTION ───────────────────────────────────────
-async function redeemPromoCode(){
-    if(isProcessing)return;
-    const inp=document.getElementById('promo-input');
-    const code=(inp?inp.value.trim():'').toUpperCase();
-    if(!code||code.length<3)return toast('Enter a valid promo code');
-    isProcessing=true;
-    const btn=document.getElementById('promo-btn');
-    if(btn)btn.disabled=true;
-    try{
-        const codeDoc=await db.collection('promo_codes').doc(code).get();
-        if(!codeDoc.exists){isProcessing=false;if(btn)btn.disabled=false;return toast('Invalid promo code!');}
-        const cd=codeDoc.data();
-        if(!cd.active){isProcessing=false;if(btn)btn.disabled=false;return toast('Promo code expired!');}
-        if(cd.max_uses&&cd.uses>=cd.max_uses){isProcessing=false;if(btn)btn.disabled=false;return toast('Promo code limit reached!');}
-        const used=await db.collection('promo_redemptions').where('user_id','==',currentUser.uid).where('code','==',code).limit(1).get();
-        if(!used.empty){isProcessing=false;if(btn)btn.disabled=false;return toast('You already used this code!');}
-        const reward=cd.reward||PROMO_REWARD;
-        await db.collection('users').doc(currentUser.uid).update({earn_wallet:firebase.firestore.FieldValue.increment(reward)});
-        await db.collection('promo_redemptions').add({user_id:currentUser.uid,user_email:currentUser.email,code:code,reward:reward,redeemed_at:firebase.firestore.FieldValue.serverTimestamp()});
-        await db.collection('promo_codes').doc(code).update({uses:firebase.firestore.FieldValue.increment(1)});
-        await db.collection('transactions').add({user_id:currentUser.uid,transaction_type:'PROMO_CODE',amount:reward,status:'approved',notes:'Promo code: '+code,created_at:firebase.firestore.FieldValue.serverTimestamp()});
-        if(inp)inp.value='';
-        isProcessing=false;if(btn)btn.disabled=false;
-        toast('Promo redeemed! $'+reward.toFixed(2)+' added to Earn Wallet!');
-    }catch(e){isProcessing=false;if(btn)btn.disabled=false;toast('Error: '+e.message);}
-}
-
-async function checkVipExpiry() {
-    if (!currentUser || !userData) return;
-    
-    if (state.isVIP && state.vipExpiry) {
-        if (Date.now() >= state.vipExpiry) {
-            try {
-                // ✅ AUTO REVERT TO FREE USER
-                await db.collection('users').doc(currentUser.uid).update({
-                    is_vip: false,
-                    vip_expiry: 0
-                });
-                state.isVIP = false;
-                state.vipExpiry = 0;
-                toast('⚠️ VIP membership expired');
-                updateVIPUI();
-                renderBotCards();
-            } catch(e) {
-                console.error('VIP expiry error:', e);
-            }
-        }
-    }
-}
-
-function updateVIPUI(){
-    const btn=document.getElementById('vip-main-btn');
-    const sideVip=document.getElementById('sidebar-vip-status');
-    const sideRec=document.getElementById('sidebar-recovery-txt');
-    
-    if(state.isVIP&&state.vipExpiry>Date.now()){
-        const d=Math.ceil((state.vipExpiry-Date.now())/(1000*60*60*24));
-        if(btn){btn.innerText='VIP ('+d+'D)';btn.style.background='#22C55E';btn.style.boxShadow='0 4px 12px rgba(34,197,94,0.35)';}
-        if(sideVip){sideVip.innerText='VIP ACTIVE';sideVip.className='text-[10px] font-black text-green-600';}
-        if(sideRec){
-            const s1=state.recoverySessions[0]?'Active':'Used';
-            const s2=state.recoverySessions[1]?'Active':'Used';
-            sideRec.innerText='S1:'+s1+' S2:'+s2;
-            sideRec.className='text-[8px] font-bold text-green-600';
-        }
-        // Unlock VIP pairs
-        for(let i=8;i<16;i++){const c=document.getElementById('card-'+i);if(c){c.classList.remove('opacity-50','grayscale');document.getElementById('status-'+i).innerText='SYNC';}}
-    } else {
-        if(btn){btn.innerText='GET VIP';btn.style.background='';btn.style.boxShadow='';}
-        if(sideVip){sideVip.innerText='FREE';sideVip.className='text-[10px] font-black text-slate-400';}
-        if(sideRec){sideRec.innerText='VIP Only';sideRec.className='text-[9px] font-black text-slate-400';}
-        // Lock VIP pairs
-        for(let i=8;i<16;i++){const c=document.getElementById('card-'+i);if(c){c.classList.add('opacity-50','grayscale');document.getElementById('status-'+i).innerText='LOCKED';}}
-    }
-}
-
-function updateSidebarInfo(){
-    const nameEl=document.getElementById('sidebar-name');
-    const emailEl=document.getElementById('sidebar-email');
-    if(nameEl)nameEl.innerText=((userData.first_name||'')+' '+(userData.last_name||'')).trim()||currentUser.email;
-    if(emailEl)emailEl.innerText=currentUser.email;
-}
-
-// ─── PRIVACY POLICY ──────────────────────────────────────────
-function openPrivacyPolicy(){
-    document.getElementById('modal-overlay').classList.remove('hidden');
-    document.body.classList.add('modal-open');
-    document.getElementById('modal-body').innerHTML=`
-        <h2 class="text-lg font-black mb-4 outfit sky-text uppercase">Privacy Policy</h2>
-        <div class="h-96 overflow-y-auto pr-2 space-y-3">
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0"><i data-lucide="file-text" class="w-5 h-5 text-sky-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Educational Platform</p><p class="text-[11px] text-slate-500 mt-0.5">Silver X is an educational simulation platform. All signals are algorithmic predictions for learning purposes only, not financial advice or guaranteed outcomes.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0"><i data-lucide="shield" class="w-5 h-5 text-green-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Data Protection</p><p class="text-[11px] text-slate-500 mt-0.5">Your personal information is encrypted and securely stored on Firebase servers. We never share your data with third parties without consent.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0"><i data-lucide="alert-triangle" class="w-5 h-5 text-red-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Risk Disclosure</p><p class="text-[11px] text-slate-500 mt-0.5">Trading involves substantial risk of loss. You acknowledge full responsibility for all trading decisions and accept 100% liability for any financial losses incurred.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center flex-shrink-0"><i data-lucide="ban" class="w-5 h-5 text-orange-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">No Refund Policy</p><p class="text-[11px] text-slate-500 mt-0.5">All transactions including VIP subscriptions and plan purchases are final and non-refundable. Please review all features carefully before making any purchase.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0"><i data-lucide="user-check" class="w-5 h-5 text-purple-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Age Requirement</p><p class="text-[11px] text-slate-500 mt-0.5">Platform is restricted to users aged 18 years or older. By creating an account, you confirm you meet this age requirement in your jurisdiction.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0"><i data-lucide="globe" class="w-5 h-5 text-blue-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">International Compliance</p><p class="text-[11px] text-slate-500 mt-0.5">Platform complies with international AML (Anti-Money Laundering) standards. We reserve the right to verify identity and reject suspicious transactions.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center flex-shrink-0"><i data-lucide="copyright" class="w-5 h-5 text-yellow-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Intellectual Property</p><p class="text-[11px] text-slate-500 mt-0.5">All algorithms, code, designs, and branding are proprietary to Silver X. Unauthorized copying, distribution, or reverse engineering is strictly prohibited.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0"><i data-lucide="x-circle" class="w-5 h-5 text-red-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Account Termination</p><p class="text-[11px] text-slate-500 mt-0.5">Admin reserves the right to suspend or terminate accounts at any time for violations of terms, suspicious activity, or any other reason deemed necessary.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center flex-shrink-0"><i data-lucide="trending-up" class="w-5 h-5 text-indigo-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Accuracy Disclaimer</p><p class="text-[11px] text-slate-500 mt-0.5">Signal accuracy percentages are statistical estimates based on historical data. Past performance does not guarantee future results or profitability in live trading.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0"><i data-lucide="receipt" class="w-5 h-5 text-green-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Tax Responsibility</p><p class="text-[11px] text-slate-500 mt-0.5">You are solely responsible for reporting and paying all applicable taxes in your jurisdiction. Silver X does not provide tax advice or filing services.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0"><i data-lucide="cloud-off" class="w-5 h-5 text-gray-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Service Interruptions</p><p class="text-[11px] text-slate-500 mt-0.5">Platform is not liable for service interruptions due to maintenance, technical issues, or force majeure events beyond our reasonable control.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0"><i data-lucide="check-circle" class="w-5 h-5 text-sky-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Acceptance of Terms</p><p class="text-[11px] text-slate-500 mt-0.5">By creating an account and using this platform, you irrevocably accept all terms and policies. Continued use constitutes ongoing acceptance of any updates.</p></div>
-            </div>
-        </div>
-        <button onclick="closeModal()" class="w-full bg-black text-white py-3 rounded-2xl font-bold uppercase text-xs mt-4">I Accept</button>`;
-    lucide.createIcons();
-}
-
-// ─── ABOUT SILVER X ──────────────────────────────────────────
-function openAboutModal(){
-    document.getElementById('modal-overlay').classList.remove('hidden');
-    document.body.classList.add('modal-open');
-    document.getElementById('modal-body').innerHTML=`
-        <h2 class="text-lg font-black mb-4 outfit sky-text uppercase">About Silver X</h2>
-        <div class="space-y-3">
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0"><i data-lucide="cpu" class="w-5 h-5 text-sky-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">AI-Powered Trading Bot</p><p class="text-[11px] text-slate-500 mt-0.5">Advanced algorithmic analysis generates real-time signals across forex & crypto markets.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0"><i data-lucide="shield-check" class="w-5 h-5 text-green-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">100% Secure Platform</p><p class="text-[11px] text-slate-500 mt-0.5">All data encrypted on Firebase. Firestore rules prevent any unauthorized balance changes.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0"><i data-lucide="trending-up" class="w-5 h-5 text-sky-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Investment Plans</p><p class="text-[11px] text-slate-500 mt-0.5">6 plans ($20–$640) with 20% fixed ROI in 24 hours. Capital + profit auto-credited.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0"><i data-lucide="users" class="w-5 h-5 text-sky-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Referral Rewards</p><p class="text-[11px] text-slate-500 mt-0.5">Earn $1.00 (Free) or $2.00 (VIP) per invite + 3% deposit commission in Earn Wallet.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center flex-shrink-0"><i data-lucide="crown" class="w-5 h-5 text-yellow-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">VIP Membership</p><p class="text-[11px] text-slate-500 mt-0.5">16 pairs, ad-free, fast withdrawals, WhatsApp support, recovery sessions — $250 for 30 days.</p></div>
-            </div>
-        </div>
-        <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-700 py-3 rounded-2xl font-bold uppercase text-xs mt-4">Close</button>`;
-    lucide.createIcons();
-}
-
-// ─── HELPERS ─────────────────────────────────────────────────
-function closeModal(){document.getElementById('modal-overlay').classList.add('hidden');document.body.classList.remove('modal-open');}
-function toast(msg){const t=document.getElementById('toast');t.innerText=msg;t.classList.remove('-translate-y-40');setTimeout(()=>t.classList.add('-translate-y-40'),2800);}
-function setBtn(btnId,txtId,ldrId,enable){const btn=document.getElementById(btnId),txt=document.getElementById(txtId),ldr=document.getElementById(ldrId);if(!btn)return;btn.disabled=!enable;if(txt)txt.classList.toggle('hidden',!enable);if(ldr)ldr.classList.toggle('hidden',enable);}
-function toggleSidebar(){const sb=document.getElementById('sidebar-main');sb.classList.toggle('active');document.getElementById('sb-overlay').style.display=sb.classList.contains('active')?'block':'none';if(sb.classList.contains('active'))document.body.classList.add('modal-open');else document.body.classList.remove('modal-open');}
-function switchTab(t){
-    ['bot','wallet','invest','invite'].forEach(x=>{
-        document.getElementById('sec-'+x).classList.add('hidden');
-        const n=document.getElementById('nav-'+x);n.classList.remove('nav-active','text-sky-600');n.classList.add('text-slate-300');
-    });
-    document.getElementById('sec-'+t).classList.remove('hidden');
-    const a=document.getElementById('nav-'+t);a.classList.add('nav-active','text-sky-600');a.classList.remove('text-slate-300');
-    document.getElementById('sidebar-main').classList.remove('active');document.getElementById('sb-overlay').style.display='none';
-    lucide.createIcons();
-}
-function openSupport(){if(!state.isVIP)return toast('WhatsApp Support is VIP-only');window.open("https://wa.me/923294007913","_blank");}
-function contactForRecovery(){
-    if(!state.isVIP||state.vipExpiry<=Date.now())return toast('Recovery is VIP-only');
-    const avail=state.recoverySessions.filter(s=>s).length;
-    if(avail===0)return toast('All Recovery Sessions Used');
-    window.open("https://wa.me/923294007913?text=Hi, I want to activate my recovery session","_blank");
-}
-function copyReferralLink(){const link=location.origin+location.pathname+'?ref='+state.refCode;navigator.clipboard.writeText(link).then(()=>toast('Referral Link Copied!')).catch(()=>toast('Copy failed'));}
-
-// ✅ FIX 3: Enhanced logout with complete session cleanup
-function handleLogout(){
-    if(unsubscribeUser)unsubscribeUser();
-    if(unsubscribeTx)unsubscribeTx();
-    
-    // Clear all state
-    state = {
-        balance:0,
-        earnWallet:0,
-        referrals:0,
-        refCode:'',
-        isVIP:false,
-        vipExpiry:0,
-        recoverySessions:[],
-        transactions:[],
-        plans:{},
-        leaderboard:[],
-        activePair:null,
-        adIdx:0,
-        adClaimsToday:0,
-        lastAdClaimDate:'',
-        boosterActive:false,
-        boosterExpiry:0
-    };
-    
-    // Clear any localStorage
-    try{
-        localStorage.clear();
-    }catch(e){}
-    
-    // Firebase signout and reload
-    firebase.auth().signOut().then(()=>{
-        window.location.href='index.html';
-    }).catch(e=>{
-        console.error('Logout error:', e);
-        location.reload(); // Force reload anyway
-    });
-}
-
-// ─── GENERIC POPUP ───────────────────────────────────────────
-function showPopupGeneric(html){let el=document.getElementById('generic-popup');if(el)el.remove();el=document.createElement('div');el.className='popup-overlay';el.id='generic-popup';el.innerHTML=`<div class="popup-box">${html}</div>`;document.body.appendChild(el);document.body.classList.add('modal-open');lucide.createIcons();}
-function closePopupGeneric(){const el=document.getElementById('generic-popup');if(el)el.remove();document.body.classList.remove('modal-open');}
-
-// ═══ AUTO-SUSPEND SECURITY ═══
-async function triggerSecuritySuspend(reason) {
-    try {
-        await db.collection('security_logs').add({
-            user_id: currentUser.uid,
-            user_email: currentUser.email,
-            reason: reason,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            ip: 'client',
-            action: 'auto_suspend'
-        });
-        await db.collection('users').doc(currentUser.uid).update({
-            suspended: true,
-            suspend_reason: reason
-        });
-        toast('⚠️ Account suspended due to security violation');
-        setTimeout(() => {
-            firebase.auth().signOut();
-            location.reload();
-        }, 2000);
-    } catch (e) {
-        console.error('Security log failed:', e);
-    }
-}
-
-// Monitor console tampering attempts
-(function() {
-    const originalLog = console.log;
-    console.log = function() {
-        if (arguments[0] && typeof arguments[0] === 'string') {
-            if (arguments[0].includes('balance') || arguments[0].includes('db.collection')) {
-                triggerSecuritySuspend('Console tampering detected');
-            }
-        }
-        originalLog.apply(console, arguments);
-    };
 })();
 
+function showPrivacyModal(type) {
+    const overlay = document.getElementById('policy-overlay');
+    const title = document.getElementById('policy-title');
+    const body = document.getElementById('policy-body');
+    if(type === 'privacy') {
+        title.innerText = 'Privacy Policy';
+        body.innerHTML = `<strong>1. Information We Collect</strong><br>We collect your name, email, phone number, and usage data when you register or use Silver X Trader platform.<br><br><strong>2. How We Use Your Information</strong><br>Your information is used to manage your account, process transactions, send important updates, and improve our services. We do not sell your personal data to third parties.<br><br><strong>3. Data Security</strong><br>We use industry-standard encryption (Firebase/Google Cloud) to protect your data. Your passwords are securely hashed and never stored in plain text.<br><br><strong>4. Cookies</strong><br>We use cookies and local storage to keep you logged in and improve your experience. You can disable cookies in your browser settings.<br><br><strong>5. Third-Party Services</strong><br>We use Firebase (Google) for authentication and data storage. Google's Privacy Policy applies to data processed through these services.<br><br><strong>6. Financial Data</strong><br>All deposit and withdrawal records are stored securely. We do not store your wallet addresses beyond what is necessary to process transactions.<br><br><strong>7. Your Rights</strong><br>You may request deletion of your account and associated data by contacting us via WhatsApp.<br><br><strong>8. Contact</strong><br>For privacy concerns: <a href="https://wa.me/923294007913" style="color:#0ea5e9">WhatsApp Support</a>`;
+    } else {
+        title.innerText = 'Terms & Conditions';
+        body.innerHTML = `<strong>1. Platform Nature</strong><br>Silver X Trader is an educational and simulation platform for binary options signals. All signals are algorithmic and for educational purposes only — not financial advice.<br><br><strong>2. Risk Disclaimer</strong><br>Trading binary options involves significant financial risk. You may lose your invested capital. Past performance does not guarantee future results. Never invest money you cannot afford to lose.<br><br><strong>3. Eligibility</strong><br>You must be 18 years or older to use this platform. By registering, you confirm you meet this requirement and that online trading is legal in your jurisdiction.<br><br><strong>4. Account Responsibility</strong><br>You are responsible for maintaining the security of your account credentials. Do not share your password with anyone. Silver X Trader is not liable for unauthorized access due to your negligence.<br><br><strong>5. Deposits & Withdrawals</strong><br>Minimum deposit is $10 (USDT TRC20 or Binance Pay). Minimum withdrawal is $10, requiring a prior deposit of $20. Processing time is 15 minutes to 24 hours.<br><br><strong>6. Earn Wallet</strong><br>Referral bonuses, ad claims, promo codes, and commissions go to your Earn Wallet. Minimum $120 is required to transfer to main balance.<br><br><strong>7. Prohibited Activities</strong><br>Fraud, multi-accounting, fake referrals, or any form of system abuse will result in immediate account suspension without refund.<br><br><strong>8. Modifications</strong><br>Silver X Trader reserves the right to modify these terms at any time. Continued use of the platform constitutes acceptance of updated terms.<br><br><strong>9. Contact</strong><br><a href="https://wa.me/923294007913" style="color:#0ea5e9">WhatsApp Support</a>`;
+    }
+    overlay.style.display = 'flex';
+}
+
+
+    const colors = {success:'#10B981', error:'#EF4444', info:'#0ea5e9', warning:'#F59E0B'};
+    const el = document.getElementById('toast-el');
+    el.style.background = colors[type] || colors.info;
+    el.innerText = msg;
+    el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 3200);
+}
+
+function openAuthPopup(mode) {
+    document.getElementById('auth-overlay').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    if(mode === 'login') {
+        document.getElementById('auth-signup').classList.add('hidden');
+        document.getElementById('auth-login').classList.remove('hidden');
+    } else {
+        document.getElementById('auth-login').classList.add('hidden');
+        document.getElementById('auth-signup').classList.remove('hidden');
+    }
+    lucide.createIcons();
+}
+function closeAuthPopup() {
+    document.getElementById('auth-overlay').classList.add('hidden');
+    document.body.style.overflow = '';
+}
+function switchToLogin() {
+    document.getElementById('auth-signup').classList.add('hidden');
+    document.getElementById('auth-login').classList.remove('hidden');
+}
+function switchToSignup() {
+    document.getElementById('auth-login').classList.add('hidden');
+    document.getElementById('auth-signup').classList.remove('hidden');
+}
+
+async function handleForgotPassword() {
+    const email = document.getElementById('login-email').value.trim();
+    if (!email) return toast('Enter your email address first', 'warning');
+    try {
+        await firebase.auth().sendPasswordResetEmail(email);
+        toast('Password reset email sent! Check your inbox.', 'success');
+    } catch(e) {
+        const msgs = {
+            'auth/user-not-found': 'No account found with this email.',
+            'auth/invalid-email': 'Invalid email format.'
+        };
+        toast(msgs[e.code] || e.message, 'error');
+    }
+}
+
+async function handleSignup() {
+    const btn = document.getElementById('signup-btn');
+    const txt = document.getElementById('signup-text');
+    const ldr = document.getElementById('signup-loader');
+
+    const firstName  = document.getElementById('su-fname').value.trim();
+    const lastName   = document.getElementById('su-lname').value.trim();
+    const phone      = document.getElementById('su-phone').value.trim();
+    const email      = document.getElementById('su-email').value.trim();
+    const password   = document.getElementById('su-pass').value;
+    const confirmPwd = document.getElementById('su-cpass').value;
+    const refCode    = document.getElementById('su-ref').value.trim().toUpperCase();
+    const privacy    = document.getElementById('su-privacy').checked;
+
+    if(!firstName||!lastName) return toast('Enter first and last name', 'warning');
+    if(!phone||phone.length<7) return toast('Enter a valid phone number', 'warning');
+    if(!email) return toast('Enter your email', 'warning');
+    if(password.length < 6) return toast('Password must be at least 6 characters!', 'warning');
+    if(password !== confirmPwd) return toast('Passwords do not match!', 'error');
+    if(!privacy) return toast('Please accept the Terms & Conditions', 'warning');
+
+    btn.disabled=true; txt.classList.add('hidden'); ldr.classList.remove('hidden');
+
+    try {
+        const cred = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        const uid  = cred.user.uid;
+        const refCodeGenerated = 'SX-' + Math.floor(1000 + Math.random() * 9000);
+
+        // Process referral
+        let referrerId = null;
+        if(refCode && refCode.length > 3) {
+            const snap = await db.collection('users').where('ref_code', '==', refCode).limit(1).get();
+            if(!snap.empty && snap.docs[0].id !== uid) {
+                referrerId = snap.docs[0].id;
+                const rData = snap.docs[0].data();
+                const isVIP = rData.is_vip && rData.vip_expiry > Date.now();
+                const bonus = isVIP ? 2 : 1;
+                await db.collection('users').doc(referrerId).update({
+                    referrals: firebase.firestore.FieldValue.increment(1),
+                    earn_wallet: firebase.firestore.FieldValue.increment(bonus)
+                });
+                await db.collection('transactions').add({
+                    user_id: referrerId,
+                    transaction_type: 'REFERRAL',
+                    amount: bonus,
+                    status: 'approved',
+                    notes: 'Referral signup: ' + email,
+                    created_at: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+        }
+
+        await db.collection('users').doc(uid).set({
+            email, first_name:firstName, last_name:lastName, phone,
+            ref_code: refCodeGenerated,
+            referred_by: referrerId ? refCode : null,
+            referral_processed: referrerId ? true : false,
+            balance: 0,
+            earn_wallet: 0,
+            total_deposited: 0,
+            referrals: 0,
+            is_vip: false,
+            vip_expiry: 0,
+            recovery_session_1: true,
+            recovery_session_2: true,
+            suspended: false,
+            ad_claims_today: 0,
+            last_ad_claim_date: '',
+            booster_active: false,
+            booster_expiry: 0,
+            created_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        toast('Account created! Redirecting...', 'success');
+        setTimeout(() => window.location.href = 'app.html', 1400);
+
+    } catch(err) {
+        btn.disabled=false; txt.classList.remove('hidden'); ldr.classList.add('hidden');
+        const msgs = {
+            'auth/email-already-in-use': 'This email is already registered!',
+            'auth/invalid-email': 'Invalid email address!',
+            'auth/weak-password': 'Password is too weak!'
+        };
+        toast(msgs[err.code] || err.message, 'error');
+    }
+}
+
+async function handleLogin() {
+    const btn = document.getElementById('login-btn');
+    const txt = document.getElementById('login-text');
+    const ldr = document.getElementById('login-loader');
+    const email    = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-pass').value;
+    if(!email||!password) return toast('Fill all fields', 'warning');
+
+    btn.disabled=true; txt.classList.add('hidden'); ldr.classList.remove('hidden');
+    try {
+        await firebase.auth().signInWithEmailAndPassword(email, password);
+        const uid = firebase.auth().currentUser.uid;
+        const userDoc = await db.collection('users').doc(uid).get();
+        if(userDoc.exists && userDoc.data().suspended) {
+            await firebase.auth().signOut();
+            btn.disabled=false; txt.classList.remove('hidden'); ldr.classList.add('hidden');
+            return toast('Account suspended. Contact support.', 'error');
+        }
+        toast('Login successful! Redirecting...', 'success');
+        setTimeout(() => window.location.href = 'app.html', 1000);
+    } catch(err) {
+        btn.disabled=false; txt.classList.remove('hidden'); ldr.classList.add('hidden');
+        const msgs = {
+            'auth/user-not-found': 'Account not found!',
+            'auth/wrong-password': 'Incorrect password!',
+            'auth/invalid-credential': 'Invalid email or password!',
+            'auth/too-many-requests': 'Too many attempts. Try again later.'
+        };
+        toast(msgs[err.code] || 'Login failed!', 'error');
+    }
+}
 </script>
 </body>
 </html>
