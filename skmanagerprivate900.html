@@ -1,957 +1,1464 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SILVER X | ADMIN PANEL</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
-
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
     <style>
         * { font-family:'Plus Jakarta Sans',sans-serif; }
         .outfit { font-family:'Space Grotesk',sans-serif; }
-        .badge-pending  { background:#FFF7ED; color:#EA580C; border:1px solid #FFEDD5; padding:4px 12px; border-radius:8px; font-size:10px; font-weight:800; text-transform:uppercase; }
-        .badge-success  { background:#ECFDF5; color:#10B981; border:1px solid #D1FAE5; padding:4px 12px; border-radius:8px; font-size:10px; font-weight:800; text-transform:uppercase; }
-        .badge-rejected { background:#FEF2F2; color:#EF4444; border:1px solid #FEE2E2; padding:4px 12px; border-radius:8px; font-size:10px; font-weight:800; text-transform:uppercase; }
-        .stat-card { background:#fff; border-radius:16px; padding:22px; box-shadow:0 4px 20px rgba(0,0,0,0.05); border:1px solid #E2E8F0; }
-        .tab-btn { padding:10px 20px; font-weight:700; font-size:13px; text-transform:uppercase; cursor:pointer; border-bottom:3px solid transparent; color:#94a3b8; transition:0.2s; white-space:nowrap; }
-        .tab-btn.active { color:#0ea5e9; border-bottom-color:#0ea5e9; }
+        .badge-pending  { background:#FFF7ED;color:#EA580C;border:1px solid #FFEDD5;padding:4px 12px;border-radius:8px;font-size:10px;font-weight:800;text-transform:uppercase; }
+        .badge-success  { background:#ECFDF5;color:#10B981;border:1px solid #D1FAE5;padding:4px 12px;border-radius:8px;font-size:10px;font-weight:800;text-transform:uppercase; }
+        .badge-rejected { background:#FEF2F2;color:#EF4444;border:1px solid #FEE2E2;padding:4px 12px;border-radius:8px;font-size:10px;font-weight:800;text-transform:uppercase; }
+        .badge-vip      { background:#F3E8FF;color:#9333ea;border:1px solid #E9D5FF;padding:4px 12px;border-radius:8px;font-size:10px;font-weight:800;text-transform:uppercase; }
+        .stat-card { background:#fff;border-radius:16px;padding:18px;box-shadow:0 4px 20px rgba(0,0,0,0.05);border:1px solid #E2E8F0; }
+        .tab-btn { padding:10px 16px;font-weight:700;font-size:12px;text-transform:uppercase;cursor:pointer;border-bottom:3px solid transparent;color:#94a3b8;transition:0.2s;white-space:nowrap; }
+        .tab-btn.active { color:#0ea5e9;border-bottom-color:#0ea5e9; }
         .tab-btn:hover { color:#0ea5e9; }
-
-        /* Reject Reason Modal */
-        .reason-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(6px); z-index:9999; display:flex; align-items:center; justify-content:center; padding:20px; }
-        .reason-box { background:#fff; border-radius:20px; padding:28px; max-width:440px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.25); }
+        .section-hidden { display:none !important; }
+        .tool-card { background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:20px; }
+        .tool-card.danger { border-color:#fca5a5; }
+        .tool-card.warning { border-color:#fed7aa; }
+        .tool-card.success { border-color:#86efac; }
+        input,select,textarea { font-family:'Plus Jakarta Sans',sans-serif; }
+        .modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px; }
+        .modal-box { background:#fff;border-radius:20px;padding:28px;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+        .filter-btn { padding:6px 14px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;transition:0.2s; }
+        .filter-btn.active { background:#0ea5e9;color:#fff; }
+        .filter-btn:not(.active) { background:#f1f5f9;color:#64748b; }
+        ::-webkit-scrollbar{width:6px;height:6px} ::-webkit-scrollbar-track{background:#f1f5f9} ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
 
-
-<div id="admin-login" class="min-h-screen flex items-center justify-center p-6">
+<!-- ══════════════════════════ LOGIN ══════════════════════════ -->
+<div id="admin-login" class="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-900 to-sky-900">
     <div class="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl border border-slate-200">
-        <h1 class="text-4xl font-black outfit text-center mb-1 text-sky-600">ADMIN PANEL</h1>
-        <p class="text-center text-slate-400 text-xs font-bold uppercase mb-1">Silver X Terminal</p>
-        <p class="text-center text-red-600 text-[10px] font-bold uppercase mb-8">⚠️ RESTRICTED ACCESS</p>
-        <input type="email" id="admin-email" placeholder="Admin Email" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-2xl mb-3 outline-none focus:border-sky-500 font-bold">
-        <input type="password" id="admin-password" placeholder="Admin Password" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-2xl mb-6 outline-none focus:border-sky-500 font-bold">
-        <button onclick="adminLogin()" class="w-full bg-sky-600 text-white py-4 rounded-2xl font-bold uppercase text-sm shadow-lg">Login</button>
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-sky-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <span class="text-white text-2xl font-black outfit">SX</span>
+            </div>
+            <h1 class="text-3xl font-black outfit text-sky-600">ADMIN PANEL</h1>
+            <p class="text-slate-400 text-xs font-bold uppercase mt-1">Silver X Trader — Restricted Access</p>
+            <div class="mt-2 bg-red-50 border border-red-200 rounded-xl px-3 py-2">
+                <p class="text-red-600 text-[10px] font-black uppercase">⚠️ Authorized Personnel Only</p>
+            </div>
+        </div>
+        <input type="email" id="admin-email" placeholder="Admin Email" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-2xl mb-3 outline-none focus:border-sky-500 font-semibold text-sm">
+        <input type="password" id="admin-password" placeholder="Admin Password" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-2xl mb-5 outline-none focus:border-sky-500 font-semibold text-sm">
+        <button onclick="adminLogin()" class="w-full bg-sky-600 hover:bg-sky-700 text-white py-4 rounded-2xl font-black uppercase text-sm shadow-lg transition">🔐 Secure Login</button>
+        <p id="login-error" class="text-red-600 text-xs font-bold text-center mt-3 hidden"></p>
     </div>
 </div>
 
-
+<!-- ══════════════════════════ DASHBOARD ══════════════════════════ -->
 <div id="admin-dashboard" class="hidden min-h-screen">
     
-    <header class="bg-white border-b border-slate-200 p-4 sm:p-6 sticky top-0 z-50 shadow-sm">
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 p-4 sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div>
-                <h1 class="text-xl sm:text-2xl font-black outfit text-sky-600">ADMIN CONTROL</h1>
-                <p class="text-xs text-slate-400 font-bold" id="admin-email-display"></p>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-sky-600 rounded-xl flex items-center justify-center">
+                    <span class="text-white text-sm font-black outfit">SX</span>
+                </div>
+                <div>
+                    <h1 class="text-lg font-black outfit text-sky-600">SILVER X ADMIN</h1>
+                    <p class="text-[10px] text-slate-400 font-bold" id="admin-email-display"></p>
+                </div>
             </div>
-            <button onclick="adminLogout()" class="bg-red-600 text-white px-5 py-2 rounded-xl font-bold text-sm">Logout</button>
+            <div class="flex items-center gap-3">
+                <div id="maintenance-badge" class="hidden bg-red-100 text-red-600 px-3 py-1 rounded-xl text-xs font-black">🔴 MAINTENANCE ON</div>
+                <span class="text-xs text-slate-400 font-semibold hidden sm:block" id="current-time"></span>
+                <button onclick="adminLogout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl font-bold text-sm transition">Logout</button>
+            </div>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto p-4 sm:p-6">
-        
-        <!-- ✅ FIX: Search Bar -->
-        <div class="bg-white rounded-2xl border border-slate-200 p-4 mb-4">
-            <div class="flex gap-3">
-                <input type="email" id="user-search" placeholder="🔍 Search user by email..." class="flex-1 bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-sky-500 font-bold text-sm">
-                <button onclick="searchUser()" class="bg-sky-600 text-white px-6 py-3 rounded-xl font-bold text-sm">Search</button>
-                <button onclick="clearSearch()" class="bg-slate-100 text-slate-600 px-6 py-3 rounded-xl font-bold text-sm">Clear</button>
+
+        <!-- ── STAT CARDS ── -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-5">
+            <div class="stat-card">
+                <p class="text-slate-400 text-[9px] font-bold uppercase mb-1">Total Users</p>
+                <h2 class="text-2xl font-black outfit text-slate-800" id="stat-total">0</h2>
+            </div>
+            <div class="stat-card">
+                <p class="text-slate-400 text-[9px] font-bold uppercase mb-1">Free Users</p>
+                <h2 class="text-2xl font-black outfit text-slate-600" id="stat-free">0</h2>
+            </div>
+            <div class="stat-card">
+                <p class="text-slate-400 text-[9px] font-bold uppercase mb-1">VIP Users</p>
+                <h2 class="text-2xl font-black outfit text-purple-600" id="stat-vip">0</h2>
+            </div>
+            <div class="stat-card">
+                <p class="text-slate-400 text-[9px] font-bold uppercase mb-1">Pending Dep.</p>
+                <h2 class="text-2xl font-black outfit text-orange-500" id="stat-pend-dep">0</h2>
+            </div>
+            <div class="stat-card">
+                <p class="text-slate-400 text-[9px] font-bold uppercase mb-1">Pending Wd.</p>
+                <h2 class="text-2xl font-black outfit text-red-500" id="stat-pend-wd">0</h2>
+            </div>
+            <div class="stat-card">
+                <p class="text-slate-400 text-[9px] font-bold uppercase mb-1">Total Txns</p>
+                <h2 class="text-2xl font-black outfit text-sky-600" id="stat-complete">0</h2>
+            </div>
+        </div>
+
+        <!-- ── DAILY ANALYTICS ── -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 mb-5">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <h3 class="font-black outfit text-base">📊 Daily Analytics</h3>
+                <div class="flex gap-2 flex-wrap">
+                    <button class="filter-btn active" onclick="setAnalyticsFilter(this,'1d')">1 Day</button>
+                    <button class="filter-btn" onclick="setAnalyticsFilter(this,'7d')">7 Days</button>
+                    <button class="filter-btn" onclick="setAnalyticsFilter(this,'30d')">30 Days</button>
+                    <button class="filter-btn" onclick="setAnalyticsFilter(this,'all')">All Time</button>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="bg-slate-50 rounded-xl p-3 text-center">
+                    <p class="text-xs text-slate-400 font-bold mb-1">New Users</p>
+                    <p class="text-2xl font-black outfit text-sky-600" id="analytics-users">—</p>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-3 text-center">
+                    <p class="text-xs text-slate-400 font-bold mb-1">Site Visits</p>
+                    <p class="text-2xl font-black outfit text-green-600" id="analytics-visits">—</p>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-3 text-center">
+                    <p class="text-xs text-slate-400 font-bold mb-1">Deposits ($)</p>
+                    <p class="text-2xl font-black outfit text-emerald-600" id="analytics-deposits">—</p>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-3 text-center">
+                    <p class="text-xs text-slate-400 font-bold mb-1">Withdrawals ($)</p>
+                    <p class="text-2xl font-black outfit text-red-500" id="analytics-withdrawals">—</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── SEARCH BAR ── -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 mb-5">
+            <p class="text-xs font-black uppercase text-slate-500 mb-2">🔍 Search User by Email</p>
+            <div class="flex gap-2">
+                <input type="email" id="user-search" placeholder="user@example.com" class="flex-1 bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-sky-500 font-semibold text-sm" onkeydown="if(event.key==='Enter')searchUser()">
+                <button onclick="searchUser()" class="bg-sky-600 text-white px-5 py-3 rounded-xl font-bold text-sm hover:bg-sky-700 transition">Search</button>
+                <button onclick="clearSearch()" class="bg-slate-100 text-slate-600 px-4 py-3 rounded-xl font-bold text-sm hover:bg-slate-200 transition">Clear</button>
             </div>
             <div id="search-result" class="mt-3"></div>
         </div>
-        
-        <div class="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 mb-6">
-            <div class="stat-card"><p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Total Users</p><h2 class="text-3xl font-black outfit" id="stat-total">0</h2></div>
-            <div class="stat-card"><p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Free Users</p><h2 class="text-3xl font-black outfit text-slate-600" id="stat-free">0</h2></div>
-            <div class="stat-card"><p class="text-slate-400 text-[10px] font-bold uppercase mb-1">VIP Users</p><h2 class="text-3xl font-black outfit text-green-600" id="stat-vip">0</h2></div>
-            <div class="stat-card"><p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Pending Deposits</p><h2 class="text-3xl font-black outfit text-orange-600" id="stat-pend-dep">0</h2></div>
-            <div class="stat-card"><p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Pending Withdrawals</p><h2 class="text-3xl font-black outfit text-red-600" id="stat-pend-wd">0</h2></div>
-            <div class="stat-card"><p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Complete Txns</p><h2 class="text-3xl font-black outfit text-sky-600" id="stat-complete">0</h2></div>
-        </div>
 
-        
-        <div class="bg-white rounded-2xl border border-slate-200 mb-4">
+        <!-- ── TABS ── -->
+        <div class="bg-white rounded-2xl border border-slate-200 mb-4 overflow-hidden">
             <div class="flex border-b border-slate-200 overflow-x-auto">
-                <button onclick="switchAdminTab('deposits')"   id="tab-deposits"   class="tab-btn active">Deposits</button>
-                <button onclick="switchAdminTab('withdrawals')" id="tab-withdrawals" class="tab-btn">Withdrawals</button>
-                <button onclick="switchAdminTab('free-users')"  id="tab-free-users"  class="tab-btn">Free Users</button>
-                <button onclick="switchAdminTab('vip-users')"   id="tab-vip-users"   class="tab-btn">VIP Users</button>
-                <button onclick="switchAdminTab('tools')" id="tab-tools" class="tab-btn">⚙️ Tools</button>
+                <button onclick="switchTab('deposits')" id="tab-deposits" class="tab-btn active">💰 Deposits</button>
+                <button onclick="switchTab('withdrawals')" id="tab-withdrawals" class="tab-btn">💸 Withdrawals</button>
+                <button onclick="switchTab('all-users')" id="tab-all-users" class="tab-btn">👥 All Users</button>
+                <button onclick="switchTab('free-users')" id="tab-free-users" class="tab-btn">🆓 Free</button>
+                <button onclick="switchTab('vip-users')" id="tab-vip-users" class="tab-btn">⭐ VIP</button>
+                <button onclick="switchTab('completed')" id="tab-completed" class="tab-btn">✅ Completed</button>
+                <button onclick="switchTab('promo')" id="tab-promo" class="tab-btn">🎟️ Promo Codes</button>
+                <button onclick="switchTab('tools')" id="tab-tools" class="tab-btn">🛠️ Tools</button>
+                <button onclick="switchTab('security')" id="tab-security" class="tab-btn">🔐 Security</button>
             </div>
         </div>
 
-        
+        <!-- ── PENDING DEPOSITS ── -->
         <div id="section-deposits" class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
-            <h3 class="text-lg font-black outfit mb-4">Pending Deposits</h3>
-            <div id="list-deposits" class="space-y-4"></div>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-base font-black outfit">Pending Deposits</h3>
+                <button onclick="approveAllPendingDeposits()" class="bg-green-600 text-white px-4 py-2 rounded-xl font-bold text-xs hover:bg-green-700 transition">⚡ Approve All</button>
+            </div>
+            <div id="list-deposits" class="space-y-4"><p class="text-center text-slate-400 py-8">Loading...</p></div>
         </div>
 
-        
-        <div id="section-withdrawals" class="hidden bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
-            <h3 class="text-lg font-black outfit mb-4">Pending Withdrawals</h3>
-            <div id="list-withdrawals" class="space-y-4"></div>
+        <!-- ── PENDING WITHDRAWALS ── -->
+        <div id="section-withdrawals" class="section-hidden bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+            <h3 class="text-base font-black outfit mb-4">Pending Withdrawals</h3>
+            <div id="list-withdrawals" class="space-y-4"><p class="text-center text-slate-400 py-8">Loading...</p></div>
         </div>
 
-        
-        <div id="section-free-users" class="hidden bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
-            <h3 class="text-lg font-black outfit mb-4">Free Users</h3>
-            <div id="list-free-users" class="space-y-4"></div>
+        <!-- ── ALL USERS ── -->
+        <div id="section-all-users" class="section-hidden bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-base font-black outfit">All Users</h3>
+                <span class="text-xs text-slate-400 font-bold" id="all-users-count"></span>
+            </div>
+            <div id="list-all-users" class="space-y-3"><p class="text-center text-slate-400 py-8">Loading...</p></div>
         </div>
 
-        
-        <div id="section-vip-users" class="hidden bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
-            <h3 class="text-lg font-black outfit mb-4">VIP Users</h3>
-            <div id="list-vip-users" class="space-y-4"></div>
+        <!-- ── FREE USERS ── -->
+        <div id="section-free-users" class="section-hidden bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+            <h3 class="text-base font-black outfit mb-4">Free Users</h3>
+            <div id="list-free-users" class="space-y-3"><p class="text-center text-slate-400 py-8">Loading...</p></div>
         </div>
 
-        <!-- ── TOOLS SECTION ── -->
-        <div id="section-tools" class="hidden space-y-4">
+        <!-- ── VIP USERS ── -->
+        <div id="section-vip-users" class="section-hidden bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+            <h3 class="text-base font-black outfit mb-4">VIP Users</h3>
+            <div id="list-vip-users" class="space-y-3"><p class="text-center text-slate-400 py-8">Loading...</p></div>
+        </div>
 
-            <!-- MAINTENANCE MODE -->
-            <div class="bg-white rounded-2xl border-2 border-red-400 p-4 sm:p-6">
-                <h3 class="text-lg font-black outfit mb-1 text-red-600">🔧 Maintenance Mode</h3>
-                <p id="maintenance-status" class="text-xs text-slate-500 font-bold mb-3">Status: Checking...</p>
-                <div class="flex gap-2">
-                    <button onclick="setMaintenanceMode(true)" class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold text-sm">🔴 Turn ON</button>
-                    <button onclick="setMaintenanceMode(false)" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold text-sm">🟢 Turn OFF</button>
+        <!-- ── COMPLETED TRANSACTIONS ── -->
+        <div id="section-completed" class="section-hidden bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+            <h3 class="text-base font-black outfit mb-4">Completed Transactions</h3>
+            <div id="list-completed" class="space-y-3"><p class="text-center text-slate-400 py-8">Loading...</p></div>
+        </div>
+
+        <!-- ── PROMO CODES ── -->
+        <div id="section-promo" class="section-hidden space-y-4">
+            <!-- Create Promo Code -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+                <h3 class="font-black outfit text-base mb-4">🎟️ Create Promo Code</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Code (e.g. SILVER10)</label>
+                        <input type="text" id="promo-code" placeholder="SILVER10" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-sky-500 font-bold text-sm uppercase">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Reward Amount ($0.01 – $10)</label>
+                        <input type="number" id="promo-reward" placeholder="5.00" min="0.01" max="10" step="0.01" value="5" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-sky-500 font-bold text-sm">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Max Uses (0 = unlimited)</label>
+                        <input type="number" id="promo-max-uses" placeholder="100" min="0" value="100" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-sky-500 font-bold text-sm">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Expiry Date</label>
+                        <input type="date" id="promo-expiry" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-sky-500 font-bold text-sm">
+                    </div>
+                </div>
+                <button onclick="createPromoCode()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-bold text-sm transition">✨ Create Promo Code</button>
+            </div>
+            <!-- Promo Code List -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-black outfit text-base">Active Promo Codes</h3>
+                    <button onclick="loadPromoCodes()" class="bg-slate-100 text-slate-600 px-4 py-2 rounded-xl font-bold text-xs">🔄 Refresh</button>
+                </div>
+                <div id="list-promo-codes" class="space-y-3"><p class="text-center text-slate-400 py-4">Click refresh to load</p></div>
+            </div>
+        </div>
+
+        <!-- ── TOOLS ── -->
+        <div id="section-tools" class="section-hidden space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                
+                <!-- MAINTENANCE MODE -->
+                <div class="tool-card danger">
+                    <h3 class="font-black outfit text-sm text-red-600 mb-1">🔧 Maintenance Mode</h3>
+                    <p id="maintenance-status" class="text-xs text-slate-500 font-semibold mb-3">Status: Checking...</p>
+                    <div class="flex gap-2">
+                        <button onclick="setMaintenanceMode(true)" class="flex-1 bg-red-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-red-700 transition">🔴 Turn ON</button>
+                        <button onclick="setMaintenanceMode(false)" class="flex-1 bg-green-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-green-700 transition">🟢 Turn OFF</button>
+                    </div>
+                </div>
+
+                <!-- APPROVE/REJECT BY TXID -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">✅ Approve/Reject by TXID</h3>
+                    <input type="text" id="t-txid" placeholder="Transaction ID (TXID)" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <div class="flex gap-2">
+                        <button onclick="approveDepositByTxid()" class="flex-1 bg-green-600 text-white py-2 rounded-xl font-bold text-xs">✅ Approve</button>
+                        <button onclick="rejectDepositByTxid()" class="flex-1 bg-red-600 text-white py-2 rounded-xl font-bold text-xs">❌ Reject</button>
+                    </div>
+                </div>
+
+                <!-- MANUAL AD REWARD -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">📺 Manual Ad Reward</h3>
+                    <input type="email" id="t-ad-email" placeholder="User Email" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <input type="number" id="t-ad-amount" placeholder="Amount" value="2" step="0.01" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="manualAdReward()" class="w-full bg-sky-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-sky-700 transition">Send Reward</button>
+                </div>
+
+                <!-- EXTEND VIP -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">⭐ Extend VIP Days</h3>
+                    <input type="email" id="t-vip-email" placeholder="User Email" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <select id="t-vip-days" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none font-semibold text-xs mb-2">
+                        <option value="7">7 Days</option>
+                        <option value="14">14 Days</option>
+                        <option value="30" selected>30 Days</option>
+                        <option value="60">60 Days</option>
+                        <option value="90">90 Days</option>
+                    </select>
+                    <button onclick="extendVIP()" class="w-full bg-purple-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-purple-700 transition">Extend VIP</button>
+                </div>
+
+                <!-- BULK BONUS -->
+                <div class="tool-card warning">
+                    <h3 class="font-black outfit text-sm text-orange-600 mb-1">🎁 Bulk Bonus — All Users</h3>
+                    <p class="text-[10px] text-red-500 font-bold mb-3">⚠️ Adds bonus to EVERY user. Be careful!</p>
+                    <input type="number" id="t-bulk-amount" value="1" step="0.01" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none font-semibold text-xs mb-2">
+                    <select id="t-bulk-wallet" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none font-semibold text-xs mb-2">
+                        <option value="earn_wallet">Earn Wallet</option>
+                        <option value="balance">Main Balance</option>
+                    </select>
+                    <button onclick="bulkBonusAllUsers()" class="w-full bg-orange-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-orange-700 transition">Send Bulk Bonus</button>
+                </div>
+
+                <!-- MANUAL BONUS (Single User) -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">💰 Manual Bonus (Single User)</h3>
+                    <input type="email" id="t-bonus-email" placeholder="User Email" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <input type="number" id="t-bonus-amount" placeholder="Amount ($)" step="0.01" value="5" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <select id="t-bonus-wallet" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none font-semibold text-xs mb-2">
+                        <option value="earn_wallet">Earn Wallet</option>
+                        <option value="balance">Main Balance</option>
+                    </select>
+                    <input type="text" id="t-bonus-note" placeholder="Note (e.g. Admin Bonus)" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="manualBonusSingle()" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-emerald-700 transition">Send Bonus</button>
+                </div>
+
+                <!-- SET EARN TRANSFER MIN -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">💱 Earn Transfer Minimum</h3>
+                    <p class="text-xs text-slate-400 mb-2">Current minimum to transfer from Earn Wallet to Main Balance</p>
+                    <input type="number" id="t-earn-min" placeholder="Default: $120" value="120" step="1" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="setEarnTransferMin()" class="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-indigo-700 transition">Update Minimum</button>
+                </div>
+
+                <!-- SET AD REWARD AMOUNT -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">📺 Ad Reward Amount</h3>
+                    <p class="text-xs text-slate-400 mb-2">Amount credited per ad claim (default $2)</p>
+                    <input type="number" id="t-ad-reward" placeholder="2.00" value="2" step="0.01" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="setAdRewardAmount()" class="w-full bg-sky-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-sky-700 transition">Update Amount</button>
+                </div>
+
+                <!-- SET WITHDRAWAL MIN -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">🔒 Withdrawal Minimum</h3>
+                    <p class="text-xs text-slate-400 mb-2">Minimum balance required for withdrawal</p>
+                    <input type="number" id="t-wd-min" placeholder="Default: $10" value="10" step="1" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="setWithdrawalMin()" class="w-full bg-slate-700 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-slate-800 transition">Update Minimum</button>
+                </div>
+
+                <!-- SET DEPOSIT MIN -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">📥 Deposit Minimum</h3>
+                    <p class="text-xs text-slate-400 mb-2">Minimum deposit amount required</p>
+                    <input type="number" id="t-dep-min" placeholder="Default: $10" value="10" step="1" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="setDepositMin()" class="w-full bg-slate-700 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-slate-800 transition">Update Minimum</button>
+                </div>
+
+                <!-- CANCEL USER WITHDRAWALS -->
+                <div class="tool-card danger">
+                    <h3 class="font-black outfit text-sm text-red-600 mb-3">🚫 Cancel User's Pending Withdrawals</h3>
+                    <input type="email" id="t-cancel-email" placeholder="User Email" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="cancelUserWithdrawals()" class="w-full bg-red-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-red-700 transition">Cancel Withdrawals</button>
+                </div>
+
+                <!-- RESET USER AD CLAIMS -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">🔄 Reset User Ad Claims</h3>
+                    <p class="text-xs text-slate-400 mb-2">Reset daily ad claim count for a user</p>
+                    <input type="email" id="t-reset-claims-email" placeholder="User Email" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="resetAdClaims()" class="w-full bg-amber-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-amber-700 transition">Reset Claims</button>
+                </div>
+
+                <!-- GIVE VIP TO USER -->
+                <div class="tool-card success">
+                    <h3 class="font-black outfit text-sm text-green-700 mb-3">⭐ Grant VIP to User (Free)</h3>
+                    <input type="email" id="t-grant-vip-email" placeholder="User Email" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <select id="t-grant-vip-days" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none font-semibold text-xs mb-2">
+                        <option value="7">7 Days Free VIP</option>
+                        <option value="14">14 Days Free VIP</option>
+                        <option value="30" selected>30 Days Free VIP</option>
+                    </select>
+                    <button onclick="grantVIPFree()" class="w-full bg-green-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-green-700 transition">Grant Free VIP</button>
+                </div>
+
+                <!-- REVOKE VIP -->
+                <div class="tool-card danger">
+                    <h3 class="font-black outfit text-sm text-red-600 mb-3">❌ Revoke VIP from User</h3>
+                    <input type="email" id="t-revoke-vip-email" placeholder="User Email" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="revokeVIP()" class="w-full bg-red-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-red-700 transition">Revoke VIP</button>
+                </div>
+
+                <!-- PLATFORM STATS -->
+                <div class="tool-card sm:col-span-2">
+                    <h3 class="font-black outfit text-sm mb-3">📊 Platform Statistics</h3>
+                    <button onclick="loadPlatformStats()" class="bg-slate-800 text-white px-5 py-2.5 rounded-xl font-bold text-xs mb-3 hover:bg-slate-900 transition">Load Stats</button>
+                    <div id="platform-stats-result" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+                </div>
+
+                <!-- APPROVE ALL -->
+                <div class="tool-card success">
+                    <h3 class="font-black outfit text-sm text-green-700 mb-1">⚡ Approve ALL Pending Deposits</h3>
+                    <p class="text-[10px] text-slate-500 mb-3">One-click mass approval of all pending deposits</p>
+                    <button onclick="approveAllPendingDeposits()" class="w-full bg-green-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-green-700 transition">Approve All Deposits</button>
+                </div>
+
+                <!-- SEND NOTIFICATION -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">📢 Platform Announcement</h3>
+                    <input type="text" id="t-announce-title" placeholder="Announcement Title" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <textarea id="t-announce-body" placeholder="Announcement message..." rows="2" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2 resize-none"></textarea>
+                    <button onclick="sendAnnouncement()" class="w-full bg-blue-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-blue-700 transition">📢 Post Announcement</button>
+                </div>
+
+                <!-- FORCE PLAN MATURITY CHECK -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">⏰ Force Plan Maturity Check</h3>
+                    <p class="text-xs text-slate-400 mb-2">Manually trigger maturity check for a user's investment plans</p>
+                    <input type="email" id="t-plan-check-email" placeholder="User Email" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="forcePlanMaturity()" class="w-full bg-teal-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-teal-700 transition">Force Maturity Check</button>
+                </div>
+
+                <!-- EDIT USER EMAIL -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">✏️ Edit User Email</h3>
+                    <input type="email" id="t-old-email" placeholder="Current Email" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <input type="email" id="t-new-email" placeholder="New Email" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="editUserEmail()" class="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-indigo-700 transition">Update Email</button>
+                </div>
+
+                <!-- ZERO OUT BALANCE -->
+                <div class="tool-card danger">
+                    <h3 class="font-black outfit text-sm text-red-600 mb-1">⚠️ Zero Out User Balance</h3>
+                    <p class="text-[10px] text-slate-500 mb-3">Sets selected wallet to $0.00</p>
+                    <input type="email" id="t-zero-email" placeholder="User Email" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <select id="t-zero-wallet" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none font-semibold text-xs mb-2">
+                        <option value="balance">Main Balance</option>
+                        <option value="earn_wallet">Earn Wallet</option>
+                    </select>
+                    <button onclick="zeroOutBalance()" class="w-full bg-red-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-red-700 transition">Zero Out Balance</button>
+                </div>
+
+                <!-- EXPORT DATA -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">📤 Export Data (CSV)</h3>
+                    <div class="flex gap-2 mb-2">
+                        <button onclick="exportUsers()" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl font-bold text-xs hover:bg-emerald-700 transition">Export Users</button>
+                        <button onclick="exportTransactions()" class="flex-1 bg-blue-600 text-white py-2 rounded-xl font-bold text-xs hover:bg-blue-700 transition">Export Txns</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ── SECURITY ── -->
+        <div id="section-security" class="section-hidden space-y-4">
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+                <h3 class="font-black outfit text-base mb-4">🔐 Security Center</h3>
+
+                <!-- Admin Actions Log -->
+                <div class="mb-5">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="font-bold text-sm">Admin Action Log</h4>
+                        <button onclick="loadAdminLog()" class="bg-slate-100 text-slate-600 px-4 py-2 rounded-xl font-bold text-xs">Load Log</button>
+                    </div>
+                    <div id="admin-log" class="space-y-2 max-h-60 overflow-y-auto">
+                        <p class="text-center text-slate-400 text-xs py-4">Click "Load Log" to view admin activity</p>
+                    </div>
+                </div>
+
+                <!-- Suspicious Activity -->
+                <div class="mb-5">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="font-bold text-sm">🚨 Suspicious Activity Detector</h4>
+                        <button onclick="detectSuspiciousActivity()" class="bg-red-100 text-red-600 px-4 py-2 rounded-xl font-bold text-xs">Scan Now</button>
+                    </div>
+                    <div id="suspicious-result" class="text-xs text-slate-400">Run a scan to detect any suspicious patterns</div>
+                </div>
+
+                <!-- Blacklist IP/Email -->
+                <div>
+                    <h4 class="font-bold text-sm mb-3">🚫 Blacklist Management</h4>
+                    <div class="flex gap-2">
+                        <input type="email" id="t-blacklist-email" placeholder="Email to blacklist" class="flex-1 bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs">
+                        <button onclick="blacklistUser()" class="bg-red-600 text-white px-4 py-2 rounded-xl font-bold text-xs hover:bg-red-700 transition">Blacklist</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- APPROVE DEPOSIT BY TXID -->
+            <!-- Session Monitor -->
             <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
-                <h3 class="text-base font-black outfit mb-3">✅ Approve Deposit by TXID</h3>
-                <input type="text" id="t-txid-approve" placeholder="Transaction ID (TXID)" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-sky-500 font-bold text-sm mb-2">
-                <button onclick="approveDepositByTxid()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold text-sm">Approve</button>
+                <h3 class="font-black outfit text-sm mb-3">📡 Platform Health</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="bg-green-50 p-3 rounded-xl text-center">
+                        <p class="text-[10px] text-green-600 font-black uppercase">Firestore</p>
+                        <p class="text-lg font-black text-green-600">✅</p>
+                    </div>
+                    <div class="bg-green-50 p-3 rounded-xl text-center">
+                        <p class="text-[10px] text-green-600 font-black uppercase">Auth</p>
+                        <p class="text-lg font-black text-green-600">✅</p>
+                    </div>
+                    <div class="bg-sky-50 p-3 rounded-xl text-center">
+                        <p class="text-[10px] text-sky-600 font-black uppercase">Admin</p>
+                        <p class="text-lg font-black text-sky-600" id="sec-admin-id">—</p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl text-center">
+                        <p class="text-[10px] text-slate-500 font-black uppercase">Session</p>
+                        <p class="text-xs font-black text-slate-600" id="sec-login-time">—</p>
+                    </div>
+                </div>
             </div>
-
-            <!-- REJECT DEPOSIT BY TXID -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
-                <h3 class="text-base font-black outfit mb-3">❌ Reject Deposit by TXID</h3>
-                <input type="text" id="t-txid-reject" placeholder="Transaction ID (TXID)" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-sky-500 font-bold text-sm mb-2">
-                <button onclick="rejectDepositByTxid()" class="w-full bg-red-600 text-white py-3 rounded-xl font-bold text-sm">Reject</button>
-            </div>
-
-            <!-- MANUAL AD REWARD -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
-                <h3 class="text-base font-black outfit mb-3">📺 Manual Ad Reward</h3>
-                <input type="email" id="t-ad-email" placeholder="User Email" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-sky-500 font-bold text-sm mb-2">
-                <input type="number" id="t-ad-amount" placeholder="Amount (default $2)" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-sky-500 font-bold text-sm mb-2" value="2">
-                <button onclick="manualAdReward()" class="w-full bg-sky-600 text-white py-3 rounded-xl font-bold text-sm">Send Reward</button>
-            </div>
-
-            <!-- EXTEND VIP -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
-                <h3 class="text-base font-black outfit mb-3">➕ Extend VIP Days</h3>
-                <input type="email" id="t-vip-email" placeholder="User Email" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-sky-500 font-bold text-sm mb-2">
-                <select id="t-vip-days" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none font-bold text-sm mb-2">
-                    <option value="7">7 Days</option>
-                    <option value="14">14 Days</option>
-                    <option value="30" selected>30 Days</option>
-                    <option value="60">60 Days</option>
-                    <option value="90">90 Days</option>
-                </select>
-                <button onclick="extendVIP()" class="w-full bg-purple-600 text-white py-3 rounded-xl font-bold text-sm">Extend VIP</button>
-            </div>
-
-            <!-- BULK BONUS ALL USERS -->
-            <div class="bg-white rounded-2xl border-2 border-orange-400 p-4 sm:p-6">
-                <h3 class="text-base font-black outfit mb-1 text-orange-600">🎁 Bulk Bonus — ALL Users</h3>
-                <p class="text-xs text-red-600 font-bold mb-3">⚠️ This adds bonus to EVERY user. Use with caution!</p>
-                <input type="number" id="t-bulk-amount" placeholder="Amount per user ($)" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none font-bold text-sm mb-2" value="1">
-                <select id="t-bulk-wallet" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none font-bold text-sm mb-2">
-                    <option value="earn_wallet">Earn Wallet</option>
-                    <option value="balance">Main Balance</option>
-                </select>
-                <button onclick="bulkBonusAllUsers()" class="w-full bg-orange-600 text-white py-3 rounded-xl font-bold text-sm">Send Bulk Bonus</button>
-            </div>
-
-            <!-- SET EARN TRANSFER MIN -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
-                <h3 class="text-base font-black outfit mb-3">🔢 Set Earn Wallet Transfer Min</h3>
-                <input type="number" id="t-earn-min" placeholder="Minimum amount (default $120)" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none font-bold text-sm mb-2" value="120">
-                <button onclick="setEarnTransferMin()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold text-sm">Update Minimum</button>
-            </div>
-
-            <!-- PLATFORM STATS -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
-                <h3 class="text-base font-black outfit mb-3">📊 Platform Stats</h3>
-                <button onclick="loadPlatformStats()" class="w-full bg-slate-700 text-white py-3 rounded-xl font-bold text-sm mb-3">Load Stats</button>
-                <div id="platform-stats-result" class="space-y-2 text-sm"></div>
-            </div>
-
-            <!-- APPROVE ALL PENDING DEPOSITS -->
-            <div class="bg-white rounded-2xl border-2 border-green-400 p-4 sm:p-6">
-                <h3 class="text-base font-black outfit mb-1 text-green-700">⚡ Approve ALL Pending Deposits</h3>
-                <p class="text-xs text-slate-500 font-bold mb-3">One-click approval of all pending deposits</p>
-                <button onclick="approveAllPendingDeposits()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold text-sm">Approve All</button>
-            </div>
-
-            <!-- CANCEL USER WITHDRAWALS -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
-                <h3 class="text-base font-black outfit mb-3">🚫 Cancel User's Withdrawals</h3>
-                <input type="email" id="t-cancel-wd-email" placeholder="User Email" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-sky-500 font-bold text-sm mb-2">
-                <button onclick="cancelUserWithdrawals()" class="w-full bg-red-600 text-white py-3 rounded-xl font-bold text-sm">Cancel & Refund</button>
-            </div>
-
-            <!-- PROMO CODE STATS -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
-                <h3 class="text-base font-black outfit mb-3">🎟️ Promo Code Stats</h3>
-                <input type="text" id="t-promo-code" placeholder="Promo Code (e.g. SX2026)" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-sky-500 font-bold text-sm mb-2" style="text-transform:uppercase;">
-                <button onclick="viewPromoStats()" class="w-full bg-yellow-500 text-white py-3 rounded-xl font-bold text-sm mb-2">View Stats</button>
-                <div id="promo-stats-result" class="text-sm text-slate-600"></div>
-            </div>
-
         </div>
 
     </main>
 </div>
 
-
-<div id="reason-modal" class="reason-overlay hidden">
-    <div class="reason-box">
-        <h3 class="text-lg font-black outfit mb-2" id="reason-modal-title">Rejection Reason</h3>
-        <p class="text-xs text-slate-500 mb-4">Enter a clear reason. The user will see this.</p>
-        <textarea id="reason-input" placeholder="Type reason here..." class="w-full border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-sky-500 resize-none" rows="3"></textarea>
-        <div class="flex gap-3 mt-4">
-            <button onclick="closeReasonModal()" class="flex-1 bg-slate-100 text-slate-600 py-3 rounded-xl font-bold text-sm">Cancel</button>
-            <button onclick="submitRejection()" class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold text-sm">Next →</button>
+<!-- ══ REJECT REASON MODAL ══ -->
+<div id="reject-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+        <h3 class="font-black outfit text-base mb-2 text-red-600">❌ Reject Transaction</h3>
+        <p class="text-xs text-slate-500 mb-3">Please provide a reason for rejection:</p>
+        <textarea id="reject-reason-input" rows="3" placeholder="Reason for rejection..." class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none font-semibold text-sm mb-3 resize-none"></textarea>
+        <p class="text-xs text-slate-500 mb-3" id="reject-refund-question"></p>
+        <div class="flex gap-2 mb-2">
+            <button onclick="finalizeRejection(true)" class="flex-1 bg-orange-500 text-white py-3 rounded-xl font-bold text-xs hover:bg-orange-600 transition">Reject + Refund</button>
+            <button onclick="finalizeRejection(false)" class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold text-xs hover:bg-red-700 transition">Reject (No Refund)</button>
         </div>
+        <button onclick="closeRejectModal()" class="w-full bg-slate-100 text-slate-600 py-2 rounded-xl font-bold text-xs hover:bg-slate-200 transition">Cancel</button>
     </div>
 </div>
 
-
-<script src="firebase-config.js"></script>
 <script>
-const ADMIN_EMAIL = "ska75470@gmail.com";
+// ─── FIREBASE CONFIG ──────────────────────────────────────────
+const firebaseConfig = {
+    apiKey: "AIzaSyCFeZCVi3bnRYlL78M4vIAe4h-_3a0VRyU",
+    authDomain: "silver-x-trader.firebaseapp.com",
+    projectId: "silver-x-trader",
+    storageBucket: "silver-x-trader.firebasestorage.app",
+    messagingSenderId: "239715343845",
+    appId: "1:239715343845:web:a72cce9be116b1d0ae230c"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+// ─── GLOBALS ──────────────────────────────────────────────────
+const ADMIN_EMAILS = ['ska75470@gmail.com'];
 let adminUser = null;
 let allUsers = [];
-let pendingDeposits = [];
-let pendingWithdrawals = [];
+let analyticsFilter = '1d';
+let _rejectTxId = null, _rejectType = null, _rejectUserId = null, _rejectAmount = 0;
+let loginTime = null;
 
-// ✅ REJECTION FLOW STATE
-let _rejectTxId   = null;
-let _rejectUserId = null;
-let _rejectAmount = null;
-let _rejectType   = null;
+// ─── CURRENT TIME ─────────────────────────────────────────────
+setInterval(() => {
+    const el = document.getElementById('current-time');
+    if(el) el.textContent = new Date().toLocaleTimeString();
+}, 1000);
 
-// ─── AUTH CHECK ──────────────────────────────────────────
-firebase.auth().onAuthStateChanged((user)=>{
-    if(user){
-        if(user.email !== ADMIN_EMAIL){
-            alert("ACCESS DENIED");
-            firebase.auth().signOut();
-            return;
-        }
-        adminUser = user;
-        document.getElementById('admin-email-display').innerText = user.email;
+// ─── LOGIN ────────────────────────────────────────────────────
+async function adminLogin(){
+    const email = document.getElementById('admin-email').value.trim().toLowerCase();
+    const pass  = document.getElementById('admin-password').value;
+    const errEl = document.getElementById('login-error');
+    errEl.classList.add('hidden');
+
+    if(!ADMIN_EMAILS.includes(email)){
+        errEl.textContent = '❌ Access denied. Not an admin email.';
+        errEl.classList.remove('hidden');
+        return;
+    }
+
+    try {
+        const cred = await auth.signInWithEmailAndPassword(email, pass);
+        adminUser = cred.user;
+        loginTime = new Date();
         document.getElementById('admin-login').classList.add('hidden');
         document.getElementById('admin-dashboard').classList.remove('hidden');
-        loadAllData();
+        document.getElementById('admin-email-display').textContent = adminUser.email;
+        document.getElementById('sec-admin-id').textContent = adminUser.uid.slice(0,6)+'...';
+        document.getElementById('sec-login-time').textContent = loginTime.toLocaleTimeString();
+        initDashboard();
+        logAdminAction('login', {});
+    } catch(e){
+        errEl.textContent = '❌ ' + e.message;
+        errEl.classList.remove('hidden');
     }
-});
-
-async function adminLogin(){
-    const email = document.getElementById('admin-email').value.trim();
-    const pass  = document.getElementById('admin-password').value;
-    if(!email || !pass) return alert('Fill all fields');
-    if(email !== ADMIN_EMAIL) return alert('ACCESS DENIED');
-    try {
-        await firebase.auth().signInWithEmailAndPassword(email, pass);
-    } catch(e){ alert('Login failed: ' + e.message); }
 }
 
 function adminLogout(){
-    firebase.auth().signOut().then(()=> location.reload());
+    if(!confirm('Logout from Admin Panel?')) return;
+    logAdminAction('logout', {});
+    auth.signOut().then(() => location.reload());
 }
 
-// ─── LOAD ALL DATA ───────────────────────────────────────
-async function loadAllData(){
-    // Users (real-time)
-    db.collection('users').orderBy('created_at','desc').onSnapshot((snap)=>{
-        allUsers = snap.docs.map(d=>({ id:d.id, ...d.data() }));
-        updateStats();
+// ─── INIT DASHBOARD ───────────────────────────────────────────
+async function initDashboard(){
+    await loadAllUsers();
+    await loadPendingDeposits();
+    await loadStatsCards();
+    await loadAnalytics();
+    await loadMaintenanceStatus();
+}
+
+// ─── LOAD ALL USERS ───────────────────────────────────────────
+async function loadAllUsers(){
+    try {
+        const snap = await db.collection('users').orderBy('created_at','desc').get();
+        allUsers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderAllUsers();
         renderFreeUsers();
         renderVIPUsers();
-    });
-
-    // Pending Deposits (real-time)
-    db.collection('transactions').where('transaction_type','==','DEPOSIT').where('status','==','pending').orderBy('created_at','desc').onSnapshot((snap)=>{
-        pendingDeposits = snap.docs.map(d=>({ id:d.id, ...d.data() }));
-        document.getElementById('stat-pend-dep').innerText = pendingDeposits.length;
-        renderPendingDeposits();
-    });
-
-    // Pending Withdrawals (real-time)
-    db.collection('transactions').where('transaction_type','==','WITHDRAWAL').where('status','==','pending').orderBy('created_at','desc').onSnapshot((snap)=>{
-        pendingWithdrawals = snap.docs.map(d=>({ id:d.id, ...d.data() }));
-        document.getElementById('stat-pend-wd').innerText = pendingWithdrawals.length;
-        renderPendingWithdrawals();
-    });
-
-    // Complete transactions count
-    db.collection('transactions').where('status','==','success').onSnapshot((snap)=>{
-        document.getElementById('stat-complete').innerText = snap.size;
-    });
+        updateStatCards();
+    } catch(e) { console.error('loadAllUsers:', e); }
 }
 
-// ─── STATS ───────────────────────────────────────────────
-function updateStats(){
-    const total = allUsers.length;
-    const vip   = allUsers.filter(u=> u.is_vip && u.vip_expiry > Date.now()).length;
-    const free  = total - vip;
-    document.getElementById('stat-total').innerText = total;
-    document.getElementById('stat-vip').innerText   = vip;
-    document.getElementById('stat-free').innerText  = free;
+function updateStatCards(){
+    const now = Date.now();
+    const vipUsers = allUsers.filter(u => u.is_vip && u.vip_expiry > now);
+    document.getElementById('stat-total').textContent = allUsers.length;
+    document.getElementById('stat-free').textContent  = allUsers.length - vipUsers.length;
+    document.getElementById('stat-vip').textContent   = vipUsers.length;
 }
 
-function getUserInfo(uid){
-    return allUsers.find(u=> u.id === uid) || null;
+async function loadStatsCards(){
+    try {
+        const pendDep = await db.collection('transactions').where('status','==','pending').where('transaction_type','==','DEPOSIT').get();
+        const pendWd  = await db.collection('transactions').where('status','==','pending').where('transaction_type','==','WITHDRAWAL').get();
+        const allTxns = await db.collection('transactions').where('status','==','success').get();
+        document.getElementById('stat-pend-dep').textContent = pendDep.size;
+        document.getElementById('stat-pend-wd').textContent  = pendWd.size;
+        document.getElementById('stat-complete').textContent = allTxns.size;
+    } catch(e) {}
 }
 
-// ─── RENDER PENDING DEPOSITS ─────────────────────────────
-function renderPendingDeposits(){
+// ─── ANALYTICS ────────────────────────────────────────────────
+async function setAnalyticsFilter(btn, filter){
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    analyticsFilter = filter;
+    await loadAnalytics();
+}
+
+async function loadAnalytics(){
+    try {
+        let cutoff = null;
+        const now = new Date();
+        if(analyticsFilter === '1d'){  cutoff = new Date(now - 86400000); }
+        else if(analyticsFilter === '7d'){  cutoff = new Date(now - 7*86400000); }
+        else if(analyticsFilter === '30d'){ cutoff = new Date(now - 30*86400000); }
+
+        // New users
+        let usersQ = db.collection('users');
+        if(cutoff) usersQ = usersQ.where('created_at','>=', firebase.firestore.Timestamp.fromDate(cutoff));
+        const usersSnap = await usersQ.get();
+        document.getElementById('analytics-users').textContent = usersSnap.size;
+
+        // Visits
+        let visitsQ = db.collection('visits');
+        if(cutoff) visitsQ = visitsQ.where('timestamp','>=', firebase.firestore.Timestamp.fromDate(cutoff));
+        const visitsSnap = await visitsQ.get();
+        document.getElementById('analytics-visits').textContent = visitsSnap.size;
+
+        // Deposits
+        let depQ = db.collection('transactions').where('transaction_type','==','DEPOSIT').where('status','==','success');
+        if(cutoff) depQ = depQ.where('created_at','>=', firebase.firestore.Timestamp.fromDate(cutoff));
+        const depSnap = await depQ.get();
+        const depTotal = depSnap.docs.reduce((s, d) => s + (d.data().amount || 0), 0);
+        document.getElementById('analytics-deposits').textContent = '$' + depTotal.toFixed(2);
+
+        // Withdrawals
+        let wdQ = db.collection('transactions').where('transaction_type','==','WITHDRAWAL').where('status','==','success');
+        if(cutoff) wdQ = wdQ.where('created_at','>=', firebase.firestore.Timestamp.fromDate(cutoff));
+        const wdSnap = await wdQ.get();
+        const wdTotal = wdSnap.docs.reduce((s, d) => s + (d.data().amount || 0), 0);
+        document.getElementById('analytics-withdrawals').textContent = '$' + wdTotal.toFixed(2);
+
+    } catch(e) { console.error('Analytics error:', e); }
+}
+
+// ─── PENDING DEPOSITS ─────────────────────────────────────────
+async function loadPendingDeposits(){
     const list = document.getElementById('list-deposits');
-    if(pendingDeposits.length === 0){ list.innerHTML='<p class="text-center text-slate-400 py-6">No pending deposits</p>'; return; }
-    list.innerHTML = pendingDeposits.map(tx=>{
-        const user = getUserInfo(tx.user_id);
-        const name  = user ? (user.first_name||'')+' '+(user.last_name||'') : '—';
-        const email = user ? user.email : tx.user_email || '—';
-        const phone = user ? (user.phone||'—') : '—';
-        const method= (tx.payment_method||'—').toUpperCase();
-        const date  = tx.created_at ? new Date(tx.created_at.toDate()).toLocaleString() : '—';
-        return `
-            <div class="border border-slate-200 rounded-xl p-4">
+    try {
+        const snap = await db.collection('transactions')
+            .where('status','==','pending')
+            .where('transaction_type','==','DEPOSIT')
+            .orderBy('created_at','desc').get();
+
+        if(snap.empty){ list.innerHTML='<p class="text-center text-slate-400 py-8">✅ No pending deposits</p>'; return; }
+
+        list.innerHTML = snap.docs.map(d => {
+            const tx = { id: d.id, ...d.data() };
+            const date = tx.created_at ? new Date(tx.created_at.toDate()).toLocaleString() : '—';
+            const user = allUsers.find(u => u.id === tx.user_id) || {};
+            return `<div class="border border-slate-200 rounded-xl p-4">
                 <div class="flex justify-between items-start mb-3">
                     <div>
-                        <p class="text-sm font-bold text-black">${name}</p>
-                        <p class="text-xs text-slate-400">${email}</p>
-                        <p class="text-xs text-slate-400">Phone: ${phone}</p>
+                        <p class="text-sm font-black text-black">${user.first_name||''} ${user.last_name||''}</p>
+                        <p class="text-xs text-slate-500">${tx.user_email || user.email || '—'}</p>
                         <p class="text-xs text-slate-400">${date}</p>
                     </div>
-                    <span class="badge-pending">Pending</span>
+                    <span class="text-lg font-black outfit text-emerald-600">$${(tx.amount||0).toFixed(2)}</span>
                 </div>
-                <div class="grid grid-cols-3 gap-2 text-center mb-3">
-                    <div class="bg-slate-50 p-2 rounded-lg"><p class="text-xs text-slate-400">Amount</p><p class="text-sm font-black text-green-600">$${(tx.amount||0).toFixed(2)}</p></div>
-                    <div class="bg-slate-50 p-2 rounded-lg"><p class="text-xs text-slate-400">Method</p><p class="text-sm font-black text-sky-600">${method}</p></div>
-                    <div class="bg-slate-50 p-2 rounded-lg"><p class="text-xs text-slate-400">TID</p><p class="text-[9px] font-black text-slate-700 break-all">${tx.txid||'—'}</p></div>
-                </div>
+                ${tx.txid ? `<div class="bg-slate-50 rounded-lg px-3 py-2 mb-3"><p class="text-[10px] text-slate-400 font-bold">TXID</p><p class="text-xs font-bold text-slate-700 break-all">${tx.txid}</p></div>` : ''}
+                ${tx.screenshot_url ? `<a href="${tx.screenshot_url}" target="_blank" class="block text-xs text-sky-600 font-bold mb-3">📎 View Screenshot</a>` : ''}
                 <div class="flex gap-2">
-                    <button onclick="approveTransaction('${tx.id}','${tx.user_id}',${tx.amount},'DEPOSIT')" class="flex-1 bg-green-600 text-white py-2 rounded-xl font-bold text-xs">✅ Approve</button>
-                    <button onclick="openReasonModal('${tx.id}','${tx.user_id}',${tx.amount},'DEPOSIT')" class="flex-1 bg-red-600 text-white py-2 rounded-xl font-bold text-xs">❌ Reject</button>
+                    <button onclick="approveDeposit('${d.id}','${tx.user_id}',${tx.amount||0})" class="flex-1 bg-green-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-green-700 transition">✅ Approve</button>
+                    <button onclick="openRejectModal('${d.id}','DEPOSIT','${tx.user_id}',${tx.amount||0})" class="flex-1 bg-red-500 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-red-600 transition">❌ Reject</button>
                 </div>
             </div>`;
-    }).join('');
+        }).join('');
+    } catch(e) { list.innerHTML = `<p class="text-center text-red-500 text-xs py-8">Error: ${e.message}</p>`; }
 }
 
-// ─── RENDER PENDING WITHDRAWALS ──────────────────────────
-function renderPendingWithdrawals(){
+async function loadPendingWithdrawals(){
     const list = document.getElementById('list-withdrawals');
-    if(pendingWithdrawals.length === 0){ list.innerHTML='<p class="text-center text-slate-400 py-6">No pending withdrawals</p>'; return; }
-    list.innerHTML = pendingWithdrawals.map(tx=>{
-        const user = getUserInfo(tx.user_id);
-        const name  = user ? (user.first_name||'')+' '+(user.last_name||'') : '—';
-        const email = user ? user.email : tx.user_email || '—';
-        const phone = user ? (user.phone||'—') : '—';
-        const addr  = tx.wallet_address || '—';
-        const method= (tx.payment_method||'trc20').toUpperCase();
-        const date  = tx.created_at ? new Date(tx.created_at.toDate()).toLocaleString() : '—';
-        return `
-            <div class="border border-slate-200 rounded-xl p-4">
+    try {
+        const snap = await db.collection('transactions')
+            .where('status','==','pending')
+            .where('transaction_type','==','WITHDRAWAL')
+            .orderBy('created_at','desc').get();
+
+        if(snap.empty){ list.innerHTML='<p class="text-center text-slate-400 py-8">✅ No pending withdrawals</p>'; return; }
+
+        list.innerHTML = snap.docs.map(d => {
+            const tx = { id: d.id, ...d.data() };
+            const date = tx.created_at ? new Date(tx.created_at.toDate()).toLocaleString() : '—';
+            const user = allUsers.find(u => u.id === tx.user_id) || {};
+            return `<div class="border border-orange-200 bg-orange-50 rounded-xl p-4">
                 <div class="flex justify-between items-start mb-3">
                     <div>
-                        <p class="text-sm font-bold text-black">${name}</p>
-                        <p class="text-xs text-slate-400">${email}</p>
-                        <p class="text-xs text-slate-400">Phone: ${phone}</p>
+                        <p class="text-sm font-black text-black">${user.first_name||''} ${user.last_name||''}</p>
+                        <p class="text-xs text-slate-500">${tx.user_email || user.email || '—'}</p>
                         <p class="text-xs text-slate-400">${date}</p>
                     </div>
-                    <span class="badge-pending">Pending</span>
+                    <span class="text-lg font-black outfit text-orange-600">$${(tx.amount||0).toFixed(2)}</span>
                 </div>
-                <div class="grid grid-cols-2 gap-2 text-center mb-2">
-                    <div class="bg-slate-50 p-2 rounded-lg"><p class="text-xs text-slate-400">Amount</p><p class="text-sm font-black text-red-600">$${(tx.amount||0).toFixed(2)}</p></div>
-                    <div class="bg-slate-50 p-2 rounded-lg"><p class="text-xs text-slate-400">Method</p><p class="text-sm font-black text-sky-600">${method}</p></div>
-                </div>
-                <div class="bg-slate-50 p-2 rounded-lg mb-3"><p class="text-xs text-slate-400">${method==='BINANCE'?'Binance Pay ID':'TRC20 Address'}</p><p class="text-[10px] font-black text-slate-700 break-all">${addr}</p></div>
+                ${tx.wallet_address ? `<div class="bg-white rounded-lg px-3 py-2 mb-3"><p class="text-[10px] text-slate-400 font-bold">WALLET ADDRESS</p><p class="text-xs font-bold text-slate-700 break-all">${tx.wallet_address}</p></div>` : ''}
                 <div class="flex gap-2">
-                    <button onclick="approveTransaction('${tx.id}','${tx.user_id}',${tx.amount},'WITHDRAWAL')" class="flex-1 bg-green-600 text-white py-2 rounded-xl font-bold text-xs">✅ Approve</button>
-                    <button onclick="openReasonModal('${tx.id}','${tx.user_id}',${tx.amount},'WITHDRAWAL')" class="flex-1 bg-red-600 text-white py-2 rounded-xl font-bold text-xs">❌ Reject</button>
+                    <button onclick="approveWithdrawal('${d.id}','${tx.user_id}',${tx.amount||0})" class="flex-1 bg-green-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-green-700 transition">✅ Approve</button>
+                    <button onclick="openRejectModal('${d.id}','WITHDRAWAL','${tx.user_id}',${tx.amount||0})" class="flex-1 bg-red-500 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-red-600 transition">❌ Reject</button>
                 </div>
             </div>`;
-    }).join('');
+        }).join('');
+    } catch(e) { list.innerHTML = `<p class="text-center text-red-500 text-xs py-8">Error: ${e.message}</p>`; }
 }
 
-// ─── APPROVE ─────────────────────────────────────────────
-async function approveTransaction(txId, userId, amount, type){
-    if(!confirm(`Approve ${type} of $${amount}?`)) return;
+async function loadCompletedTransactions(){
+    const list = document.getElementById('list-completed');
+    try {
+        const snap = await db.collection('transactions')
+            .where('status','==','success')
+            .orderBy('created_at','desc').limit(50).get();
+
+        if(snap.empty){ list.innerHTML='<p class="text-center text-slate-400 py-8">No completed transactions</p>'; return; }
+
+        list.innerHTML = snap.docs.map(d => {
+            const tx = { id: d.id, ...d.data() };
+            const date = tx.created_at ? new Date(tx.created_at.toDate()).toLocaleString() : '—';
+            const isDeposit = tx.transaction_type === 'DEPOSIT';
+            return `<div class="border border-slate-200 rounded-xl p-3 flex justify-between items-center">
+                <div>
+                    <p class="text-xs font-black uppercase ${isDeposit?'text-emerald-600':'text-orange-600'}">${tx.transaction_type||'—'}</p>
+                    <p class="text-[10px] text-slate-400">${tx.user_email || '—'}</p>
+                    <p class="text-[10px] text-slate-400">${date}</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm font-black ${isDeposit?'text-emerald-600':'text-orange-600'}">$${(tx.amount||0).toFixed(2)}</p>
+                    <span class="badge-success">SUCCESS</span>
+                </div>
+            </div>`;
+        }).join('');
+    } catch(e) { list.innerHTML = `<p class="text-center text-red-500 text-xs py-8">Error: ${e.message}</p>`; }
+}
+
+// ─── APPROVE DEPOSIT ──────────────────────────────────────────
+async function approveDeposit(txId, userId, amount){
+    if(!confirm(`Approve deposit of $${amount}?`)) return;
     try {
         const batch = db.batch();
-        batch.update(db.collection('transactions').doc(txId), { status:'success' });
-
-        if(type === 'DEPOSIT'){
-            batch.update(db.collection('users').doc(userId), {
-                balance: firebase.firestore.FieldValue.increment(amount),
-                total_deposited: firebase.firestore.FieldValue.increment(amount)
-            });
-        }
-
-        await batch.commit();
-        alert('✅ Approved!');
-    } catch(e){ alert('Error: ' + e.message); }
-}
-
-// ─── REJECT (STEP 1: Open reason modal) ──────────────────
-function openReasonModal(txId, userId, amount, type){
-    _rejectTxId   = txId;
-    _rejectUserId = userId;
-    _rejectAmount = amount;
-    _rejectType   = type;
-    document.getElementById('reason-input').value = '';
-    document.getElementById('reason-modal-title').innerText = `Reject ${type} ($${amount})`;
-    document.getElementById('reason-modal').classList.remove('hidden');
-}
-
-function closeReasonModal(){
-    document.getElementById('reason-modal').classList.add('hidden');
-}
-
-// ─── REJECT (STEP 2: After entering reason, show refund choice) ───
-function submitRejection(){
-    const reason = document.getElementById('reason-input').value.trim();
-    if(!reason) return alert('⚠️ Enter a reason');
-    
-    window._pendingReason = reason;
-    closeReasonModal();
-    
-    // ✅ ONLY SHOW REFUND CHOICE FOR WITHDRAWALS
-    if(_rejectType === 'WITHDRAWAL'){
-        showRefundChoiceModal();
-    } else {
-        // For deposits, just reject without refund option
-        finalizeRejection(false);
-    }
-}
-
-// ─── REJECT (STEP 3: Show refund choice modal) ───────────
-function showRefundChoiceModal(){
-    const modal = document.createElement('div');
-    modal.id = 'refund-choice-modal';
-    modal.className = 'reason-overlay';
-    modal.innerHTML = `
-        <div class="reason-box">
-            <h3 class="text-lg font-black outfit mb-2">💰 Refund Decision</h3>
-            <p class="text-xs text-slate-500 mb-4">Choose whether to refund the amount to user's balance:</p>
-            <div class="bg-orange-50 border-l-4 border-orange-500 p-3 rounded-lg mb-4">
-                <p class="text-xs text-orange-700 font-bold">⚠️ Amount: $${_rejectAmount.toFixed(2)}</p>
-                <p class="text-xs text-orange-600 mt-1">This amount was already deducted from user's balance when they submitted withdrawal.</p>
-            </div>
-            <div class="flex gap-3">
-                <button onclick="finalizeRejection(true)" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold text-sm">✅ Refund & Reject</button>
-                <button onclick="finalizeRejection(false)" class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold text-sm">❌ No Refund</button>
-            </div>
-        </div>`;
-    document.body.appendChild(modal);
-}
-
-// ─── REJECT (STEP 4: Finalize rejection) ─────────────────
-async function finalizeRejection(shouldRefund){
-    const refModal = document.getElementById('refund-choice-modal');
-    if(refModal) refModal.remove();
-    
-    try {
-        const batch = db.batch();
-        
-        batch.update(db.collection('transactions').doc(_rejectTxId), {
-            status: 'rejected',
-            rejection_reason: window._pendingReason,
-            refunded: shouldRefund
+        batch.update(db.collection('transactions').doc(txId), { status:'success', approved_at: firebase.firestore.FieldValue.serverTimestamp(), approved_by: adminUser.email });
+        batch.update(db.collection('users').doc(userId), {
+            balance: firebase.firestore.FieldValue.increment(amount),
+            total_deposited: firebase.firestore.FieldValue.increment(amount)
         });
-        
-        if(shouldRefund && _rejectType === 'WITHDRAWAL'){
-            batch.update(db.collection('users').doc(_rejectUserId), {
-                balance: firebase.firestore.FieldValue.increment(_rejectAmount)
-            });
-        }
-        
         await batch.commit();
+
+        // Trigger deposit commission for referrer
+        await triggerDepositCommission(userId, amount);
         
-        alert(`❌ ${_rejectType} rejected. ${shouldRefund ? '✅ Amount refunded to user.' : '⚠️ No refund given.'}`);
-    } catch(e){ 
-        alert('Error: ' + e.message); 
-    }
+        logAdminAction('approve_deposit', { txId, userId, amount });
+        alert('✅ Deposit approved! Balance updated.');
+        loadPendingDeposits();
+        loadStatsCards();
+    } catch(e) { alert('Error: '+e.message); }
 }
 
-// ─── RENDER FREE USERS ───────────────────────────────────
+async function triggerDepositCommission(userId, depositAmount){
+    try {
+        const userDoc = await db.collection('users').doc(userId).get();
+        if(!userDoc.exists) return;
+        const user = userDoc.data();
+        if(!user.referred_by) return;
+
+        const refSnap = await db.collection('users').where('ref_code','==',user.referred_by).limit(1).get();
+        if(refSnap.empty) return;
+
+        const refUser = { id: refSnap.docs[0].id, ...refSnap.docs[0].data() };
+        const commission = parseFloat((depositAmount * 0.03).toFixed(2));
+
+        const batch = db.batch();
+        batch.update(db.collection('users').doc(refUser.id), { earn_wallet: firebase.firestore.FieldValue.increment(commission) });
+        batch.set(db.collection('transactions').doc(), {
+            user_id: refUser.id, user_email: refUser.email,
+            amount: commission, transaction_type: 'DEPOSIT_COMMISSION',
+            status: 'success', from_user: userId,
+            created_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        await batch.commit();
+    } catch(e) { console.warn('Commission error:', e); }
+}
+
+// ─── APPROVE WITHDRAWAL ───────────────────────────────────────
+async function approveWithdrawal(txId, userId, amount){
+    if(!confirm(`Approve withdrawal of $${amount}? Confirm payment was sent.`)) return;
+    try {
+        await db.collection('transactions').doc(txId).update({ status:'success', approved_at: firebase.firestore.FieldValue.serverTimestamp(), approved_by: adminUser.email });
+        logAdminAction('approve_withdrawal', { txId, userId, amount });
+        alert('✅ Withdrawal marked as approved!');
+        loadPendingWithdrawals();
+        loadStatsCards();
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+// ─── REJECT MODAL ─────────────────────────────────────────────
+function openRejectModal(txId, type, userId, amount){
+    _rejectTxId = txId; _rejectType = type; _rejectUserId = userId; _rejectAmount = amount;
+    document.getElementById('reject-reason-input').value = '';
+    document.getElementById('reject-refund-question').textContent = type === 'WITHDRAWAL' ? '(Withdrawal amount was already deducted. Choose whether to refund.)' : '';
+    document.getElementById('reject-modal').classList.remove('hidden');
+}
+
+function closeRejectModal(){ document.getElementById('reject-modal').classList.add('hidden'); }
+
+async function finalizeRejection(shouldRefund){
+    const reason = document.getElementById('reject-reason-input').value.trim();
+    if(!reason){ alert('Please enter a rejection reason.'); return; }
+    closeRejectModal();
+
+    try {
+        const batch = db.batch();
+        batch.update(db.collection('transactions').doc(_rejectTxId), {
+            status: 'rejected', rejection_reason: reason,
+            refunded: shouldRefund, rejected_at: firebase.firestore.FieldValue.serverTimestamp(), rejected_by: adminUser.email
+        });
+
+        if(shouldRefund && _rejectType === 'WITHDRAWAL'){
+            batch.update(db.collection('users').doc(_rejectUserId), { balance: firebase.firestore.FieldValue.increment(_rejectAmount) });
+        }
+        await batch.commit();
+        logAdminAction('reject_transaction', { txId: _rejectTxId, type: _rejectType, reason, refunded: shouldRefund });
+        alert(`❌ ${_rejectType} rejected. ${shouldRefund ? '✅ Amount refunded.' : ''}`);
+        if(_rejectType === 'DEPOSIT') loadPendingDeposits();
+        else loadPendingWithdrawals();
+        loadStatsCards();
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+// ─── RENDER ALL USERS ─────────────────────────────────────────
+function renderAllUsers(){
+    const list = document.getElementById('list-all-users');
+    document.getElementById('all-users-count').textContent = `${allUsers.length} users`;
+    if(!allUsers.length){ list.innerHTML='<p class="text-center text-slate-400 py-8">No users found</p>'; return; }
+    list.innerHTML = allUsers.map(u => userCard(u)).join('');
+}
+
 function renderFreeUsers(){
     const list = document.getElementById('list-free-users');
-    const freeUsers = allUsers.filter(u=> !(u.is_vip && u.vip_expiry > Date.now()));
-    if(freeUsers.length === 0){ list.innerHTML='<p class="text-center text-slate-400 py-6">No free users</p>'; return; }
-    list.innerHTML = freeUsers.map(u=>{
-        const joinDate = u.created_at ? new Date(u.created_at.toDate()).toLocaleDateString() : '—';
-        return `
-            <div class="border border-slate-200 rounded-xl p-4">
-                <div class="flex justify-between items-start mb-3">
-                    <div>
-                        <p class="text-sm font-bold text-black">${(u.first_name||'')+' '+(u.last_name||'')}</p>
-                        <p class="text-xs text-slate-400">${u.email}</p>
-                        <p class="text-xs text-slate-400">Phone: ${u.phone||'—'}</p>
-                        <p class="text-xs text-slate-400">Joined: ${joinDate}</p>
-                    </div>
-                    <span class="badge-pending">FREE</span>
-                </div>
-                <div class="grid grid-cols-3 gap-2 text-center">
-                    <div class="bg-slate-50 p-2 rounded-lg"><p class="text-xs text-slate-400">Balance</p><p class="text-sm font-black text-green-600">$${(u.balance||0).toFixed(2)}</p></div>
-                    <div class="bg-slate-50 p-2 rounded-lg"><p class="text-xs text-slate-400">Referrals</p><p class="text-sm font-black text-sky-600">${u.referrals||0}</p></div>
-                    <div class="bg-slate-50 p-2 rounded-lg"><p class="text-xs text-slate-400">Ref Code</p><p class="text-sm font-black text-slate-700">${u.ref_code||'—'}</p></div>
-                </div>
-            </div>`;
-    }).join('');
+    const free = allUsers.filter(u => !(u.is_vip && u.vip_expiry > Date.now()));
+    if(!free.length){ list.innerHTML='<p class="text-center text-slate-400 py-8">No free users</p>'; return; }
+    list.innerHTML = free.map(u => userCard(u)).join('');
 }
 
-// ─── RENDER VIP USERS ────────────────────────────────────
 function renderVIPUsers(){
     const list = document.getElementById('list-vip-users');
-    const vipUsers = allUsers.filter(u=> u.is_vip && u.vip_expiry > Date.now());
-    if(vipUsers.length === 0){ list.innerHTML='<p class="text-center text-slate-400 py-6">No VIP users</p>'; return; }
-    list.innerHTML = vipUsers.map(u=>{
-        const daysLeft  = Math.ceil((u.vip_expiry - Date.now())/(1000*60*60*24));
-        const r1 = u.recovery_session_1;
-        const r2 = u.recovery_session_2;
-        return `
-            <div class="border-2 border-green-500 rounded-xl p-4 bg-green-50">
-                <div class="flex justify-between items-start mb-3">
-                    <div>
-                        <p class="text-sm font-bold text-black">${(u.first_name||'')+' '+(u.last_name||'')}</p>
-                        <p class="text-xs text-slate-600">${u.email}</p>
-                        <p class="text-xs text-slate-600">Phone: ${u.phone||'—'}</p>
-                    </div>
-                    <span class="badge-success">VIP ACTIVE</span>
-                </div>
-                <div class="grid grid-cols-4 gap-2 text-center mb-3">
-                    <div class="bg-white p-2 rounded-lg"><p class="text-xs text-slate-400">Balance</p><p class="text-sm font-black text-green-600">$${(u.balance||0).toFixed(2)}</p></div>
-                    <div class="bg-white p-2 rounded-lg"><p class="text-xs text-slate-400">Referrals</p><p class="text-sm font-black text-sky-600">${u.referrals||0}</p></div>
-                    <div class="bg-white p-2 rounded-lg"><p class="text-xs text-slate-400">Days Left</p><p class="text-sm font-black text-orange-600">${daysLeft}</p></div>
-                    <div class="bg-white p-2 rounded-lg"><p class="text-xs text-slate-400">Recovery</p><p class="text-sm font-black text-green-600">${[r1,r2].filter(s=>s).length}/2</p></div>
-                </div>
-                
-                <div class="flex gap-2">
-                    <button onclick="toggleRecovery('${u.id}', 1, ${r1})" class="flex-1 py-2 rounded-xl font-bold text-xs ${r1?'bg-green-100 text-green-700':'bg-slate-100 text-slate-600'}">S1: ${r1?'Active':'Used'}</button>
-                    <button onclick="toggleRecovery('${u.id}', 2, ${r2})" class="flex-1 py-2 rounded-xl font-bold text-xs ${r2?'bg-green-100 text-green-700':'bg-slate-100 text-slate-600'}">S2: ${r2?'Active':'Used'}</button>
-                </div>
-            </div>`;
-    }).join('');
+    const vip = allUsers.filter(u => u.is_vip && u.vip_expiry > Date.now());
+    if(!vip.length){ list.innerHTML='<p class="text-center text-slate-400 py-8">No VIP users</p>'; return; }
+    list.innerHTML = vip.map(u => userCard(u, true)).join('');
 }
 
-// ─── TOGGLE RECOVERY SESSION (Admin) ─────────────────────
-async function toggleRecovery(userId, session, currentVal){
-    const newVal = !currentVal;
-    const field  = 'recovery_session_' + session;
-    try {
-        await db.collection('users').doc(userId).update({ [field]: newVal });
-        alert(`✅ Recovery Session ${session} set to: ${newVal ? 'Active' : 'Used'}`);
-    } catch(e){ alert('Error: ' + e.message); }
+function userCard(u, highlight=false){
+    const isVip = u.is_vip && u.vip_expiry > Date.now();
+    const vipDays = isVip ? Math.ceil((u.vip_expiry - Date.now())/(1000*60*60*24)) : 0;
+    const joinDate = u.created_at ? new Date(u.created_at.toDate()).toLocaleDateString() : '—';
+    const border = highlight ? 'border-purple-300 bg-purple-50' : 'border-slate-200';
+    return `<div class="border ${border} rounded-xl p-3">
+        <div class="flex justify-between items-start mb-2">
+            <div>
+                <p class="text-sm font-bold">${(u.first_name||'')+' '+(u.last_name||'')}</p>
+                <p class="text-xs text-slate-500">${u.email}</p>
+                <p class="text-[10px] text-slate-400">Joined: ${joinDate} | Ref: ${u.ref_code||'—'}</p>
+            </div>
+            <span class="${isVip?'badge-vip':'badge-pending'}">${isVip?`VIP ${vipDays}d`:'FREE'}</span>
+        </div>
+        <div class="grid grid-cols-4 gap-2 text-center mb-2">
+            <div class="bg-white p-1.5 rounded-lg border border-slate-100"><p class="text-[9px] text-slate-400">Balance</p><p class="text-xs font-black text-green-600">$${(u.balance||0).toFixed(2)}</p></div>
+            <div class="bg-white p-1.5 rounded-lg border border-slate-100"><p class="text-[9px] text-slate-400">Earn</p><p class="text-xs font-black text-sky-600">$${(u.earn_wallet||0).toFixed(2)}</p></div>
+            <div class="bg-white p-1.5 rounded-lg border border-slate-100"><p class="text-[9px] text-slate-400">Deposited</p><p class="text-xs font-black text-slate-700">$${(u.total_deposited||0).toFixed(2)}</p></div>
+            <div class="bg-white p-1.5 rounded-lg border border-slate-100"><p class="text-[9px] text-slate-400">Referrals</p><p class="text-xs font-black text-blue-600">${u.referrals||0}</p></div>
+        </div>
+        <div class="flex gap-1.5">
+            <button onclick="editUserBalance('${u.id}',${u.balance||0},'balance')" class="flex-1 bg-orange-100 text-orange-700 py-1.5 rounded-lg font-bold text-[10px]">💰 Bal</button>
+            <button onclick="editUserBalance('${u.id}',${u.earn_wallet||0},'earn_wallet')" class="flex-1 bg-sky-100 text-sky-700 py-1.5 rounded-lg font-bold text-[10px]">💱 Earn</button>
+            <button onclick="viewUserTransactions('${u.id}')" class="flex-1 bg-slate-100 text-slate-700 py-1.5 rounded-lg font-bold text-[10px]">📊 Txns</button>
+            <button onclick="${u.suspended?`unsuspendUser('${u.id}')`:`suspendUser('${u.id}')`}" class="flex-1 ${u.suspended?'bg-green-100 text-green-700':'bg-red-100 text-red-700'} py-1.5 rounded-lg font-bold text-[10px]">${u.suspended?'✅ Unban':'🚫 Ban'}</button>
+        </div>
+    </div>`;
 }
 
-// ─── TAB SWITCHER ────────────────────────────────────────
-function switchAdminTab(tab){
-    ['deposits','withdrawals','free-users','vip-users','tools'].forEach(t=>{
-        document.getElementById('section-'+t).classList.add('hidden');
+// ─── TAB SWITCHER ─────────────────────────────────────────────
+const allTabs = ['deposits','withdrawals','all-users','free-users','vip-users','completed','promo','tools','security'];
+function switchTab(tab){
+    allTabs.forEach(t => {
+        document.getElementById('section-'+t).classList.add('section-hidden');
         document.getElementById('tab-'+t).classList.remove('active');
     });
-    document.getElementById('section-'+tab).classList.remove('hidden');
+    document.getElementById('section-'+tab).classList.remove('section-hidden');
     document.getElementById('tab-'+tab).classList.add('active');
-    if(tab==='tools') loadMaintenanceStatus();
+
+    if(tab === 'withdrawals') loadPendingWithdrawals();
+    else if(tab === 'completed') loadCompletedTransactions();
+    else if(tab === 'tools') loadMaintenanceStatus();
+    else if(tab === 'promo') loadPromoCodes();
 }
 
-// ✅ FIX: User Search Functions
+// ─── USER SEARCH ──────────────────────────────────────────────
 async function searchUser(){
     const email = document.getElementById('user-search').value.trim().toLowerCase();
     const resultDiv = document.getElementById('search-result');
-    
-    if(!email){
-        resultDiv.innerHTML = '<p class="text-center text-slate-400 text-sm">Enter an email to search</p>';
-        return;
-    }
-    
-    resultDiv.innerHTML = '<p class="text-center text-slate-600 text-sm">Searching...</p>';
-    
-    try{
+    if(!email){ resultDiv.innerHTML='<p class="text-xs text-slate-400">Enter an email to search</p>'; return; }
+    resultDiv.innerHTML = '<p class="text-xs text-slate-500">Searching...</p>';
+
+    try {
         const snap = await db.collection('users').where('email','==',email).limit(1).get();
-        
-        if(snap.empty){
-            resultDiv.innerHTML = '<p class="text-center text-red-600 text-sm font-bold">❌ No user found with this email</p>';
-            return;
-        }
-        
-        const userDoc = snap.docs[0];
-        const user = {id: userDoc.id, ...userDoc.data()};
-        const isVip = user.is_vip && user.vip_expiry > Date.now();
-        const vipDays = isVip ? Math.ceil((user.vip_expiry - Date.now())/(1000*60*60*24)) : 0;
-        const joinDate = user.created_at ? new Date(user.created_at.toDate()).toLocaleDateString() : '—';
-        
-        resultDiv.innerHTML = `
-            <div class="border-2 ${isVip?'border-green-500 bg-green-50':'border-slate-200 bg-white'} rounded-xl p-4">
-                <div class="flex justify-between items-start mb-3">
-                    <div>
-                        <p class="text-sm font-bold text-black">${(user.first_name||'')+' '+(user.last_name||'')}</p>
-                        <p class="text-xs text-slate-600">${user.email} <button onclick="navigator.clipboard.writeText('${user.email}').then(()=>alert('Email copied!'))" style="background:#eff6ff;color:#0ea5e9;border:none;border-radius:6px;padding:2px 8px;font-size:9px;font-weight:800;cursor:pointer;margin-left:4px;">📋 Copy</button></p>
-                        <p class="text-xs text-slate-600">Phone: ${user.phone||'—'}</p>
-                        <p class="text-xs text-slate-600">Joined: ${joinDate}</p>
-                        <p class="text-xs text-slate-600">User ID: ${user.id}</p>
-                    </div>
-                    <span class="${isVip?'badge-success':'badge-pending'}">${isVip?'VIP ACTIVE':'FREE'}</span>
-                </div>
-                <div class="grid grid-cols-4 gap-2 text-center mb-3">
-                    <div class="bg-white p-2 rounded-lg border border-slate-200"><p class="text-xs text-slate-400">Balance</p><p class="text-sm font-black text-green-600">$${(user.balance||0).toFixed(2)}</p></div>
-                    <div class="bg-white p-2 rounded-lg border border-slate-200"><p class="text-xs text-slate-400">Referrals</p><p class="text-sm font-black text-sky-600">${user.referrals||0}</p></div>
-                    <div class="bg-white p-2 rounded-lg border border-slate-200"><p class="text-xs text-slate-400">Ref Code</p><p class="text-[10px] font-black text-slate-700">${user.ref_code||'—'}</p></div>
-                    ${isVip ? `<div class="bg-white p-2 rounded-lg border border-slate-200"><p class="text-xs text-slate-400">VIP Days</p><p class="text-sm font-black text-orange-600">${vipDays}</p></div>` : '<div class="bg-white p-2 rounded-lg border border-slate-200"><p class="text-xs text-slate-400">Status</p><p class="text-[10px] font-black text-slate-500">No VIP</p></div>'}
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="viewUserTransactions('${user.id}')" class="flex-1 bg-sky-100 text-sky-700 py-2 rounded-xl font-bold text-xs">📊 Transactions</button>
-                    <button onclick="editUserBalance('${user.id}',${user.balance||0})" class="flex-1 bg-orange-100 text-orange-700 py-2 rounded-xl font-bold text-xs">💰 Edit Balance</button>
-                    ${user.suspended ? `<button onclick="toggleSuspend('${user.id}',false)" class="flex-1 bg-green-100 text-green-700 py-2 rounded-xl font-bold text-xs">✅ Unsuspend</button>` : `<button onclick="toggleSuspend('${user.id}',true)" class="flex-1 bg-red-100 text-red-700 py-2 rounded-xl font-bold text-xs">🚫 Suspend</button>`}
-                </div>
-            </div>`;
-        
-    }catch(e){
-        resultDiv.innerHTML = `<p class="text-center text-red-600 text-sm font-bold">Error: ${e.message}</p>`;
-    }
+        if(snap.empty){ resultDiv.innerHTML='<p class="text-xs text-red-600 font-bold">❌ No user found</p>'; return; }
+        const u = { id: snap.docs[0].id, ...snap.docs[0].data() };
+        resultDiv.innerHTML = `<div class="mt-2">${userCard(u)}</div>`;
+    } catch(e){ resultDiv.innerHTML=`<p class="text-xs text-red-600">${e.message}</p>`; }
 }
 
 function clearSearch(){
-    document.getElementById('user-search').value = '';
-    document.getElementById('search-result').innerHTML = '';
+    document.getElementById('user-search').value='';
+    document.getElementById('search-result').innerHTML='';
 }
 
 async function viewUserTransactions(userId){
-    try{
-        const snap = await db.collection('transactions').where('user_id','==',userId).orderBy('created_at','desc').limit(10).get();
-        const txs = snap.docs.map(d=>({id:d.id,...d.data()}));
-        
-        let html = '<h4 class="text-sm font-black mb-2 mt-3">Recent Transactions (Last 10)</h4><div class="space-y-2">';
-        
-        if(txs.length === 0){
-            html += '<p class="text-center text-slate-400 text-xs py-3">No transactions</p>';
-        } else {
-            txs.forEach(tx=>{
-                const badge = tx.status==='success'?'badge-success':tx.status==='rejected'?'badge-rejected':'badge-pending';
-                const date = tx.created_at ? new Date(tx.created_at.toDate()).toLocaleDateString() : '—';
-                html += `
-                    <div class="bg-white p-2 rounded-lg border border-slate-100 flex justify-between items-center">
-                        <div><p class="text-[10px] font-bold text-black uppercase">${tx.transaction_type}</p><p class="text-[9px] text-slate-400">${date}</p></div>
-                        <div class="text-right"><p class="text-xs font-black">${tx.amount.toFixed(2)}</p><span class="${badge} text-[8px]">${tx.status}</span></div>
-                    </div>`;
-            });
-        }
-        
-        html += '</div>';
+    try {
+        const snap = await db.collection('transactions').where('user_id','==',userId).orderBy('created_at','desc').limit(15).get();
+        const txs = snap.docs.map(d => ({id:d.id,...d.data()}));
+        let html = `<div class="mt-2 border border-slate-200 rounded-xl p-3"><h4 class="text-xs font-black mb-2">Last ${txs.length} Transactions</h4><div class="space-y-1.5">`;
+        if(!txs.length) html += '<p class="text-xs text-slate-400">No transactions</p>';
+        txs.forEach(tx => {
+            const date = tx.created_at ? new Date(tx.created_at.toDate()).toLocaleDateString() : '—';
+            const badge = tx.status==='success'?'badge-success':tx.status==='rejected'?'badge-rejected':'badge-pending';
+            html += `<div class="bg-slate-50 p-2 rounded-lg flex justify-between items-center"><div><p class="text-[10px] font-black uppercase">${tx.transaction_type}</p><p class="text-[9px] text-slate-400">${date}</p></div><div class="text-right"><p class="text-xs font-black">$${(tx.amount||0).toFixed(2)}</p><span class="${badge}">${tx.status}</span></div></div>`;
+        });
+        html += '</div></div>';
         document.getElementById('search-result').innerHTML += html;
-        
-    }catch(e){
-        alert('Error loading transactions: '+e.message);
-    }
+    } catch(e) { alert('Error: '+e.message); }
 }
 
-async function editUserBalance(userId, currentBalance){
-    const newBalance = prompt(`Current Balance: $${currentBalance.toFixed(2)}\n\nEnter NEW balance amount (can be higher or lower):`, currentBalance);
-    if(newBalance === null) return;
-    
-    const amount = parseFloat(newBalance);
-    if(isNaN(amount) || amount < 0){
-        alert('Invalid amount');
-        return;
-    }
-    
-    if(!confirm(`Change balance from $${currentBalance.toFixed(2)} to $${amount.toFixed(2)}?`)){
-        return;
-    }
-    
-    try{
-        await db.collection('users').doc(userId).update({balance: amount});
-        
-        // Log the action
-        await db.collection('admin_actions').add({
-            admin_email: adminUser.email,
-            action: 'balance_edit',
-            user_id: userId,
-            old_balance: currentBalance,
-            new_balance: amount,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        alert('✅ Balance updated successfully!');
-        searchUser(); // Refresh search results
-    }catch(e){
-        alert('Error: '+e.message);
-    }
+async function editUserBalance(userId, current, field='balance'){
+    const label = field==='balance' ? 'Main Balance' : 'Earn Wallet';
+    const newVal = prompt(`${label}: $${current.toFixed(2)}\n\nEnter new amount:`, current);
+    if(newVal === null) return;
+    const amount = parseFloat(newVal);
+    if(isNaN(amount)||amount<0){ alert('Invalid amount'); return; }
+    if(!confirm(`Change ${label} to $${amount.toFixed(2)}?`)) return;
+    try {
+        await db.collection('users').doc(userId).update({ [field]: amount });
+        logAdminAction('edit_balance', { userId, field, old: current, new: amount });
+        alert('✅ Balance updated!');
+        await loadAllUsers();
+        searchUser();
+    } catch(e) { alert('Error: '+e.message); }
 }
 
-async function toggleSuspend(userId, suspend){
-    const action = suspend ? 'suspend' : 'unsuspend';
-    const reason = suspend ? prompt('Enter suspension reason:') : null;
-    
-    if(suspend && !reason) return;
-    
-    if(!confirm(`Are you sure you want to ${action} this account?`)){
-        return;
-    }
-    
-    try{
-        const updateData = {suspended: suspend};
-        if(suspend) updateData.suspend_reason = reason;
-        
-        await db.collection('users').doc(userId).update(updateData);
-        
-        // Log the action
-        await db.collection('admin_actions').add({
-            admin_email: adminUser.email,
-            action: action,
-            user_id: userId,
-            reason: reason || 'Unsuspended',
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        alert(`✅ Account ${suspend?'suspended':'unsuspended'} successfully!`);
-        searchUser(); // Refresh search results
-    }catch(e){
-        alert('Error: '+e.message);
-    }
+async function suspendUser(userId){
+    const reason = prompt('Suspension reason:');
+    if(!reason) return;
+    if(!confirm('Suspend this account?')) return;
+    await db.collection('users').doc(userId).update({ suspended: true, suspend_reason: reason });
+    logAdminAction('suspend', { userId, reason });
+    alert('✅ User suspended');
+    loadAllUsers();
 }
 
-// ─── HELPER: Get User By Email ────────────────────────────────
-async function getUserByEmail(email){
-    const snap=await db.collection('users').where('email','==',email.toLowerCase().trim()).limit(1).get();
-    if(snap.empty){alert('User not found: '+email);return null;}
-    return {id:snap.docs[0].id,...snap.docs[0].data()};
+async function unsuspendUser(userId){
+    if(!confirm('Unsuspend this account?')) return;
+    await db.collection('users').doc(userId).update({ suspended: false });
+    logAdminAction('unsuspend', { userId });
+    alert('✅ User unsuspended');
+    loadAllUsers();
 }
 
-// ─── MAINTENANCE MODE ─────────────────────────────────────────
+// ─── PROMO CODES ──────────────────────────────────────────────
+async function createPromoCode(){
+    const code    = document.getElementById('promo-code').value.trim().toUpperCase();
+    const reward  = parseFloat(document.getElementById('promo-reward').value);
+    const maxUses = parseInt(document.getElementById('promo-max-uses').value) || 0;
+    const expiryVal = document.getElementById('promo-expiry').value;
+
+    if(!code){ alert('Enter a promo code'); return; }
+    if(isNaN(reward)||reward<0.01||reward>10){ alert('Reward must be $0.01–$10'); return; }
+
+    const data = { reward, active: true, max_uses: maxUses, uses: 0, created_by: adminUser.email, created_at: firebase.firestore.FieldValue.serverTimestamp() };
+    if(expiryVal) data.expires_at = firebase.firestore.Timestamp.fromDate(new Date(expiryVal));
+
+    try {
+        await db.collection('promo_codes').doc(code).set(data);
+        logAdminAction('create_promo', { code, reward, maxUses });
+        alert(`✅ Promo code "${code}" created! Reward: $${reward}`);
+        document.getElementById('promo-code').value = '';
+        loadPromoCodes();
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function loadPromoCodes(){
+    const list = document.getElementById('list-promo-codes');
+    list.innerHTML = '<p class="text-xs text-slate-400">Loading...</p>';
+    try {
+        const snap = await db.collection('promo_codes').orderBy('created_at','desc').get();
+        if(snap.empty){ list.innerHTML='<p class="text-center text-slate-400 py-4">No promo codes yet</p>'; return; }
+        list.innerHTML = snap.docs.map(d => {
+            const p = { id: d.id, ...d.data() };
+            const expired = p.expires_at && p.expires_at.toDate() < new Date();
+            const maxUses = p.max_uses || 0;
+            const exhausted = maxUses > 0 && p.uses >= maxUses;
+            const status = !p.active ? 'Disabled' : expired ? 'Expired' : exhausted ? 'Exhausted' : 'Active';
+            const statusColor = status==='Active' ? 'text-green-600' : 'text-red-500';
+            const expiry = p.expires_at ? new Date(p.expires_at.toDate()).toLocaleDateString() : 'No expiry';
+            return `<div class="border border-slate-200 rounded-xl p-3 flex justify-between items-center">
+                <div>
+                    <p class="text-sm font-black outfit">${p.id}</p>
+                    <p class="text-xs text-emerald-600 font-bold">💰 $${p.reward} reward</p>
+                    <p class="text-[10px] text-slate-400">Uses: ${p.uses||0}/${maxUses||'∞'} · Expires: ${expiry}</p>
+                    <p class="text-[10px] font-bold ${statusColor}">${status}</p>
+                </div>
+                <div class="flex gap-1.5">
+                    <button onclick="togglePromoCode('${p.id}',${p.active})" class="bg-${p.active?'orange':'green'}-100 text-${p.active?'orange':'green'}-700 px-3 py-1.5 rounded-lg font-bold text-[10px]">${p.active?'Disable':'Enable'}</button>
+                    <button onclick="deletePromoCode('${p.id}')" class="bg-red-100 text-red-600 px-3 py-1.5 rounded-lg font-bold text-[10px]">Delete</button>
+                </div>
+            </div>`;
+        }).join('');
+    } catch(e) { list.innerHTML=`<p class="text-xs text-red-500">Error: ${e.message}</p>`; }
+}
+
+async function togglePromoCode(code, currentActive){
+    await db.collection('promo_codes').doc(code).update({ active: !currentActive });
+    alert(`✅ Promo code ${!currentActive?'enabled':'disabled'}`);
+    loadPromoCodes();
+}
+
+async function deletePromoCode(code){
+    if(!confirm(`Delete promo code "${code}"? This cannot be undone.`)) return;
+    await db.collection('promo_codes').doc(code).delete();
+    alert('✅ Promo code deleted');
+    loadPromoCodes();
+}
+
+// ─── TOOLS ────────────────────────────────────────────────────
 async function setMaintenanceMode(on){
-    if(!confirm(`Turn maintenance mode ${on?'ON':'OFF'}?`))return;
-    try{
-        await db.collection('config').doc('platform').set({maintenance_mode:on},{merge:true});
-        document.getElementById('maintenance-status').innerText='Status: '+(on?'🔴 MAINTENANCE IS ON':'🟢 App is LIVE');
+    if(!confirm(`Turn maintenance mode ${on?'ON':'OFF'}?`)) return;
+    try {
+        await db.collection('config').doc('platform').set({ maintenance_mode: on }, { merge: true });
+        const status = document.getElementById('maintenance-status');
+        status.textContent = 'Status: '+(on?'🔴 MAINTENANCE IS ON':'🟢 App is LIVE');
+        const badge = document.getElementById('maintenance-badge');
+        on ? badge.classList.remove('hidden') : badge.classList.add('hidden');
+        logAdminAction('maintenance', { on });
         alert('✅ Maintenance mode '+(on?'ENABLED':'DISABLED'));
-    }catch(e){alert('Error: '+e.message);}
-}
-// Load maintenance status on tools tab
-async function loadMaintenanceStatus(){
-    try{
-        const snap=await db.collection('config').doc('platform').get();
-        const on=snap.exists&&snap.data().maintenance_mode;
-        document.getElementById('maintenance-status').innerText='Status: '+(on?'🔴 MAINTENANCE IS ON':'🟢 App is LIVE');
-    }catch(e){}
+    } catch(e) { alert('Error: '+e.message); }
 }
 
-// ─── APPROVE DEPOSIT BY TXID ──────────────────────────────────
+async function loadMaintenanceStatus(){
+    try {
+        const snap = await db.collection('config').doc('platform').get();
+        const on = snap.exists && snap.data().maintenance_mode;
+        const status = document.getElementById('maintenance-status');
+        if(status) status.textContent = 'Status: '+(on?'🔴 MAINTENANCE IS ON':'🟢 App is LIVE');
+        const badge = document.getElementById('maintenance-badge');
+        if(badge) on ? badge.classList.remove('hidden') : badge.classList.add('hidden');
+    } catch(e) {}
+}
+
 async function approveDepositByTxid(){
-    const txid=document.getElementById('t-txid-approve').value.trim();
-    if(!txid)return alert('Enter TXID');
-    try{
-        const snap=await db.collection('transactions').where('txid','==',txid).where('transaction_type','==','DEPOSIT').limit(1).get();
-        if(snap.empty)return alert('No pending deposit found with this TXID');
-        const txDoc=snap.docs[0];
-        const tx=txDoc.data();
-        if(tx.status==='success')return alert('Already approved!');
-        const batch=db.batch();
-        batch.update(db.collection('transactions').doc(txDoc.id),{status:'success'});
-        batch.update(db.collection('users').doc(tx.user_id),{
-            balance:firebase.firestore.FieldValue.increment(tx.amount),
-            total_deposited:firebase.firestore.FieldValue.increment(tx.amount)
-        });
-        await batch.commit();
-        // 3% commission to referrer
-        const userDoc=await db.collection('users').doc(tx.user_id).get();
-        if(userDoc.exists&&userDoc.data().referred_by){
-            const refSnap=await db.collection('users').where('ref_code','==',userDoc.data().referred_by).limit(1).get();
-            if(!refSnap.empty){
-                const commission=parseFloat((tx.amount*0.03).toFixed(2));
-                await db.collection('users').doc(refSnap.docs[0].id).update({earn_wallet:firebase.firestore.FieldValue.increment(commission)});
-                await db.collection('transactions').add({user_id:refSnap.docs[0].id,transaction_type:'DEPOSIT_COMMISSION',amount:commission,status:'approved',notes:'3% from $'+tx.amount+' deposit',created_at:firebase.firestore.FieldValue.serverTimestamp()});
+    const txid = document.getElementById('t-txid').value.trim();
+    if(!txid){ alert('Enter TXID'); return; }
+    try {
+        const snap = await db.collection('transactions').where('txid','==',txid).where('status','==','pending').limit(1).get();
+        if(snap.empty){ alert('No pending transaction found with this TXID'); return; }
+        const tx = { id: snap.docs[0].id, ...snap.docs[0].data() };
+        await approveDeposit(tx.id, tx.user_id, tx.amount);
+        document.getElementById('t-txid').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function rejectDepositByTxid(){
+    const txid = document.getElementById('t-txid').value.trim();
+    if(!txid){ alert('Enter TXID'); return; }
+    try {
+        const snap = await db.collection('transactions').where('txid','==',txid).where('status','==','pending').limit(1).get();
+        if(snap.empty){ alert('No pending transaction found with this TXID'); return; }
+        const tx = { id: snap.docs[0].id, ...snap.docs[0].data() };
+        openRejectModal(tx.id, tx.transaction_type, tx.user_id, tx.amount);
+        document.getElementById('t-txid').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function manualAdReward(){
+    const email = document.getElementById('t-ad-email').value.trim().toLowerCase();
+    const amount = parseFloat(document.getElementById('t-ad-amount').value);
+    if(!email||isNaN(amount)||amount<=0){ alert('Invalid input'); return; }
+    const user = await getUserByEmail(email);
+    if(!user) return;
+    if(!confirm(`Send $${amount} ad reward to ${email}?`)) return;
+    try {
+        await db.collection('users').doc(user.id).update({ earn_wallet: firebase.firestore.FieldValue.increment(amount) });
+        await db.collection('transactions').add({ user_id: user.id, user_email: email, amount, transaction_type: 'AD_REWARD', status: 'success', note: 'Manual Admin Reward', created_at: firebase.firestore.FieldValue.serverTimestamp() });
+        logAdminAction('manual_ad_reward', { email, amount });
+        alert('✅ Ad reward sent!');
+        document.getElementById('t-ad-email').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function extendVIP(){
+    const email = document.getElementById('t-vip-email').value.trim().toLowerCase();
+    const days  = parseInt(document.getElementById('t-vip-days').value);
+    if(!email){ alert('Enter email'); return; }
+    const user = await getUserByEmail(email);
+    if(!user) return;
+    if(!confirm(`Extend VIP by ${days} days for ${email}?`)) return;
+    try {
+        const currentExpiry = (user.is_vip && user.vip_expiry > Date.now()) ? user.vip_expiry : Date.now();
+        const newExpiry = currentExpiry + days * 86400000;
+        await db.collection('users').doc(user.id).update({ is_vip: true, vip_expiry: newExpiry });
+        logAdminAction('extend_vip', { email, days });
+        alert(`✅ VIP extended by ${days} days!`);
+        document.getElementById('t-vip-email').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function bulkBonusAllUsers(){
+    const amount = parseFloat(document.getElementById('t-bulk-amount').value);
+    const wallet = document.getElementById('t-bulk-wallet').value;
+    if(isNaN(amount)||amount<=0){ alert('Invalid amount'); return; }
+    if(!confirm(`⚠️ Send $${amount} to ${wallet.replace('_',' ')} of ALL ${allUsers.length} users?\n\nThis cannot be undone!`)) return;
+
+    let success = 0;
+    for(const user of allUsers){
+        try {
+            await db.collection('users').doc(user.id).update({ [wallet]: firebase.firestore.FieldValue.increment(amount) });
+            success++;
+        } catch(e) {}
+    }
+    logAdminAction('bulk_bonus', { amount, wallet, count: success });
+    alert(`✅ Bulk bonus sent to ${success} users!`);
+}
+
+async function manualBonusSingle(){
+    const email  = document.getElementById('t-bonus-email').value.trim().toLowerCase();
+    const amount = parseFloat(document.getElementById('t-bonus-amount').value);
+    const wallet = document.getElementById('t-bonus-wallet').value;
+    const note   = document.getElementById('t-bonus-note').value || 'Admin Bonus';
+    if(!email||isNaN(amount)||amount<=0){ alert('Invalid input'); return; }
+    const user = await getUserByEmail(email);
+    if(!user) return;
+    if(!confirm(`Send $${amount} to ${wallet.replace('_',' ')} of ${email}?`)) return;
+    try {
+        await db.collection('users').doc(user.id).update({ [wallet]: firebase.firestore.FieldValue.increment(amount) });
+        await db.collection('transactions').add({ user_id: user.id, user_email: email, amount, transaction_type: 'ADMIN_BONUS', status: 'success', note, wallet, created_at: firebase.firestore.FieldValue.serverTimestamp() });
+        logAdminAction('manual_bonus', { email, amount, wallet, note });
+        alert('✅ Bonus sent!');
+        document.getElementById('t-bonus-email').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function setEarnTransferMin(){
+    const min = parseFloat(document.getElementById('t-earn-min').value);
+    if(isNaN(min)||min<0){ alert('Invalid amount'); return; }
+    await db.collection('config').doc('platform').set({ earn_transfer_min: min }, { merge: true });
+    logAdminAction('set_earn_min', { min });
+    alert(`✅ Earn transfer minimum set to $${min}`);
+}
+
+async function setAdRewardAmount(){
+    const reward = parseFloat(document.getElementById('t-ad-reward').value);
+    if(isNaN(reward)||reward<=0){ alert('Invalid amount'); return; }
+    await db.collection('config').doc('platform').set({ ad_reward: reward }, { merge: true });
+    logAdminAction('set_ad_reward', { reward });
+    alert(`✅ Ad reward amount set to $${reward}`);
+}
+
+async function setWithdrawalMin(){
+    const min = parseFloat(document.getElementById('t-wd-min').value);
+    if(isNaN(min)||min<0){ alert('Invalid amount'); return; }
+    await db.collection('config').doc('platform').set({ withdrawal_min: min }, { merge: true });
+    logAdminAction('set_wd_min', { min });
+    alert(`✅ Withdrawal minimum set to $${min}`);
+}
+
+async function setDepositMin(){
+    const min = parseFloat(document.getElementById('t-dep-min').value);
+    if(isNaN(min)||min<0){ alert('Invalid amount'); return; }
+    await db.collection('config').doc('platform').set({ deposit_min: min }, { merge: true });
+    logAdminAction('set_dep_min', { min });
+    alert(`✅ Deposit minimum set to $${min}`);
+}
+
+async function approveAllPendingDeposits(){
+    if(!confirm('⚡ Approve ALL pending deposits? This will credit all pending amounts to users.')) return;
+    const snap = await db.collection('transactions').where('status','==','pending').where('transaction_type','==','DEPOSIT').get();
+    if(snap.empty){ alert('No pending deposits'); return; }
+    let count = 0;
+    for(const d of snap.docs){
+        const tx = d.data();
+        try {
+            await approveDeposit(d.id, tx.user_id, tx.amount);
+            count++;
+        } catch(e) {}
+    }
+    alert(`✅ Approved ${count} deposits!`);
+}
+
+async function cancelUserWithdrawals(){
+    const email = document.getElementById('t-cancel-email').value.trim().toLowerCase();
+    if(!email){ alert('Enter email'); return; }
+    const user = await getUserByEmail(email);
+    if(!user) return;
+    if(!confirm(`Cancel ALL pending withdrawals for ${email}?`)) return;
+    const snap = await db.collection('transactions').where('user_id','==',user.id).where('status','==','pending').where('transaction_type','==','WITHDRAWAL').get();
+    if(snap.empty){ alert('No pending withdrawals for this user'); return; }
+    for(const d of snap.docs){
+        const tx = d.data();
+        await db.collection('users').doc(user.id).update({ balance: firebase.firestore.FieldValue.increment(tx.amount||0) });
+        await d.ref.update({ status:'rejected', rejection_reason: 'Cancelled by admin', refunded: true });
+    }
+    logAdminAction('cancel_withdrawals', { email, count: snap.size });
+    alert(`✅ Cancelled ${snap.size} withdrawal(s) and refunded to balance`);
+    document.getElementById('t-cancel-email').value = '';
+}
+
+async function resetAdClaims(){
+    const email = document.getElementById('t-reset-claims-email').value.trim().toLowerCase();
+    if(!email){ alert('Enter email'); return; }
+    const user = await getUserByEmail(email);
+    if(!user) return;
+    await db.collection('users').doc(user.id).update({ ad_claims_today: 0, last_ad_claim_date: null });
+    alert('✅ Ad claims reset!');
+    document.getElementById('t-reset-claims-email').value = '';
+}
+
+async function grantVIPFree(){
+    const email = document.getElementById('t-grant-vip-email').value.trim().toLowerCase();
+    const days  = parseInt(document.getElementById('t-grant-vip-days').value);
+    if(!email){ alert('Enter email'); return; }
+    const user = await getUserByEmail(email);
+    if(!user) return;
+    if(!confirm(`Grant ${days}-day free VIP to ${email}?`)) return;
+    const expiry = Date.now() + days * 86400000;
+    await db.collection('users').doc(user.id).update({ is_vip: true, vip_expiry: expiry, vip_granted_by: 'admin' });
+    logAdminAction('grant_vip_free', { email, days });
+    alert('✅ VIP granted!');
+    document.getElementById('t-grant-vip-email').value = '';
+}
+
+async function revokeVIP(){
+    const email = document.getElementById('t-revoke-vip-email').value.trim().toLowerCase();
+    if(!email){ alert('Enter email'); return; }
+    const user = await getUserByEmail(email);
+    if(!user) return;
+    if(!confirm(`Revoke VIP from ${email}?`)) return;
+    await db.collection('users').doc(user.id).update({ is_vip: false, vip_expiry: 0 });
+    logAdminAction('revoke_vip', { email });
+    alert('✅ VIP revoked!');
+    document.getElementById('t-revoke-vip-email').value = '';
+}
+
+async function loadPlatformStats(){
+    const el = document.getElementById('platform-stats-result');
+    el.innerHTML = '<p class="text-xs text-slate-400">Loading...</p>';
+    try {
+        const [usersSnap, txSnap, depSnap, wdSnap] = await Promise.all([
+            db.collection('users').get(),
+            db.collection('transactions').where('status','==','success').get(),
+            db.collection('transactions').where('transaction_type','==','DEPOSIT').where('status','==','success').get(),
+            db.collection('transactions').where('transaction_type','==','WITHDRAWAL').where('status','==','success').get()
+        ]);
+        const totalDep = depSnap.docs.reduce((s,d) => s+(d.data().amount||0), 0);
+        const totalWd  = wdSnap.docs.reduce((s,d) => s+(d.data().amount||0), 0);
+        const totalBal = allUsers.reduce((s,u) => s+(u.balance||0), 0);
+        const totalEarn = allUsers.reduce((s,u) => s+(u.earn_wallet||0), 0);
+        const vipCount = allUsers.filter(u=>u.is_vip&&u.vip_expiry>Date.now()).length;
+        el.innerHTML = `
+            <div class="bg-slate-50 p-3 rounded-xl text-center"><p class="text-[10px] text-slate-400">Total Users</p><p class="text-xl font-black outfit">${usersSnap.size}</p></div>
+            <div class="bg-slate-50 p-3 rounded-xl text-center"><p class="text-[10px] text-slate-400">VIP Users</p><p class="text-xl font-black outfit text-purple-600">${vipCount}</p></div>
+            <div class="bg-green-50 p-3 rounded-xl text-center"><p class="text-[10px] text-green-500">Total Deposits</p><p class="text-xl font-black outfit text-green-600">$${totalDep.toFixed(0)}</p></div>
+            <div class="bg-red-50 p-3 rounded-xl text-center"><p class="text-[10px] text-red-400">Total Withdrawals</p><p class="text-xl font-black outfit text-red-500">$${totalWd.toFixed(0)}</p></div>
+            <div class="bg-blue-50 p-3 rounded-xl text-center"><p class="text-[10px] text-blue-400">Total Balance Held</p><p class="text-xl font-black outfit text-blue-600">$${totalBal.toFixed(0)}</p></div>
+            <div class="bg-sky-50 p-3 rounded-xl text-center"><p class="text-[10px] text-sky-400">Total Earn Wallets</p><p class="text-xl font-black outfit text-sky-600">$${totalEarn.toFixed(0)}</p></div>
+            <div class="bg-slate-50 p-3 rounded-xl text-center"><p class="text-[10px] text-slate-400">Net Platform</p><p class="text-xl font-black outfit text-emerald-600">$${(totalDep-totalWd).toFixed(0)}</p></div>
+            <div class="bg-slate-50 p-3 rounded-xl text-center"><p class="text-[10px] text-slate-400">Total Txns</p><p class="text-xl font-black outfit text-slate-700">${txSnap.size}</p></div>`;
+    } catch(e) { el.innerHTML=`<p class="text-xs text-red-500">Error: ${e.message}</p>`; }
+}
+
+async function sendAnnouncement(){
+    const title = document.getElementById('t-announce-title').value.trim();
+    const body  = document.getElementById('t-announce-body').value.trim();
+    if(!title||!body){ alert('Enter title and message'); return; }
+    if(!confirm(`Post announcement: "${title}"?`)) return;
+    try {
+        await db.collection('announcements').add({ title, body, created_by: adminUser.email, created_at: firebase.firestore.FieldValue.serverTimestamp(), active: true });
+        logAdminAction('announcement', { title });
+        alert('✅ Announcement posted!');
+        document.getElementById('t-announce-title').value = '';
+        document.getElementById('t-announce-body').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function forcePlanMaturity(){
+    const email = document.getElementById('t-plan-check-email').value.trim().toLowerCase();
+    if(!email){ alert('Enter email'); return; }
+    const user = await getUserByEmail(email);
+    if(!user) return;
+    try {
+        const now = Date.now();
+        const snap = await db.collection('investment_plans').where('user_id','==',user.id).where('status','==','active').get();
+        if(snap.empty){ alert('No active investment plans for this user'); return; }
+        let credited = 0;
+        for(const d of snap.docs){
+            const plan = d.data();
+            if(plan.matures_at && plan.matures_at <= now){
+                await db.collection('users').doc(user.id).update({ balance: firebase.firestore.FieldValue.increment(plan.return_amount||0) });
+                await d.ref.update({ status: 'completed', completed_at: firebase.firestore.FieldValue.serverTimestamp() });
+                credited += plan.return_amount || 0;
             }
         }
-        alert('✅ Deposit approved! $'+tx.amount+' credited.');
-        document.getElementById('t-txid-approve').value='';
-    }catch(e){alert('Error: '+e.message);}
+        alert(credited > 0 ? `✅ Credited $${credited.toFixed(2)} from matured plans!` : 'No matured plans found');
+    } catch(e) { alert('Error: '+e.message); }
 }
 
-// ─── REJECT DEPOSIT BY TXID ───────────────────────────────────
-async function rejectDepositByTxid(){
-    const txid=document.getElementById('t-txid-reject').value.trim();
-    if(!txid)return alert('Enter TXID');
-    const reason=prompt('Rejection reason:');if(!reason)return;
-    try{
-        const snap=await db.collection('transactions').where('txid','==',txid).limit(1).get();
-        if(snap.empty)return alert('Transaction not found');
-        await db.collection('transactions').doc(snap.docs[0].id).update({status:'rejected',rejection_reason:reason});
-        alert('❌ Deposit rejected.');
-        document.getElementById('t-txid-reject').value='';
-    }catch(e){alert('Error: '+e.message);}
+async function editUserEmail(){
+    const oldEmail = document.getElementById('t-old-email').value.trim().toLowerCase();
+    const newEmail = document.getElementById('t-new-email').value.trim().toLowerCase();
+    if(!oldEmail||!newEmail){ alert('Enter both emails'); return; }
+    if(!confirm(`Change ${oldEmail} → ${newEmail}?`)) return;
+    const user = await getUserByEmail(oldEmail);
+    if(!user) return;
+    await db.collection('users').doc(user.id).update({ email: newEmail });
+    logAdminAction('edit_email', { userId: user.id, old: oldEmail, new: newEmail });
+    alert('✅ Email updated in Firestore (Auth email must be changed separately)');
 }
 
-// ─── MANUAL AD REWARD ─────────────────────────────────────────
-async function manualAdReward(){
-    const email=document.getElementById('t-ad-email').value.trim();
-    const amount=parseFloat(document.getElementById('t-ad-amount').value)||2;
-    if(!email)return alert('Enter email');
-    const user=await getUserByEmail(email);if(!user)return;
-    try{
-        await db.collection('users').doc(user.id).update({earn_wallet:firebase.firestore.FieldValue.increment(amount)});
-        await db.collection('transactions').add({user_id:user.id,transaction_type:'AD_CLAIM',amount:amount,status:'approved',notes:'Manual ad reward by admin',created_at:firebase.firestore.FieldValue.serverTimestamp()});
-        alert('✅ $'+amount+' ad reward sent to '+email);
-    }catch(e){alert('Error: '+e.message);}
+async function zeroOutBalance(){
+    const email = document.getElementById('t-zero-email').value.trim().toLowerCase();
+    const wallet = document.getElementById('t-zero-wallet').value;
+    if(!email){ alert('Enter email'); return; }
+    if(!confirm(`⚠️ Set ${wallet.replace('_',' ')} of ${email} to $0.00?`)) return;
+    const user = await getUserByEmail(email);
+    if(!user) return;
+    await db.collection('users').doc(user.id).update({ [wallet]: 0 });
+    logAdminAction('zero_balance', { email, wallet });
+    alert('✅ Balance zeroed out');
 }
 
-// ─── EXTEND VIP ───────────────────────────────────────────────
-async function extendVIP(){
-    const email=document.getElementById('t-vip-email').value.trim();
-    const days=parseInt(document.getElementById('t-vip-days').value)||30;
-    if(!email)return alert('Enter email');
-    const user=await getUserByEmail(email);if(!user)return;
-    const now=Date.now();
-    const currentExpiry=user.is_vip&&user.vip_expiry>now?user.vip_expiry:now;
-    const newExpiry=currentExpiry+(days*24*60*60*1000);
-    try{
-        await db.collection('users').doc(user.id).update({is_vip:true,vip_expiry:newExpiry});
-        alert('✅ VIP extended! '+days+' days added for '+email);
-    }catch(e){alert('Error: '+e.message);}
+function exportUsers(){
+    const rows = [['ID','Email','Name','Balance','Earn Wallet','VIP','Referrals','Joined']];
+    allUsers.forEach(u => {
+        const isVip = u.is_vip && u.vip_expiry > Date.now();
+        const joined = u.created_at ? new Date(u.created_at.toDate()).toLocaleDateString() : '';
+        rows.push([u.id, u.email, `${u.first_name||''} ${u.last_name||''}`, (u.balance||0).toFixed(2), (u.earn_wallet||0).toFixed(2), isVip?'VIP':'Free', u.referrals||0, joined]);
+    });
+    downloadCSV('silver-x-users.csv', rows);
 }
 
-// ─── BULK BONUS ALL USERS ─────────────────────────────────────
-async function bulkBonusAllUsers(){
-    const amount=parseFloat(document.getElementById('t-bulk-amount').value);
-    const wallet=document.getElementById('t-bulk-wallet').value;
-    if(!amount||amount<=0)return alert('Enter valid amount');
-    if(!confirm('Send $'+amount+' to '+wallet+' of ALL '+allUsers.length+' users? This cannot be undone!'))return;
-    try{
-        const batchSize=499;
-        let count=0;
-        for(let i=0;i<allUsers.length;i+=batchSize){
-            const batch=db.batch();
-            allUsers.slice(i,i+batchSize).forEach(u=>{
-                batch.update(db.collection('users').doc(u.id),{[wallet]:firebase.firestore.FieldValue.increment(amount)});
-            });
-            await batch.commit();
-            count+=Math.min(batchSize,allUsers.length-i);
-        }
-        alert('✅ $'+amount+' sent to '+wallet+' for '+count+' users!');
-    }catch(e){alert('Error: '+e.message);}
+async function exportTransactions(){
+    const snap = await db.collection('transactions').orderBy('created_at','desc').limit(500).get();
+    const rows = [['ID','User Email','Type','Amount','Status','Date']];
+    snap.docs.forEach(d => {
+        const tx = d.data();
+        const date = tx.created_at ? new Date(tx.created_at.toDate()).toLocaleDateString() : '';
+        rows.push([d.id, tx.user_email||'', tx.transaction_type||'', (tx.amount||0).toFixed(2), tx.status||'', date]);
+    });
+    downloadCSV('silver-x-transactions.csv', rows);
 }
 
-// ─── SET EARN TRANSFER MIN ────────────────────────────────────
-async function setEarnTransferMin(){
-    const min=parseFloat(document.getElementById('t-earn-min').value);
-    if(!min||min<0)return alert('Enter valid amount');
-    try{
-        await db.collection('config').doc('platform').set({earn_transfer_min:min},{merge:true});
-        alert('✅ Earn wallet transfer minimum set to $'+min);
-    }catch(e){alert('Error: '+e.message);}
+function downloadCSV(filename, rows){
+    const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type:'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
 }
 
-// ─── PLATFORM STATS ───────────────────────────────────────────
-async function loadPlatformStats(){
-    const el=document.getElementById('platform-stats-result');
-    el.innerHTML='<p class="text-slate-500 text-center">Loading...</p>';
-    try{
-        const [usersSnap,txSnap]=await Promise.all([
-            db.collection('users').get(),
-            db.collection('transactions').get()
-        ]);
-        const users=usersSnap.docs.map(d=>d.data());
-        const txs=txSnap.docs.map(d=>d.data());
-        const vipUsers=users.filter(u=>u.is_vip&&u.vip_expiry>Date.now()).length;
-        const totalBal=users.reduce((s,u)=>s+(parseFloat(u.balance)||0),0).toFixed(2);
-        const totalEarn=users.reduce((s,u)=>s+(parseFloat(u.earn_wallet)||0),0).toFixed(2);
-        const pendingDep=txs.filter(t=>t.transaction_type==='DEPOSIT'&&t.status==='pending').length;
-        const pendingWd=txs.filter(t=>t.transaction_type==='WITHDRAWAL'&&t.status==='pending').length;
-        const totalDep=txs.filter(t=>t.transaction_type==='DEPOSIT'&&t.status==='success').reduce((s,t)=>s+(parseFloat(t.amount)||0),0).toFixed(2);
-        const totalWd=txs.filter(t=>t.transaction_type==='WITHDRAWAL'&&t.status==='success').reduce((s,t)=>s+(parseFloat(t.amount)||0),0).toFixed(2);
-        el.innerHTML=[
-            ['Total Users',usersSnap.size,'#0ea5e9'],
-            ['VIP Users',vipUsers,'#8B5CF6'],
-            ['Free Users',usersSnap.size-vipUsers,'#64748b'],
-            ['Total Main Balance','$'+totalBal,'#10B981'],
-            ['Total Earn Wallets','$'+totalEarn,'#F59E0B'],
-            ['Pending Deposits',pendingDep,'#EA580C'],
-            ['Pending Withdrawals',pendingWd,'#EF4444'],
-            ['All-Time Deposited','$'+totalDep,'#10B981'],
-            ['All-Time Withdrawn','$'+totalWd,'#EF4444'],
-        ].map(([k,v,c])=>`<div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-100"><span class="font-bold text-slate-600 text-xs">${k}</span><span class="font-black text-sm" style="color:${c}">${v}</span></div>`).join('');
-    }catch(e){el.innerHTML='<p class="text-red-600 text-sm">Error: '+e.message+'</p>';}
+// ─── SECURITY ─────────────────────────────────────────────────
+async function loadAdminLog(){
+    const el = document.getElementById('admin-log');
+    el.innerHTML = '<p class="text-xs text-slate-400">Loading...</p>';
+    try {
+        const snap = await db.collection('admin_actions').orderBy('timestamp','desc').limit(30).get();
+        if(snap.empty){ el.innerHTML='<p class="text-xs text-slate-400">No actions logged</p>'; return; }
+        el.innerHTML = snap.docs.map(d => {
+            const a = d.data();
+            const date = a.timestamp ? new Date(a.timestamp.toDate()).toLocaleString() : '—';
+            return `<div class="bg-slate-50 p-2 rounded-lg flex justify-between items-center">
+                <div><p class="text-[10px] font-black uppercase text-slate-700">${a.action||'—'}</p><p class="text-[9px] text-slate-400">${date}</p></div>
+                <span class="text-[9px] text-slate-400">${a.admin_email||'—'}</span>
+            </div>`;
+        }).join('');
+    } catch(e) { el.innerHTML=`<p class="text-xs text-red-500">${e.message}</p>`; }
 }
 
-// ─── APPROVE ALL PENDING DEPOSITS ────────────────────────────
-async function approveAllPendingDeposits(){
-    if(!confirm('Approve ALL pending deposits?'))return;
-    try{
-        const snap=await db.collection('transactions').where('transaction_type','==','DEPOSIT').where('status','==','pending').get();
-        if(snap.empty)return alert('No pending deposits');
-        const batch=db.batch();
-        snap.forEach(doc=>{
-            const tx=doc.data();
-            batch.update(db.collection('transactions').doc(doc.id),{status:'success'});
-            batch.update(db.collection('users').doc(tx.user_id),{
-                balance:firebase.firestore.FieldValue.increment(tx.amount),
-                total_deposited:firebase.firestore.FieldValue.increment(tx.amount)
-            });
+async function detectSuspiciousActivity(){
+    const el = document.getElementById('suspicious-result');
+    el.textContent = 'Scanning...';
+    let flags = [];
+
+    // Check for users with high balances but no deposits
+    allUsers.forEach(u => {
+        if((u.balance||0) > 1000 && (u.total_deposited||0) < 10) flags.push(`⚠️ ${u.email} — High balance ($${(u.balance||0).toFixed(2)}) with low deposits ($${(u.total_deposited||0).toFixed(2)})`);
+    });
+
+    // Check for multiple accounts with same referral code
+    const refCodeCounts = {};
+    allUsers.forEach(u => { if(u.referred_by) refCodeCounts[u.referred_by] = (refCodeCounts[u.referred_by]||0)+1; });
+    Object.entries(refCodeCounts).forEach(([code, count]) => { if(count>5) flags.push(`⚠️ Ref code "${code}" used ${count} times — possible abuse`); });
+
+    if(!flags.length) flags.push('✅ No suspicious activity detected');
+    el.innerHTML = flags.map(f => `<p class="text-xs py-1 border-b border-slate-100">${f}</p>`).join('');
+}
+
+async function blacklistUser(){
+    const email = document.getElementById('t-blacklist-email').value.trim().toLowerCase();
+    if(!email){ alert('Enter email'); return; }
+    if(!confirm(`Blacklist ${email}? They will be suspended and flagged.`)) return;
+    const user = await getUserByEmail(email);
+    if(!user) return;
+    await db.collection('users').doc(user.id).update({ suspended: true, blacklisted: true, suspend_reason: 'Blacklisted by admin' });
+    await db.collection('blacklist').doc(email).set({ email, admin: adminUser.email, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+    logAdminAction('blacklist', { email });
+    alert('✅ User blacklisted and suspended');
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────
+async function getUserByEmail(email){
+    const snap = await db.collection('users').where('email','==',email).limit(1).get();
+    if(snap.empty){ alert('User not found: '+email); return null; }
+    return { id: snap.docs[0].id, ...snap.docs[0].data() };
+}
+
+async function logAdminAction(action, data){
+    try {
+        await db.collection('admin_actions').add({
+            action, admin_email: adminUser?.email || 'unknown',
+            data, timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
-        await batch.commit();
-        alert('✅ Approved '+snap.size+' pending deposits!');
-    }catch(e){alert('Error: '+e.message);}
+    } catch(e) {}
 }
-
-// ─── CANCEL USER WITHDRAWALS ──────────────────────────────────
-async function cancelUserWithdrawals(){
-    const email=document.getElementById('t-cancel-wd-email').value.trim();
-    if(!email)return alert('Enter email');
-    const user=await getUserByEmail(email);if(!user)return;
-    try{
-        const snap=await db.collection('transactions').where('user_id','==',user.id).where('transaction_type','==','WITHDRAWAL').where('status','==','pending').get();
-        if(snap.empty)return alert('No pending withdrawals for this user');
-        let totalRefund=0;
-        const batch=db.batch();
-        snap.forEach(doc=>{
-            const tx=doc.data();
-            batch.update(db.collection('transactions').doc(doc.id),{status:'cancelled',rejection_reason:'Cancelled by admin'});
-            totalRefund+=parseFloat(tx.amount)||0;
-        });
-        batch.update(db.collection('users').doc(user.id),{balance:firebase.firestore.FieldValue.increment(totalRefund)});
-        await batch.commit();
-        alert('✅ Cancelled '+snap.size+' withdrawals. $'+totalRefund.toFixed(2)+' refunded to '+email);
-    }catch(e){alert('Error: '+e.message);}
-}
-
-// ─── PROMO CODE STATS ─────────────────────────────────────────
-async function viewPromoStats(){
-    const code=document.getElementById('t-promo-code').value.trim().toUpperCase();
-    if(!code)return alert('Enter promo code');
-    const el=document.getElementById('promo-stats-result');
-    el.innerHTML='Searching...';
-    try{
-        const snap=await db.collection('promo_codes').doc(code).get();
-        if(!snap.exists){el.innerHTML='<p class="text-red-600 font-bold">Code not found.</p>';return;}
-        const p=snap.data();
-        const redemptionsSnap=await db.collection('promo_redemptions').where('code','==',code).get();
-        const expiry=p.expires_at?new Date(p.expires_at.toDate()).toLocaleDateString():'No expiry';
-        el.innerHTML=`<div class="space-y-1 mt-2">
-            <div class="flex justify-between bg-slate-50 p-2 rounded-xl"><span class="font-bold text-xs text-slate-600">Code</span><span class="font-black text-sky-600">${code}</span></div>
-            <div class="flex justify-between bg-slate-50 p-2 rounded-xl"><span class="font-bold text-xs text-slate-600">Reward</span><span class="font-black text-green-600">$${p.reward||0.50}</span></div>
-            <div class="flex justify-between bg-slate-50 p-2 rounded-xl"><span class="font-bold text-xs text-slate-600">Total Uses</span><span class="font-black">${redemptionsSnap.size}</span></div>
-            <div class="flex justify-between bg-slate-50 p-2 rounded-xl"><span class="font-bold text-xs text-slate-600">Max Uses</span><span class="font-black">${p.max_uses||'Unlimited'}</span></div>
-            <div class="flex justify-between bg-slate-50 p-2 rounded-xl"><span class="font-bold text-xs text-slate-600">Active</span><span class="font-black ${p.active!==false?'text-green-600':'text-red-600'}">${p.active!==false?'Yes':'No'}</span></div>
-            <div class="flex justify-between bg-slate-50 p-2 rounded-xl"><span class="font-bold text-xs text-slate-600">Expiry</span><span class="font-black">${expiry}</span></div>
-        </div>`;
-    }catch(e){el.innerHTML='<p class="text-red-600 font-bold">Error: '+e.message+'</p>';}
-}
-
 </script>
 </body>
 </html>
