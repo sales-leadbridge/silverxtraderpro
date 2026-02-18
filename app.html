@@ -3,8 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/jpeg" href="logo.jpg">
-    <link rel="apple-touch-icon" href="logo.jpg">
     <meta name="description" content="Silver X Trader - Advanced AI Binary Options Trading Bot for Quotex & Pocket Option. 95-98% accuracy signals, automated trading strategies, VIP features.">
     <meta name="keywords" content="binary bot, quotex bot, pocket option bot, trading bot, binary options, automated trading, quotex signals, binary signals, ai trading, forex bot, crypto bot, trading signals">
     <meta name="author" content="Silver X Trader">
@@ -33,10 +31,10 @@
 
         /* ── SKY TEXT: subtle black stroke + light sky glow ── */
         .sky-text {
-            color: #0369a1;
+            color: var(--primary);
             font-weight: 800;
-            -webkit-text-stroke: 0.4px rgba(2,78,120,0.35);
-            text-shadow: 0 1px 3px rgba(3,105,161,0.2);
+            -webkit-text-stroke: 0.35px rgba(15,23,42,0.2);
+            text-shadow: 0 0 10px rgba(14,165,233,0.2);
         }
 
         .glass-card { background:var(--card); border:1px solid #E2E8F0; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,0.04); }
@@ -170,14 +168,9 @@
 
 
 <div id="splash" class="fixed inset-0 z-[100000] bg-white flex flex-col items-center justify-center">
-    <div class="relative mb-4">
-        <div class="w-20 h-20 rounded-full overflow-hidden border-4 border-sky-200 shadow-xl">
-            <img src="logo.jpg" alt="Silver X" class="w-20 h-20 object-cover" onerror="this.style.display='none'">
-        </div>
-        <div class="absolute -bottom-2 -right-2 w-7 h-7 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
-    </div>
-    <h1 class="mt-4 text-3xl font-black outfit sky-text uppercase tracking-tight">Silver X</h1>
-    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">Initializing...</p>
+    <div class="w-14 h-14 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
+    <h1 class="mt-6 text-3xl font-black outfit sky-text uppercase tracking-tight">Silver X</h1>
+    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-4">Initializing...</p>
 </div>
 
 
@@ -237,10 +230,7 @@
     <aside id="sidebar-main" class="sidebar" style="padding:10px; padding-bottom:60px;">
         
         <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-2">
-                <img src="logo.jpg" alt="Silver X" class="w-8 h-8 rounded-full object-cover border border-sky-200" onerror="this.style.display='none'">
-                <h2 class="text-lg font-black outfit sky-text uppercase tracking-tight">Silver X</h2>
-            </div>
+            <h2 class="text-lg font-black outfit sky-text uppercase tracking-tight">Silver X</h2>
             <button onclick="toggleSidebar()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"><i data-lucide="x" class="w-4 h-4"></i></button>
         </div>
 
@@ -318,10 +308,7 @@
     
     <header class="bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-[5000] px-4 py-3 flex items-center justify-between">
         <button onclick="toggleSidebar()" class="text-slate-500"><i data-lucide="menu" class="w-5 h-5"></i></button>
-        <div class="flex items-center gap-2">
-            <img src="logo.jpg" alt="Silver X" class="w-7 h-7 rounded-full object-cover border border-sky-200 flex-shrink-0" onerror="this.style.display='none'">
-            <h1 class="text-base font-black outfit sky-text uppercase tracking-tight">Silver X</h1>
-        </div>
+        <h1 class="text-base font-black outfit sky-text uppercase tracking-tight">Silver X</h1>
         <div class="flex items-center gap-2">
             <span id="header-bal" class="text-[12px] font-black text-green-600">$0.00</span>
             <button onclick="handleVipClick()" id="vip-main-btn" class="px-3 py-1.5 rounded-xl text-[9px] shadow-md btn-supreme uppercase font-bold">GET VIP</button>
@@ -407,7 +394,7 @@
                     <span id="ad-claim-badge" class="text-[9px] font-bold bg-sky-100 text-sky-700 px-2 py-1 rounded-lg">0/1 Today</span>
                 </div>
                 <p class="text-[10px] text-slate-500 mb-3">Watch a 5-min ad to earn <strong class="text-green-600">$2.00</strong> in your Earn Wallet. Resets daily.</p>
-                <button onclick="window.location.href='adclaim.html'" id="ad-claim-btn" class="w-full btn-supreme py-3 rounded-2xl font-bold uppercase text-[11px] flex items-center justify-center gap-2">
+                <button onclick="handleAdClaim()" id="ad-claim-btn" class="w-full btn-supreme py-3 rounded-2xl font-bold uppercase text-[11px] flex items-center justify-center gap-2">
                     <i data-lucide="play-circle" class="w-4 h-4"></i>
                     <span id="ad-claim-btn-txt">Claim $2 Now</span>
                 </button>
@@ -418,21 +405,6 @@
                     </div>
                     <button onclick="handleBuyBooster()" id="booster-btn" class="bg-amber-500 text-white px-3 py-2 rounded-xl font-bold text-[10px] uppercase">$30 / 30d</button>
                 </div>
-            </div>
-
-            <!-- 3% DEPOSIT COMMISSION -->
-            <div class="glass-card p-4 mb-4 border border-green-300" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);">
-                <div class="flex items-center justify-between mb-2">
-                    <h3 class="outfit text-[13px] font-black text-green-700 uppercase tracking-tight">3% Deposit Commission</h3>
-                    <span class="text-[9px] font-bold bg-green-200 text-green-800 px-2 py-1 rounded-lg">AUTO</span>
-                </div>
-                <p class="text-[10px] text-green-700 mb-3">Earn <strong>3% commission</strong> every time your referred friend makes a deposit. Automatically added to your Earn Wallet!</p>
-                <div class="grid grid-cols-3 gap-2 text-center">
-                    <div class="bg-white p-2 rounded-xl border border-green-200"><p class="text-[9px] text-slate-500 font-bold">Friend Deposits</p><p class="text-sm font-black text-green-600">$100</p></div>
-                    <div class="bg-white p-2 rounded-xl border border-green-200 flex items-center justify-center"><p class="text-lg font-black text-green-700">→</p></div>
-                    <div class="bg-white p-2 rounded-xl border border-green-200"><p class="text-[9px] text-slate-500 font-bold">You Earn</p><p class="text-sm font-black text-green-600">$3.00</p></div>
-                </div>
-                <p class="text-[9px] text-green-600 mt-2 text-center font-bold">✅ VIP Only Feature — Upgrade to activate</p>
             </div>
 
             <!-- PROMO CODE -->
@@ -457,7 +429,7 @@
             <div class="glass-card p-4 mb-4 text-center border-dashed border-2 border-slate-200">
                 <p class="text-slate-400 text-[9px] font-bold uppercase mb-1">Your Referral Code</p>
                 <h2 class="text-xl font-black sky-text outfit tracking-widest" id="my-ref-code">—</h2>
-                <p class="text-[9px] text-slate-400 mt-2">Free: $1.00/invite | VIP: $2.00/invite + 3% deposit commission</p>
+                <p class="text-[9px] text-slate-400 mt-2">Free: $1.00/invite | VIP: $2.00/invite | 3% deposit commission (all users)</p>
                 <button onclick="copyReferralLink()" class="w-full btn-supreme py-3 rounded-2xl text-[11px] uppercase mt-3">Copy Referral Link</button>
             </div>
             <div class="glass-card p-4 mb-4">
@@ -545,6 +517,26 @@ window.addEventListener('load',async()=>{
     const urlRef=getUrlParam('ref');
     if(urlRef){showSignup();setTimeout(()=>{document.getElementById('su-ref').value=urlRef;},300);}
 
+
+    // ✅ MAINTENANCE MODE CHECK
+    try {
+        const cfgSnap = await db.collection('config').doc('platform').get();
+        if(cfgSnap.exists && cfgSnap.data().maintenance_mode) {
+            document.getElementById('splash').classList.add('hidden');
+            document.body.innerHTML = `<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#F8FAFC;padding:24px;text-align:center;font-family:'Plus Jakarta Sans',sans-serif;">
+                <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;margin-bottom:20px;border:3px solid #0ea5e9;"><img src="logo.jpg" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentNode.style.background='#0ea5e9'"></div>
+                <h1 style="font-size:28px;font-weight:900;color:#0ea5e9;margin-bottom:8px;font-family:'Space Grotesk',sans-serif;">SILVER X TRADER</h1>
+                <div style="background:#FEF2F2;border:2px solid #EF4444;border-radius:16px;padding:20px 24px;max-width:380px;margin-bottom:24px;">
+                    <p style="font-size:22px;margin-bottom:8px;">🔧</p>
+                    <p style="font-weight:800;font-size:16px;color:#DC2626;margin-bottom:4px;">UNDER MAINTENANCE</p>
+                    <p style="font-size:12px;color:#64748b;font-weight:600;">We're upgrading the platform. Back soon!</p>
+                </div>
+                <a href="https://wa.me/923294007913" style="background:#25D366;color:#fff;padding:14px 28px;border-radius:14px;font-weight:700;text-decoration:none;font-size:13px;">💬 Contact Support</a>
+            </div>`;
+            return;
+        }
+    } catch(e) { /* config not found, continue */ }
+    
     firebase.auth().onAuthStateChanged(async(user)=>{
         if(user){
             currentUser=user;
@@ -565,6 +557,7 @@ window.addEventListener('load',async()=>{
         await checkVipExpiry();
         await checkBoosterExpiry();
         await autoMaturePlans();
+        await autoCheckMilestones();
     }, 30000);
 });
 
@@ -756,6 +749,7 @@ async function loadUserData(){
         updateBalanceUI();updateVIPUI();updateSidebarInfo();
         await loadPlans();await loadLeaderboard();await loadClaimedMilestones();
         renderPlans();renderMilestones();
+        await autoCheckMilestones();
     });
 
     // Compute total deposited from approved deposits
@@ -876,6 +870,24 @@ async function processReferralBonus(code){
         
     } catch(e){
         console.error('❌ Referral error:', e);
+    }
+}
+
+
+// ✅ AUTO-CHECK MILESTONES — runs on load and every 30s
+async function autoCheckMilestones(){
+    if(!currentUser||!userData)return;
+    const refs=state.referrals||0;
+    for(const m of MILESTONES){
+        if(refs>=m.count&&!claimedMilestones.includes(m.count)){
+            try{
+                await db.collection('users').doc(currentUser.uid).update({earn_wallet:firebase.firestore.FieldValue.increment(m.bonus)});
+                await db.collection('referral_bonuses').add({user_id:currentUser.uid,milestone:m.count,bonus_amount:m.bonus,claimed_at:firebase.firestore.FieldValue.serverTimestamp()});
+                claimedMilestones.push(m.count);
+                toast('🎉 Milestone Bonus! $'+m.bonus+' added for '+m.count+' referrals!','success');
+                renderMilestones();
+            }catch(e){console.error('Auto milestone error:',e);}
+        }
     }
 }
 
@@ -1230,24 +1242,11 @@ function selectDepositMethod(m){
 
 async function submitDeposit(){
     if(isProcessing)return;
-    // ── SECURITY: Rate limit deposits ──
-    if(typeof _checkRateLimit === 'function' && !_checkRateLimit('deposit', 3)){
-        return toast('Too many attempts. Please wait a minute.');
-    }
-    // ── SECURITY: Transaction dedup ──
-    const txnKey = 'dep_' + (currentUser ? currentUser.uid : 'x');
-    if(typeof _startTxn === 'function' && !_startTxn(txnKey)){
-        return toast('Request already processing, please wait.');
-    }
-    const rawAmount = document.getElementById('dep-amount').value;
-    const amount = typeof _validateAmount === 'function' ? _validateAmount(rawAmount, 10, 10000) : parseFloat(rawAmount);
-    const txid = typeof _sanitize === 'function' ? _sanitize(document.getElementById('dep-txid').value, 100) : document.getElementById('dep-txid').value.trim();
-    if(!amount || amount < 10) { if(typeof _endTxn === 'function') _endTxn(txnKey); return toast('Min deposit $10'); }
-    if(amount > 10000) { if(typeof _endTxn === 'function') _endTxn(txnKey); return toast('Max deposit $10,000'); }
-    if(!txid || txid.length < 6) { if(typeof _endTxn === 'function') _endTxn(txnKey); return toast('Enter valid TXID'); }
-    // ── SECURITY: Check for duplicate TXID ──
-    const dupCheck = await db.collection('transactions').where('txid','==',txid).limit(1).get();
-    if(!dupCheck.empty) { if(typeof _endTxn === 'function') _endTxn(txnKey); return toast('⚠️ This TXID was already used!'); }
+    const amount=parseFloat(document.getElementById('dep-amount').value);
+    const txid=document.getElementById('dep-txid').value.trim();
+    if(!amount||amount<10)return toast('Min deposit $10');
+    if(amount>10000)return toast('Max deposit $10,000');
+    if(!txid||txid.length<6)return toast('Enter valid TXID');
     isProcessing=true;setBtn('dep-btn','dep-btn-txt','dep-btn-ldr',false);
     try{
         await db.collection('transactions').add({
@@ -1260,13 +1259,8 @@ async function submitDeposit(){
             payment_method:selectedMethod,
             created_at:firebase.firestore.FieldValue.serverTimestamp()
         });
-        if(typeof _auditWrite === 'function') _auditWrite('DEPOSIT_SUBMIT', {amount, method: selectedMethod});
-        if(typeof _endTxn === 'function') _endTxn(txnKey);
         isProcessing=false;closeModal();toast('Deposit submitted! Awaiting approval.');
-    }catch(e){
-        if(typeof _endTxn === 'function') _endTxn(txnKey);
-        isProcessing=false;setBtn('dep-btn','dep-btn-txt','dep-btn-ldr',true);toast('Error: '+e.message);
-    }
+    }catch(e){isProcessing=false;setBtn('dep-btn','dep-btn-txt','dep-btn-ldr',true);toast('Error: '+e.message);}
 }
 
 // ─── WITHDRAW MODAL ──────────────────────────────────────────
@@ -1343,38 +1337,23 @@ function selectWithdrawMethod(m){
 
 async function submitWithdraw(){
     if(isProcessing)return;
-    // ── SECURITY: Double-submit guard ──
-    if(window._wdSubmitting) return toast('Already processing withdrawal...');
-    window._wdSubmitting = true;
-    // ── SECURITY: Rate limit ──
-    if(typeof _checkRateLimit === 'function' && !_checkRateLimit('withdraw', 2)){
-        window._wdSubmitting = false;
-        return toast('Too many withdrawal attempts. Wait a minute.');
-    }
-    const rawAmount = document.getElementById('wd-amount').value;
-    const amount = typeof _validateAmount === 'function' ? _validateAmount(rawAmount, 10, 50000) : parseFloat(rawAmount);
+    const amount=parseFloat(document.getElementById('wd-amount').value);
     let address='';
     
     if(selectedWithdrawMethod==='binance'){
-        address = typeof _sanitize === 'function' ? _sanitize(document.getElementById('wd-binance-id').value, 50) : document.getElementById('wd-binance-id').value.trim();
-        if(!address||address.length<5){ window._wdSubmitting=false; return toast('Enter valid Binance Pay ID'); }
+        address=document.getElementById('wd-binance-id').value.trim();
+        if(!address||address.length<5)return toast('Enter valid Binance Pay ID');
     } else {
-        address = typeof _sanitize === 'function' ? _sanitize(document.getElementById('wd-address').value, 100) : document.getElementById('wd-address').value.trim();
-        if(!address||address.length<10){ window._wdSubmitting=false; return toast('Enter valid TRC20 address'); }
+        address=document.getElementById('wd-address').value.trim();
+        if(!address||address.length<10)return toast('Enter valid TRC20 address');
     }
     
-    if(!amount||amount<10){ window._wdSubmitting=false; return toast('Min withdrawal $10'); }
-    // ── SECURITY: Re-verify balance from Firestore (server source of truth) ──
-    try {
-        const freshDoc = await db.collection('users').doc(currentUser.uid).get();
-        const freshBalance = freshDoc.exists ? (freshDoc.data().balance || 0) : 0;
-        if(amount > freshBalance + 0.01){ window._wdSubmitting=false; return toast('Insufficient balance. Refreshing...'); }
-    } catch(e) { /* proceed with state */ }
-    if(amount>state.balance){ window._wdSubmitting=false; return toast('Insufficient balance'); }
+    if(!amount||amount<10)return toast('Min withdrawal $10');
+    if(amount>state.balance)return toast('Insufficient balance');
     
     isProcessing=true;setBtn('wd-btn','wd-btn-txt','wd-btn-ldr',false);
     try{
-        // ✅ CUT AMOUNT IMMEDIATELY FROM BALANCE (atomic)
+        // ✅ CUT AMOUNT IMMEDIATELY FROM BALANCE
         await db.collection('users').doc(currentUser.uid).update({
             balance:firebase.firestore.FieldValue.increment(-amount)
         });
@@ -1389,12 +1368,8 @@ async function submitWithdraw(){
             payment_method:selectedWithdrawMethod,
             created_at:firebase.firestore.FieldValue.serverTimestamp()
         });
-        if(typeof _auditWrite === 'function') _auditWrite('WITHDRAWAL_SUBMIT', {amount, method: selectedWithdrawMethod});
-        window._wdSubmitting=false;isProcessing=false;closeModal();toast('Withdrawal submitted!');
-    }catch(e){
-        window._wdSubmitting=false;isProcessing=false;
-        setBtn('wd-btn','wd-btn-txt','wd-btn-ldr',true);toast('Error: '+e.message);
-    }
+        isProcessing=false;closeModal();toast('Withdrawal submitted!');
+    }catch(e){isProcessing=false;setBtn('wd-btn','wd-btn-txt','wd-btn-ldr',true);toast('Error: '+e.message);}
 }
 
 // ─── TRANSACTIONS ────────────────────────────────────────────
@@ -2030,12 +2005,12 @@ function handleLogout(){
         localStorage.clear();
     }catch(e){}
     
-    // Firebase signout and redirect
+    // Firebase signout and reload
     firebase.auth().signOut().then(()=>{
-        window.location.replace('index.html');
+        window.location.href='index.html';
     }).catch(e=>{
         console.error('Logout error:', e);
-        window.location.replace('index.html');
+        location.reload(); // Force reload anyway
     });
 }
 
@@ -2060,7 +2035,8 @@ async function triggerSecuritySuspend(reason) {
         });
         toast('⚠️ Account suspended due to security violation');
         setTimeout(() => {
-            firebase.auth().signOut().then(()=>{ window.location.replace('index.html'); });
+            firebase.auth().signOut();
+            location.reload();
         }, 2000);
     } catch (e) {
         console.error('Security log failed:', e);
@@ -2079,193 +2055,6 @@ async function triggerSecuritySuspend(reason) {
         originalLog.apply(console, arguments);
     };
 })();
-
-// ═══════════════════════════════════════════════════════════
-// 🔐 ADVANCED SECURITY LAYER v2 — NO CLOUD FUNCTIONS
-// ═══════════════════════════════════════════════════════════
-(function SECURITY_INIT() {
-    'use strict';
-
-    // ── 1. RATE LIMITER (client-side, Firestore-backed) ──────
-    // Prevents spamming any sensitive action
-    const _rateLimits = {};
-    window._checkRateLimit = function(action, maxPerMin = 5) {
-        const now = Date.now();
-        if (!_rateLimits[action]) _rateLimits[action] = [];
-        _rateLimits[action] = _rateLimits[action].filter(t => now - t < 60000);
-        if (_rateLimits[action].length >= maxPerMin) {
-            logSecEvent('RATE_LIMIT_HIT', action + ' exceeded ' + maxPerMin + '/min');
-            return false;
-        }
-        _rateLimits[action].push(now);
-        return true;
-    };
-
-    // ── 2. INPUT SANITIZER ───────────────────────────────────
-    window._sanitize = function(str, maxLen = 200) {
-        if (typeof str !== 'string') return '';
-        return str.replace(/<[^>]*>/g, '').replace(/[<>"'`]/g, '').trim().substring(0, maxLen);
-    };
-
-    // ── 3. AMOUNT VALIDATOR ──────────────────────────────────
-    window._validateAmount = function(amount, min = 0.01, max = 100000) {
-        const n = parseFloat(amount);
-        if (isNaN(n) || n < min || n > max || !isFinite(n)) return false;
-        // Prevent floating point abuse
-        if (String(n).includes('e') || String(n).includes('E')) return false;
-        return Math.round(n * 100) / 100;
-    };
-
-    // ── 4. TRANSACTION DEDUP (prevents double-submit) ────────
-    const _pendingTxns = new Set();
-    window._startTxn = function(id) {
-        if (_pendingTxns.has(id)) return false;
-        _pendingTxns.add(id);
-        return true;
-    };
-    window._endTxn = function(id) { _pendingTxns.delete(id); };
-
-    // ── 5. SESSION INTEGRITY CHECK ───────────────────────────
-    // Verifies user data not tampered from Firestore every 2 minutes
-    setInterval(async function() {
-        try {
-            if (!window.currentUser || !window.db) return;
-            const snap = await window.db.collection('users').doc(window.currentUser.uid).get();
-            if (!snap.exists) return;
-            const srv = snap.data();
-            if (srv.suspended) {
-                toast('⚠️ Account suspended. Logging out...');
-                setTimeout(() => firebase.auth().signOut().then(() => window.location.replace('index.html')), 2000);
-                return;
-            }
-            // If server balance differs drastically from client state (>$0.01), sync from server
-            if (window.state && Math.abs((srv.balance || 0) - window.state.balance) > 0.01) {
-                window.state.balance = srv.balance || 0;
-                window.state.earnWallet = srv.earn_wallet || 0;
-                if (typeof updateAllUI === 'function') updateAllUI();
-            }
-        } catch(e) { /* silent */ }
-    }, 120000);
-
-    // ── 6. FAKE TRANSACTION DETECTION ───────────────────────
-    // Watches for impossible state (balance jumping without deposit)
-    let _lastKnownBalance = 0;
-    window._snapshotBalance = function(b) { _lastKnownBalance = b; };
-    window._assertBalance = function(b) {
-        if (b > _lastKnownBalance + 10000) {
-            logSecEvent('BALANCE_JUMP', `From ${_lastKnownBalance} to ${b}`);
-        }
-    };
-
-    // ── 7. ANTI-AUTOMATION / BOT DETECTION ──────────────────
-    let _mouseEvents = 0, _touchEvents = 0;
-    document.addEventListener('mousemove', () => _mouseEvents++, { passive: true });
-    document.addEventListener('touchstart', () => _touchEvents++, { passive: true });
-    // After 30 seconds, if no human interaction detected, log it
-    setTimeout(function() {
-        if (_mouseEvents < 3 && _touchEvents < 1 && document.visibilityState === 'visible') {
-            logSecEvent('POSSIBLE_AUTOMATION', `mouse:${_mouseEvents} touch:${_touchEvents}`);
-        }
-    }, 30000);
-
-    // ── 8. PREVENT XSS / SCRIPT INJECTION ───────────────────
-    // Disallow eval and Function constructor usage
-    const _origEval = window.eval;
-    window.eval = function(code) {
-        logSecEvent('EVAL_ATTEMPT', String(code).substring(0, 100));
-        return _origEval.call(this, code);
-    };
-
-    // ── 9. CLIPBOARD DATA LEAK PROTECTION ───────────────────
-    document.addEventListener('copy', function(e) {
-        const sel = (window.getSelection() || '').toString();
-        if (/\$[\d,.]+/.test(sel) || /balance/i.test(sel)) {
-            logSecEvent('BALANCE_COPY', sel.substring(0, 60));
-        }
-    }, { passive: true });
-
-    // ── 10. HIDDEN FIELD TAMPER DETECTION ───────────────────
-    // Watches critical DOM fields for external modification
-    if (window.MutationObserver) {
-        const _mutObs = new MutationObserver(function(mutations) {
-            mutations.forEach(function(m) {
-                const t = m.target;
-                if (t && (t.id === 'wallet-balance' || t.id === 'header-bal' || t.id === 'earn-wallet-balance')) {
-                    const newVal = parseFloat((t.innerText || '').replace('$',''));
-                    if (!isNaN(newVal) && window.state) {
-                        const diff = Math.abs(newVal - window.state.balance);
-                        if (diff > 0.05) {
-                            logSecEvent('DOM_BALANCE_TAMPER', `DOM shows ${newVal}, state is ${window.state.balance}`);
-                            // Immediately restore correct value
-                            if (typeof updateAllUI === 'function') updateAllUI();
-                        }
-                    }
-                }
-            });
-        });
-        document.addEventListener('DOMContentLoaded', function() {
-            if (document.body) {
-                _mutObs.observe(document.body, { childList: true, subtree: true, characterData: true });
-            }
-        });
-    }
-
-    // ── 11. NETWORK REQUEST WHITELIST ───────────────────────
-    const _allowedDomains = ['firebaseapp.com','googleapis.com','gstatic.com','firebase.io','firestore.googleapis.com'];
-    const _origFetch = window.fetch;
-    window.fetch = function(...args) {
-        const url = String(args[0] || '');
-        const allowed = _allowedDomains.some(d => url.includes(d));
-        if (!allowed && url.startsWith('http')) {
-            logSecEvent('UNAUTH_REQUEST', url.substring(0, 100));
-        }
-        return _origFetch.apply(this, args);
-    };
-
-    // ── 12. WITHDRAWAL DOUBLE-SUBMIT GUARD ──────────────────
-    window._wdSubmitting = false;
-
-    // ── 13. FIRESTORE WRITE AUDIT ───────────────────────────
-    // Patches sensitive write operations to add server-side audit trail
-    window._auditWrite = async function(action, data) {
-        try {
-            if (!window.currentUser || !window.db) return;
-            await window.db.collection('audit_trail').add({
-                uid: window.currentUser.uid,
-                email: window.currentUser.email,
-                action: action,
-                data: JSON.stringify(data).substring(0, 500),
-                ts: firebase.firestore.FieldValue.serverTimestamp(),
-                ua: navigator.userAgent.substring(0, 200)
-            });
-        } catch(e) { /* silent */ }
-    };
-
-    // ── SECURITY LOG FUNCTION ────────────────────────────────
-    function logSecEvent(type, detail) {
-        try {
-            if (window.db && window.currentUser) {
-                window.db.collection('security_logs').add({
-                    uid: window.currentUser.uid,
-                    email: window.currentUser.email,
-                    type: type,
-                    detail: String(detail).substring(0, 300),
-                    ts: firebase.firestore.FieldValue.serverTimestamp(),
-                    ua: navigator.userAgent.substring(0, 150),
-                    url: window.location.pathname
-                });
-            }
-        } catch(e) {}
-        console.warn('[SEC]', type, detail);
-    }
-
-    // ── SECURITY CONSOLE WARNING ─────────────────────────────
-    console.log('%c⛔ STOP! This is a browser feature for developers.', 'color:red;font-size:22px;font-weight:bold;');
-    console.log('%cPasting ANY code here can STEAL your account & funds!', 'color:orange;font-size:15px;font-weight:bold;');
-    console.log('%cAll actions are monitored, logged & reviewed by admins.', 'color:#0ea5e9;font-size:13px;');
-
-})();
-// ── END SECURITY LAYER ──────────────────────────────────────
 
 </script>
 </body>
