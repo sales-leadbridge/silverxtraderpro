@@ -163,6 +163,8 @@
                 <button onclick="switchTab('promo')" id="tab-promo" class="tab-btn">🎟️ Promo Codes</button>
                 <button onclick="switchTab('tools')" id="tab-tools" class="tab-btn">🛠️ Tools</button>
                 <button onclick="switchTab('security')" id="tab-security" class="tab-btn">🔐 Security</button>
+                <button onclick="switchTab('reports')" id="tab-reports" class="tab-btn">📊 Reports</button>
+                <button onclick="switchTab('config')" id="tab-config" class="tab-btn">⚙️ Config</button>
             </div>
         </div>
 
@@ -439,6 +441,215 @@
                     </div>
                 </div>
 
+                <!-- ═══ NEW FEATURES START ═══ -->
+
+                <!-- 1. ADJUST REFERRAL COMMISSION RATE -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">💹 Referral Commission Rate</h3>
+                    <p class="text-xs text-slate-400 mb-2">Deposit commission % for referrers (default 3%)</p>
+                    <input type="number" id="t-ref-rate" placeholder="3" value="3" min="0" max="50" step="0.5" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="setReferralRate()" class="w-full bg-blue-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-blue-700 transition">Update Rate</button>
+                </div>
+
+                <!-- 2. SET VIP PRICE -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">💎 VIP Price Config</h3>
+                    <p class="text-xs text-slate-400 mb-2">Change VIP 30-day subscription price</p>
+                    <input type="number" id="t-vip-price" placeholder="199" value="199" step="1" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="setVIPPrice()" class="w-full bg-purple-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-purple-700 transition">Update VIP Price</button>
+                </div>
+
+                <!-- 3. JOINING BONUS CONFIG -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">🎁 Joining Bonus Amount</h3>
+                    <p class="text-xs text-slate-400 mb-2">Change signup bonus for new users</p>
+                    <input type="number" id="t-join-bonus" placeholder="10" value="10" step="0.5" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="setJoiningBonus()" class="w-full bg-green-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-green-700 transition">Update Bonus</button>
+                </div>
+
+                <!-- 4. REFERRAL BONUS CONFIG -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">👥 Referral Signup Bonus</h3>
+                    <p class="text-xs text-slate-400 mb-2">Free = $1, VIP = $2 per referral</p>
+                    <div class="grid grid-cols-2 gap-2 mb-2">
+                        <div>
+                            <label class="text-[10px] text-slate-400 font-bold block mb-1">Free Referral ($)</label>
+                            <input type="number" id="t-ref-bonus-free" value="1" step="0.5" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-xl outline-none text-xs font-semibold">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-400 font-bold block mb-1">VIP Referral ($)</label>
+                            <input type="number" id="t-ref-bonus-vip" value="2" step="0.5" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-xl outline-none text-xs font-semibold">
+                        </div>
+                    </div>
+                    <button onclick="setReferralBonuses()" class="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-indigo-700 transition">Update Bonuses</button>
+                </div>
+
+                <!-- 5. DAILY CLAIM AMOUNT -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">📅 Daily Claim Amount</h3>
+                    <p class="text-xs text-slate-400 mb-2">Daily claim reward amount for users</p>
+                    <input type="number" id="t-daily-claim" placeholder="0.50" value="0.5" step="0.1" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="setDailyClaimAmount()" class="w-full bg-amber-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-amber-700 transition">Update Claim Amount</button>
+                </div>
+
+                <!-- 6. AD CLAIM DAILY LIMIT -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">📺 Ad Claims Daily Limit</h3>
+                    <p class="text-xs text-slate-400 mb-2">Max ad sessions per user per day</p>
+                    <input type="number" id="t-ad-limit" placeholder="3" value="3" min="1" max="20" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="setAdClaimLimit()" class="w-full bg-sky-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-sky-700 transition">Update Limit</button>
+                </div>
+
+                <!-- 7. SET INVESTMENT ROI % -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">📈 Investment ROI %</h3>
+                    <p class="text-xs text-slate-400 mb-2">Fixed ROI % for investment plans</p>
+                    <input type="number" id="t-roi" placeholder="15" value="15" step="0.5" min="1" max="100" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="setInvestmentROI()" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-emerald-700 transition">Update ROI</button>
+                </div>
+
+                <!-- 8. INVESTMENT MATURITY TIME -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">⏱️ Investment Maturity Time</h3>
+                    <p class="text-xs text-slate-400 mb-2">Hours until investment matures</p>
+                    <input type="number" id="t-maturity-hours" placeholder="24" value="24" min="1" max="720" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="setMaturityHours()" class="w-full bg-teal-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-teal-700 transition">Update Hours</button>
+                </div>
+
+                <!-- 9. MASS EMAIL/NOTIFICATION -->
+                <div class="tool-card warning">
+                    <h3 class="font-black outfit text-sm text-orange-700 mb-3">📣 Mass In-App Notification</h3>
+                    <input type="text" id="t-mass-notif-title" placeholder="Title (e.g. WINNER!)" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <textarea id="t-mass-notif-body" rows="2" placeholder="Message..." class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2 resize-none"></textarea>
+                    <select id="t-mass-notif-target" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none font-semibold text-xs mb-2">
+                        <option value="all">All Users</option>
+                        <option value="vip">VIP Only</option>
+                        <option value="free">Free Users Only</option>
+                    </select>
+                    <button onclick="sendMassNotification()" class="w-full bg-orange-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-orange-700 transition">📣 Send Now</button>
+                </div>
+
+                <!-- 10. FREEZE / UNFREEZE ALL WITHDRAWALS -->
+                <div class="tool-card danger">
+                    <h3 class="font-black outfit text-sm text-red-600 mb-3">🧊 Freeze All Withdrawals</h3>
+                    <p class="text-[10px] text-slate-500 mb-3">Temporarily block all new withdrawal requests</p>
+                    <div class="flex gap-2">
+                        <button onclick="setWithdrawalFreeze(true)" class="flex-1 bg-red-600 text-white py-2.5 rounded-xl font-bold text-xs">❄️ Freeze</button>
+                        <button onclick="setWithdrawalFreeze(false)" class="flex-1 bg-green-600 text-white py-2.5 rounded-xl font-bold text-xs">🔥 Unfreeze</button>
+                    </div>
+                </div>
+
+                <!-- 11. USER ACTIVITY REPORT -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">📊 User Activity Report</h3>
+                    <input type="email" id="t-activity-email" placeholder="User Email" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="loadUserActivityReport()" class="w-full bg-slate-700 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-slate-800 transition">Load Activity</button>
+                    <div id="activity-report-result" class="mt-2"></div>
+                </div>
+
+                <!-- 12. TOP EARNERS LEADERBOARD -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">🏆 Top Earners / Referrers</h3>
+                    <div class="flex gap-2 mb-2">
+                        <button onclick="loadTopEarners('balance')" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl font-bold text-xs">Top Balance</button>
+                        <button onclick="loadTopEarners('referrals')" class="flex-1 bg-blue-600 text-white py-2 rounded-xl font-bold text-xs">Top Referrers</button>
+                    </div>
+                    <div id="top-earners-result" class="space-y-1.5"></div>
+                </div>
+
+                <!-- 13. FORCE WITHDRAWAL ALL MATURED PLANS -->
+                <div class="tool-card success">
+                    <h3 class="font-black outfit text-sm text-green-700 mb-3">⚡ Force All Matured Plans</h3>
+                    <p class="text-[10px] text-slate-500 mb-3">Credit ALL matured investment plans to all users at once</p>
+                    <button onclick="forceAllMaturedPlans()" class="w-full bg-green-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-green-700 transition">Run Maturity Check</button>
+                    <div id="maturity-result" class="mt-2"></div>
+                </div>
+
+                <!-- 14. DELETE USER ACCOUNT -->
+                <div class="tool-card danger">
+                    <h3 class="font-black outfit text-sm text-red-600 mb-3">🗑️ Delete User Account</h3>
+                    <p class="text-[10px] text-red-400 font-bold mb-3">⚠️ Permanently removes user data from Firestore</p>
+                    <input type="email" id="t-delete-email" placeholder="User Email" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="deleteUserAccount()" class="w-full bg-red-700 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-red-800 transition">Delete Account</button>
+                </div>
+
+                <!-- 15. PLATFORM NOTICE BANNER -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">📌 Platform Notice Banner</h3>
+                    <p class="text-xs text-slate-400 mb-2">Shows a banner on top of the app for all users</p>
+                    <input type="text" id="t-notice-text" placeholder="e.g. Platform under maintenance from 2-4 PM" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <select id="t-notice-type" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none font-semibold text-xs mb-2">
+                        <option value="info">ℹ️ Info (Blue)</option>
+                        <option value="warning">⚠️ Warning (Orange)</option>
+                        <option value="success">✅ Success (Green)</option>
+                        <option value="danger">🚨 Alert (Red)</option>
+                    </select>
+                    <div class="flex gap-2">
+                        <button onclick="setPlatformNotice()" class="flex-1 bg-blue-600 text-white py-2 rounded-xl font-bold text-xs">Set Notice</button>
+                        <button onclick="clearPlatformNotice()" class="flex-1 bg-slate-500 text-white py-2 rounded-xl font-bold text-xs">Clear</button>
+                    </div>
+                </div>
+
+                <!-- 16. RESET USER PASSWORD (SEND EMAIL) -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">🔑 Send Password Reset Email</h3>
+                    <input type="email" id="t-reset-pass-email" placeholder="User Email" class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="sendPasswordReset()" class="w-full bg-amber-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-amber-700 transition">Send Reset Email</button>
+                </div>
+
+                <!-- 17. BULK SUSPEND ALL FLAGGED -->
+                <div class="tool-card danger">
+                    <h3 class="font-black outfit text-sm text-red-600 mb-3">🚨 Auto-Suspend Suspicious</h3>
+                    <p class="text-[10px] text-slate-500 mb-3">Suspends users with high balance + no deposits</p>
+                    <button onclick="autoSuspendSuspicious()" class="w-full bg-red-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-red-700 transition">🔍 Scan & Suspend</button>
+                    <div id="auto-suspend-result" class="mt-2 text-xs"></div>
+                </div>
+
+                <!-- 18. MANAGE WALLET ADDRESSES -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">💳 Deposit Wallet Addresses</h3>
+                    <p class="text-xs text-slate-400 mb-2">Update receiving wallet addresses shown to users</p>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase block mb-1">USDT TRC20 Address</label>
+                    <input type="text" id="t-wallet-usdt" placeholder="T..." class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase block mb-1">BNB / Binance Address</label>
+                    <input type="text" id="t-wallet-bnb" placeholder="0x..." class="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl outline-none focus:border-sky-500 font-semibold text-xs mb-2">
+                    <button onclick="updateWalletAddresses()" class="w-full bg-yellow-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-yellow-700 transition">Update Addresses</button>
+                </div>
+
+                <!-- 19. USER COUNT BY COUNTRY -->
+                <div class="tool-card">
+                    <h3 class="font-black outfit text-sm mb-3">🌍 Users by Country</h3>
+                    <button onclick="loadUsersByCountry()" class="w-full bg-slate-700 text-white py-2.5 rounded-xl font-bold text-xs mb-2 hover:bg-slate-800 transition">Load Country Stats</button>
+                    <div id="country-stats-result" class="space-y-1.5 max-h-40 overflow-y-auto"></div>
+                </div>
+
+                <!-- 20. SITE TRAFFIC / LIVE VISITORS -->
+                <div class="tool-card sm:col-span-2">
+                    <h3 class="font-black outfit text-sm mb-3">📡 Live Site Traffic Monitor</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
+                        <div class="bg-green-50 p-3 rounded-xl text-center">
+                            <p class="text-[10px] text-green-600 font-bold uppercase">Today Visits</p>
+                            <p class="text-2xl font-black outfit text-green-600" id="traffic-today">—</p>
+                        </div>
+                        <div class="bg-blue-50 p-3 rounded-xl text-center">
+                            <p class="text-[10px] text-blue-600 font-bold uppercase">This Week</p>
+                            <p class="text-2xl font-black outfit text-blue-600" id="traffic-week">—</p>
+                        </div>
+                        <div class="bg-purple-50 p-3 rounded-xl text-center">
+                            <p class="text-[10px] text-purple-600 font-bold uppercase">This Month</p>
+                            <p class="text-2xl font-black outfit text-purple-600" id="traffic-month">—</p>
+                        </div>
+                        <div class="bg-orange-50 p-3 rounded-xl text-center">
+                            <p class="text-[10px] text-orange-600 font-bold uppercase">Total</p>
+                            <p class="text-2xl font-black outfit text-orange-600" id="traffic-total">—</p>
+                        </div>
+                    </div>
+                    <button onclick="loadTrafficStats()" class="bg-slate-700 text-white px-5 py-2 rounded-xl font-bold text-xs hover:bg-slate-800 transition">🔄 Refresh Traffic</button>
+                </div>
+
+                <!-- ═══ NEW FEATURES END ═══ -->
+
+
             </div>
         </div>
 
@@ -518,6 +729,53 @@
         <button onclick="closeRejectModal()" class="w-full bg-slate-100 text-slate-600 py-2 rounded-xl font-bold text-xs hover:bg-slate-200 transition">Cancel</button>
     </div>
 </div>
+
+
+        <!-- ── REPORTS TAB ── -->
+        <div id="section-reports" class="section-hidden space-y-4">
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+                <h3 class="font-black outfit text-base mb-4">📊 Reports & Exports</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="tool-card">
+                        <h4 class="font-black text-sm mb-3">🏆 Top Earners</h4>
+                        <div class="flex gap-2 mb-2">
+                            <button onclick="switchTab('tools');setTimeout(()=>loadTopEarners('balance'),100)" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl font-bold text-xs">Top Balance</button>
+                            <button onclick="switchTab('tools');setTimeout(()=>loadTopEarners('referrals'),100)" class="flex-1 bg-blue-600 text-white py-2 rounded-xl font-bold text-xs">Top Referrers</button>
+                        </div>
+                        <p class="text-xs text-slate-400">Go to Tools tab to view results</p>
+                    </div>
+                    <div class="tool-card">
+                        <h4 class="font-black text-sm mb-3">📤 Export Reports</h4>
+                        <div class="space-y-2">
+                            <button onclick="exportUsers()" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl font-bold text-xs">Export All Users CSV</button>
+                            <button onclick="exportTransactions()" class="w-full bg-blue-600 text-white py-2.5 rounded-xl font-bold text-xs">Export Transactions CSV</button>
+                            <button onclick="exportVIPUsers()" class="w-full bg-purple-600 text-white py-2.5 rounded-xl font-bold text-xs">Export VIP Users CSV</button>
+                        </div>
+                    </div>
+                    <div class="tool-card sm:col-span-2">
+                        <h4 class="font-black text-sm mb-3">📡 Traffic Stats</h4>
+                        <div class="grid grid-cols-4 gap-3 mb-3">
+                            <div class="bg-green-50 p-3 rounded-xl text-center"><p class="text-[10px] text-green-600 font-bold">Today</p><p class="text-xl font-black text-green-600" id="rep-traffic-today">—</p></div>
+                            <div class="bg-blue-50 p-3 rounded-xl text-center"><p class="text-[10px] text-blue-600 font-bold">This Week</p><p class="text-xl font-black text-blue-600" id="rep-traffic-week">—</p></div>
+                            <div class="bg-purple-50 p-3 rounded-xl text-center"><p class="text-[10px] text-purple-600 font-bold">This Month</p><p class="text-xl font-black text-purple-600" id="rep-traffic-month">—</p></div>
+                            <div class="bg-orange-50 p-3 rounded-xl text-center"><p class="text-[10px] text-orange-600 font-bold">Total</p><p class="text-xl font-black text-orange-600" id="rep-traffic-total">—</p></div>
+                        </div>
+                        <button onclick="loadReportsTraffic()" class="bg-slate-700 text-white px-5 py-2 rounded-xl font-bold text-xs">Refresh</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── CONFIG TAB ── -->
+        <div id="section-config" class="section-hidden space-y-4">
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+                <h3 class="font-black outfit text-base mb-4">⚙️ Platform Configuration</h3>
+                <div id="config-display" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+                    <p class="text-xs text-slate-400 col-span-3">Loading config...</p>
+                </div>
+                <button onclick="loadPlatformConfig()" class="bg-slate-700 text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-800 transition">🔄 Load Current Config</button>
+            </div>
+        </div>
 
 <script>
 // ─── FIREBASE CONFIG ──────────────────────────────────────────
@@ -910,7 +1168,7 @@ function userCard(u, highlight=false){
 }
 
 // ─── TAB SWITCHER ─────────────────────────────────────────────
-const allTabs = ['deposits','withdrawals','all-users','free-users','vip-users','completed','promo','tools','security'];
+const allTabs = ['deposits','withdrawals','all-users','free-users','vip-users','completed','promo','tools','security','reports','config'];
 function switchTab(tab){
     allTabs.forEach(t => {
         document.getElementById('section-'+t).classList.add('section-hidden');
@@ -923,6 +1181,8 @@ function switchTab(tab){
     else if(tab === 'completed') loadCompletedTransactions();
     else if(tab === 'tools') loadMaintenanceStatus();
     else if(tab === 'promo') loadPromoCodes();
+    else if(tab === 'reports') loadReportsTraffic();
+    else if(tab === 'config') loadPlatformConfig();
 }
 
 // ─── USER SEARCH ──────────────────────────────────────────────
@@ -1459,6 +1719,330 @@ async function logAdminAction(action, data){
         });
     } catch(e) {}
 }
+
+// ═══ NEW ADMIN FEATURES JS ═══
+
+async function setReferralRate(){
+    const rate = parseFloat(document.getElementById('t-ref-rate').value);
+    if(isNaN(rate)||rate<0||rate>50){ alert('Rate must be 0-50%'); return; }
+    await db.collection('config').doc('platform').set({ referral_commission_rate: rate/100 }, { merge:true });
+    logAdminAction('set_referral_rate', { rate });
+    alert(`✅ Referral commission set to ${rate}%`);
+}
+
+async function setVIPPrice(){
+    const price = parseFloat(document.getElementById('t-vip-price').value);
+    if(isNaN(price)||price<=0){ alert('Invalid price'); return; }
+    await db.collection('config').doc('platform').set({ vip_price: price }, { merge:true });
+    logAdminAction('set_vip_price', { price });
+    alert(`✅ VIP price set to $${price}`);
+}
+
+async function setJoiningBonus(){
+    const bonus = parseFloat(document.getElementById('t-join-bonus').value);
+    if(isNaN(bonus)||bonus<0){ alert('Invalid amount'); return; }
+    await db.collection('config').doc('platform').set({ joining_bonus: bonus }, { merge:true });
+    logAdminAction('set_joining_bonus', { bonus });
+    alert(`✅ Joining bonus set to $${bonus}`);
+}
+
+async function setReferralBonuses(){
+    const freeBonus = parseFloat(document.getElementById('t-ref-bonus-free').value);
+    const vipBonus  = parseFloat(document.getElementById('t-ref-bonus-vip').value);
+    if(isNaN(freeBonus)||isNaN(vipBonus)){ alert('Invalid amounts'); return; }
+    await db.collection('config').doc('platform').set({ ref_bonus_free: freeBonus, ref_bonus_vip: vipBonus }, { merge:true });
+    logAdminAction('set_ref_bonuses', { freeBonus, vipBonus });
+    alert(`✅ Referral bonuses: Free=$${freeBonus}, VIP=$${vipBonus}`);
+}
+
+async function setDailyClaimAmount(){
+    const amount = parseFloat(document.getElementById('t-daily-claim').value);
+    if(isNaN(amount)||amount<=0){ alert('Invalid amount'); return; }
+    await db.collection('config').doc('platform').set({ daily_claim_amount: amount }, { merge:true });
+    logAdminAction('set_daily_claim', { amount });
+    alert(`✅ Daily claim set to $${amount}`);
+}
+
+async function setAdClaimLimit(){
+    const limit = parseInt(document.getElementById('t-ad-limit').value);
+    if(isNaN(limit)||limit<1){ alert('Invalid limit'); return; }
+    await db.collection('config').doc('platform').set({ ad_claim_daily_limit: limit }, { merge:true });
+    logAdminAction('set_ad_limit', { limit });
+    alert(`✅ Ad claim daily limit set to ${limit}`);
+}
+
+async function setInvestmentROI(){
+    const roi = parseFloat(document.getElementById('t-roi').value);
+    if(isNaN(roi)||roi<=0||roi>100){ alert('ROI must be 1-100%'); return; }
+    await db.collection('config').doc('platform').set({ investment_roi: roi/100 }, { merge:true });
+    logAdminAction('set_roi', { roi });
+    alert(`✅ Investment ROI set to ${roi}%`);
+}
+
+async function setMaturityHours(){
+    const hours = parseInt(document.getElementById('t-maturity-hours').value);
+    if(isNaN(hours)||hours<1){ alert('Invalid hours'); return; }
+    await db.collection('config').doc('platform').set({ investment_maturity_hours: hours }, { merge:true });
+    logAdminAction('set_maturity_hours', { hours });
+    alert(`✅ Investment maturity set to ${hours} hours`);
+}
+
+async function sendMassNotification(){
+    const title  = document.getElementById('t-mass-notif-title').value.trim();
+    const body   = document.getElementById('t-mass-notif-body').value.trim();
+    const target = document.getElementById('t-mass-notif-target').value;
+    if(!title||!body){ alert('Enter title and message'); return; }
+    if(!confirm(`Send notification to all ${target} users?`)) return;
+    try {
+        await db.collection('notifications').add({
+            title, body, target,
+            created_by: adminUser.email,
+            created_at: firebase.firestore.FieldValue.serverTimestamp(),
+            active: true, read_by: []
+        });
+        logAdminAction('mass_notification', { title, target });
+        alert('✅ Mass notification sent!');
+        document.getElementById('t-mass-notif-title').value = '';
+        document.getElementById('t-mass-notif-body').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function setWithdrawalFreeze(freeze){
+    if(!confirm(`${freeze?'FREEZE':'UNFREEZE'} all withdrawals?`)) return;
+    await db.collection('config').doc('platform').set({ withdrawals_frozen: freeze }, { merge:true });
+    logAdminAction('withdrawal_freeze', { freeze });
+    alert(`✅ Withdrawals ${freeze?'FROZEN':'UNFROZEN'}`);
+}
+
+async function loadUserActivityReport(){
+    const email = document.getElementById('t-activity-email').value.trim().toLowerCase();
+    if(!email){ alert('Enter email'); return; }
+    const resultDiv = document.getElementById('activity-report-result');
+    resultDiv.innerHTML = '<p class="text-xs text-slate-400">Loading...</p>';
+    try {
+        const user = await getUserByEmail(email);
+        if(!user){ resultDiv.innerHTML=''; return; }
+        const [txSnap, plansSnap] = await Promise.all([
+            db.collection('transactions').where('user_id','==',user.id).orderBy('created_at','desc').limit(10).get(),
+            db.collection('investment_plans').where('user_id','==',user.id).get()
+        ]);
+        const deps = txSnap.docs.filter(d=>d.data().transaction_type==='DEPOSIT'&&d.data().status==='success').reduce((s,d)=>s+(d.data().amount||0),0);
+        const wds  = txSnap.docs.filter(d=>d.data().transaction_type==='WITHDRAWAL'&&d.data().status==='success').reduce((s,d)=>s+(d.data().amount||0),0);
+        const activePlans = plansSnap.docs.filter(d=>d.data().status==='active').length;
+        resultDiv.innerHTML = `<div class="bg-slate-50 rounded-xl p-3 mt-2 grid grid-cols-2 gap-2">
+            <div class="text-center"><p class="text-[9px] text-slate-400">Balance</p><p class="text-sm font-black text-green-600">$${(user.balance||0).toFixed(2)}</p></div>
+            <div class="text-center"><p class="text-[9px] text-slate-400">Earn Wallet</p><p class="text-sm font-black text-sky-600">$${(user.earn_wallet||0).toFixed(2)}</p></div>
+            <div class="text-center"><p class="text-[9px] text-slate-400">Total Deposited</p><p class="text-sm font-black">$${deps.toFixed(2)}</p></div>
+            <div class="text-center"><p class="text-[9px] text-slate-400">Total Withdrawn</p><p class="text-sm font-black text-orange-600">$${wds.toFixed(2)}</p></div>
+            <div class="text-center"><p class="text-[9px] text-slate-400">Referrals</p><p class="text-sm font-black text-blue-600">${user.referrals||0}</p></div>
+            <div class="text-center"><p class="text-[9px] text-slate-400">Active Plans</p><p class="text-sm font-black text-purple-600">${activePlans}</p></div>
+        </div>`;
+    } catch(e) { resultDiv.innerHTML=`<p class="text-xs text-red-500">${e.message}</p>`; }
+}
+
+async function loadTopEarners(field){
+    const el = document.getElementById('top-earners-result');
+    el.innerHTML = '<p class="text-xs text-slate-400">Loading...</p>';
+    const sorted = [...allUsers].sort((a,b) => (b[field]||0) - (a[field]||0)).slice(0,10);
+    el.innerHTML = sorted.map((u,i) => `<div class="flex justify-between items-center bg-slate-50 p-2 rounded-lg">
+        <div class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black ${i===0?'bg-yellow-400':i===1?'bg-slate-300':i===2?'bg-amber-600 text-white':'bg-slate-200'}">${i+1}</span>
+            <div><p class="text-[10px] font-bold">${u.email}</p></div>
+        </div>
+        <span class="text-xs font-black ${field==='balance'?'text-green-600':'text-blue-600'}">${field==='balance'?'$'+(u[field]||0).toFixed(2):(u[field]||0)+' refs'}</span>
+    </div>`).join('');
+}
+
+async function forceAllMaturedPlans(){
+    const el = document.getElementById('maturity-result');
+    el.innerHTML = '<p class="text-xs text-slate-400">Processing...</p>';
+    try {
+        const now = Date.now();
+        const snap = await db.collection('investment_plans').where('status','==','active').get();
+        let count = 0, total = 0;
+        for(const d of snap.docs){
+            const plan = d.data();
+            if(plan.matures_at && plan.matures_at <= now){
+                await db.collection('users').doc(plan.user_id).update({ balance: firebase.firestore.FieldValue.increment(plan.return_amount||0) });
+                await d.ref.update({ status:'completed', completed_at: firebase.firestore.FieldValue.serverTimestamp() });
+                count++;
+                total += plan.return_amount||0;
+            }
+        }
+        logAdminAction('force_all_matured', { count, total });
+        el.innerHTML = `<p class="text-xs text-green-600 font-bold">✅ Credited ${count} plans totalling $${total.toFixed(2)}</p>`;
+    } catch(e) { el.innerHTML=`<p class="text-xs text-red-500">${e.message}</p>`; }
+}
+
+async function deleteUserAccount(){
+    const email = document.getElementById('t-delete-email').value.trim().toLowerCase();
+    if(!email){ alert('Enter email'); return; }
+    if(!confirm(`⚠️ PERMANENTLY DELETE account: ${email}?\n\nThis removes their Firestore data. Cannot be undone!`)) return;
+    if(!confirm('Are you ABSOLUTELY sure? Type OK to confirm.')) return;
+    const user = await getUserByEmail(email);
+    if(!user) return;
+    try {
+        await db.collection('users').doc(user.id).delete();
+        logAdminAction('delete_user', { email, userId: user.id });
+        alert(`✅ User ${email} deleted from Firestore`);
+        document.getElementById('t-delete-email').value = '';
+        await loadAllUsers();
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function setPlatformNotice(){
+    const text = document.getElementById('t-notice-text').value.trim();
+    const type = document.getElementById('t-notice-type').value;
+    if(!text){ alert('Enter notice text'); return; }
+    await db.collection('config').doc('platform').set({ notice_text: text, notice_type: type, notice_active: true }, { merge:true });
+    logAdminAction('set_notice', { text, type });
+    alert('✅ Platform notice set!');
+}
+
+async function clearPlatformNotice(){
+    await db.collection('config').doc('platform').set({ notice_active: false, notice_text: '' }, { merge:true });
+    logAdminAction('clear_notice', {});
+    alert('✅ Platform notice cleared');
+}
+
+async function sendPasswordReset(){
+    const email = document.getElementById('t-reset-pass-email').value.trim();
+    if(!email){ alert('Enter email'); return; }
+    try {
+        await auth.sendPasswordResetEmail(email);
+        alert(`✅ Password reset email sent to ${email}`);
+        document.getElementById('t-reset-pass-email').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function autoSuspendSuspicious(){
+    const el = document.getElementById('auto-suspend-result');
+    el.innerHTML = '<p class="text-slate-400">Scanning...</p>';
+    let suspended = 0;
+    for(const u of allUsers){
+        if((u.balance||0) > 500 && (u.total_deposited||0) < 5 && !u.suspended){
+            await db.collection('users').doc(u.id).update({ suspended: true, suspend_reason: 'Auto-suspended: high balance, no deposits' });
+            logAdminAction('auto_suspend', { email: u.email, balance: u.balance });
+            suspended++;
+        }
+    }
+    el.innerHTML = `<p class="text-xs font-bold ${suspended?'text-red-600':'text-green-600'}">✅ Auto-suspended ${suspended} suspicious account(s)</p>`;
+    if(suspended) await loadAllUsers();
+}
+
+async function updateWalletAddresses(){
+    const usdt = document.getElementById('t-wallet-usdt').value.trim();
+    const bnb  = document.getElementById('t-wallet-bnb').value.trim();
+    if(!usdt&&!bnb){ alert('Enter at least one address'); return; }
+    const update = {};
+    if(usdt) update.wallet_usdt = usdt;
+    if(bnb)  update.wallet_bnb = bnb;
+    await db.collection('config').doc('platform').set(update, { merge:true });
+    logAdminAction('update_wallets', { usdt, bnb });
+    alert('✅ Wallet addresses updated!');
+}
+
+async function loadUsersByCountry(){
+    const el = document.getElementById('country-stats-result');
+    el.innerHTML = '<p class="text-xs text-slate-400">Loading...</p>';
+    const countryMap = {};
+    allUsers.forEach(u => {
+        const c = u.country || u.location || 'Unknown';
+        countryMap[c] = (countryMap[c]||0) + 1;
+    });
+    const sorted = Object.entries(countryMap).sort((a,b)=>b[1]-a[1]);
+    if(!sorted.length){ el.innerHTML='<p class="text-xs text-slate-400">No country data</p>'; return; }
+    el.innerHTML = sorted.map(([country, count]) =>
+        `<div class="flex justify-between bg-slate-50 p-2 rounded-lg"><span class="text-xs font-bold">${country}</span><span class="text-xs font-black text-sky-600">${count} users</span></div>`
+    ).join('');
+}
+
+async function loadTrafficStats(){
+    try {
+        const now = new Date();
+        const today  = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const week   = new Date(now - 7*86400000);
+        const month  = new Date(now.getFullYear(), now.getMonth(), 1);
+
+        const [todaySnap, weekSnap, monthSnap, totalSnap] = await Promise.all([
+            db.collection('visits').where('timestamp','>=', firebase.firestore.Timestamp.fromDate(today)).get(),
+            db.collection('visits').where('timestamp','>=', firebase.firestore.Timestamp.fromDate(week)).get(),
+            db.collection('visits').where('timestamp','>=', firebase.firestore.Timestamp.fromDate(month)).get(),
+            db.collection('visits').get()
+        ]);
+        document.getElementById('traffic-today').textContent  = todaySnap.size;
+        document.getElementById('traffic-week').textContent   = weekSnap.size;
+        document.getElementById('traffic-month').textContent  = monthSnap.size;
+        document.getElementById('traffic-total').textContent  = totalSnap.size;
+    } catch(e) { console.error('Traffic error:', e); }
+}
+
+
+function exportVIPUsers(){
+    const vipUsers = allUsers.filter(u => u.is_vip && u.vip_expiry > Date.now());
+    const rows = [['Email','Name','VIP Expiry','Balance','Referrals']];
+    vipUsers.forEach(u => {
+        const expiry = new Date(u.vip_expiry).toLocaleDateString();
+        rows.push([u.email, `${u.first_name||''} ${u.last_name||''}`, expiry, (u.balance||0).toFixed(2), u.referrals||0]);
+    });
+    downloadCSV('silver-x-vip-users.csv', rows);
+}
+
+async function loadReportsTraffic(){
+    try {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const week  = new Date(now - 7*86400000);
+        const month = new Date(now.getFullYear(), now.getMonth(), 1);
+        const [a,b,c,d] = await Promise.all([
+            db.collection('visits').where('timestamp','>=', firebase.firestore.Timestamp.fromDate(today)).get(),
+            db.collection('visits').where('timestamp','>=', firebase.firestore.Timestamp.fromDate(week)).get(),
+            db.collection('visits').where('timestamp','>=', firebase.firestore.Timestamp.fromDate(month)).get(),
+            db.collection('visits').get()
+        ]);
+        ['rep-traffic-today','rep-traffic-week','rep-traffic-month','rep-traffic-total'].forEach((id,i)=>{
+            const el = document.getElementById(id);
+            if(el) el.textContent = [a,b,c,d][i].size;
+        });
+        // Also update tools tab traffic
+        ['traffic-today','traffic-week','traffic-month','traffic-total'].forEach((id,i)=>{
+            const el = document.getElementById(id);
+            if(el) el.textContent = [a,b,c,d][i].size;
+        });
+    } catch(e) { console.error(e); }
+}
+
+async function loadPlatformConfig(){
+    const el = document.getElementById('config-display');
+    try {
+        const snap = await db.collection('config').doc('platform').get();
+        const cfg = snap.exists ? snap.data() : {};
+        const configItems = [
+            { label: 'Maintenance Mode', value: cfg.maintenance_mode ? '🔴 ON' : '🟢 OFF', color: cfg.maintenance_mode ? 'text-red-600' : 'text-green-600' },
+            { label: 'VIP Price', value: '$'+(cfg.vip_price||199), color: 'text-purple-600' },
+            { label: 'Investment ROI', value: ((cfg.investment_roi||0.15)*100).toFixed(0)+'%', color: 'text-green-600' },
+            { label: 'Maturity Hours', value: (cfg.investment_maturity_hours||24)+'h', color: 'text-sky-600' },
+            { label: 'Joining Bonus', value: '$'+(cfg.joining_bonus||10), color: 'text-amber-600' },
+            { label: 'Ad Reward', value: '$'+(cfg.ad_reward||2), color: 'text-sky-600' },
+            { label: 'Ad Daily Limit', value: (cfg.ad_claim_daily_limit||3), color: 'text-blue-600' },
+            { label: 'Earn Transfer Min', value: '$'+(cfg.earn_transfer_min||120), color: 'text-orange-600' },
+            { label: 'Withdrawal Min', value: '$'+(cfg.withdrawal_min||10), color: 'text-red-600' },
+            { label: 'Deposit Min', value: '$'+(cfg.deposit_min||10), color: 'text-slate-700' },
+            { label: 'Ref Commission', value: ((cfg.referral_commission_rate||0.03)*100)+'%', color: 'text-blue-600' },
+            { label: 'Ref Bonus Free', value: '$'+(cfg.ref_bonus_free||1), color: 'text-slate-600' },
+            { label: 'Ref Bonus VIP', value: '$'+(cfg.ref_bonus_vip||2), color: 'text-purple-600' },
+            { label: 'Daily Claim', value: '$'+(cfg.daily_claim_amount||0.5), color: 'text-amber-600' },
+            { label: 'Withdrawals Frozen', value: cfg.withdrawals_frozen ? '❄️ YES' : '✅ NO', color: cfg.withdrawals_frozen ? 'text-red-600' : 'text-green-600' },
+            { label: 'Notice Active', value: cfg.notice_active ? '✅ YES' : '❌ NO', color: 'text-slate-600' },
+        ];
+        el.innerHTML = configItems.map(item => `
+            <div class="bg-slate-50 p-3 rounded-xl">
+                <p class="text-[10px] text-slate-400 font-bold uppercase">${item.label}</p>
+                <p class="text-sm font-black ${item.color}">${item.value}</p>
+            </div>`).join('');
+    } catch(e) { el.innerHTML=`<p class="text-xs text-red-500">${e.message}</p>`; }
+}
+
 </script>
 </body>
 </html>
