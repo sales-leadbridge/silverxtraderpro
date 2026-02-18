@@ -36,6 +36,11 @@
 
 <div id="admin-login" class="min-h-screen flex items-center justify-center p-6">
     <div class="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl border border-slate-200">
+        <div class="flex justify-center mb-4">
+            <div class="w-16 h-16 rounded-full overflow-hidden border-4 border-sky-200 shadow-lg">
+                <img src="logo.jpg" alt="Silver X" class="w-16 h-16 object-cover">
+            </div>
+        </div>
         <h1 class="text-4xl font-black outfit text-center mb-1 text-sky-600">ADMIN PANEL</h1>
         <p class="text-center text-slate-400 text-xs font-bold uppercase mb-1">Silver X Terminal</p>
         <p class="text-center text-red-600 text-[10px] font-bold uppercase mb-8">⚠️ RESTRICTED ACCESS</p>
@@ -50,9 +55,14 @@
     
     <header class="bg-white border-b border-slate-200 p-4 sm:p-6 sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div>
-                <h1 class="text-xl sm:text-2xl font-black outfit text-sky-600">ADMIN CONTROL</h1>
-                <p class="text-xs text-slate-400 font-bold" id="admin-email-display"></p>
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-sky-200 flex-shrink-0">
+                    <img src="logo.jpg" alt="Silver X" class="w-9 h-9 object-cover">
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-black outfit text-sky-600">ADMIN CONTROL</h1>
+                    <p class="text-xs text-slate-400 font-bold" id="admin-email-display"></p>
+                </div>
             </div>
             <button onclick="adminLogout()" class="bg-red-600 text-white px-5 py-2 rounded-xl font-bold text-sm">Logout</button>
         </div>
@@ -263,6 +273,85 @@
                     <input type="text" id="tool-refcode-new" placeholder="New code (e.g. SX-ELITE)" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs uppercase">
                     <button onclick="changeRefCode()" class="w-full bg-slate-700 text-white py-2.5 rounded-xl font-bold text-xs">Update Ref Code</button>
                 </div>
+
+                <!-- ── 10 NEW TOOLS ── -->
+
+                <!-- Mark VIP Manually Paid -->
+                <div class="border border-violet-200 rounded-2xl p-4 bg-violet-50">
+                    <h4 class="font-black text-sm text-violet-700 mb-3">💳 Record VIP Payment</h4>
+                    <input type="email" id="tool-vip-pay-email" placeholder="User email" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-2 outline-none font-bold text-xs">
+                    <input type="number" id="tool-vip-pay-amount" placeholder="Amount paid e.g. 250" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs">
+                    <button onclick="recordVIPPayment()" class="w-full bg-violet-600 text-white py-2.5 rounded-xl font-bold text-xs">Record & Grant VIP</button>
+                </div>
+
+                <!-- Approve Investment Plan Manually -->
+                <div class="border border-amber-200 rounded-2xl p-4 bg-amber-50">
+                    <h4 class="font-black text-sm text-amber-700 mb-3">📈 Manual Plan Payout</h4>
+                    <input type="email" id="tool-plan-email" placeholder="User email" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-2 outline-none font-bold text-xs">
+                    <input type="number" id="tool-plan-amount" placeholder="Payout amount" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs">
+                    <button onclick="manualPlanPayout()" class="w-full bg-amber-600 text-white py-2.5 rounded-xl font-bold text-xs">Credit to Balance</button>
+                </div>
+
+                <!-- Transfer Earn to Main for User -->
+                <div class="border border-yellow-300 rounded-2xl p-4 bg-yellow-50">
+                    <h4 class="font-black text-sm text-yellow-700 mb-3">🔄 Force Earn→Main Transfer</h4>
+                    <input type="email" id="tool-transfer-email" placeholder="User email" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs">
+                    <button onclick="forceEarnTransfer()" class="w-full bg-yellow-600 text-white py-2.5 rounded-xl font-bold text-xs">Transfer All Earn to Main</button>
+                </div>
+
+                <!-- Add Referral Bonus Manually -->
+                <div class="border border-green-300 rounded-2xl p-4 bg-green-50">
+                    <h4 class="font-black text-sm text-green-700 mb-3">👥 Manual Referral Bonus</h4>
+                    <input type="email" id="tool-refbonus-email" placeholder="Referrer email" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-2 outline-none font-bold text-xs">
+                    <input type="number" id="tool-refbonus-amount" placeholder="Bonus amount" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs">
+                    <button onclick="manualReferralBonus()" class="w-full bg-green-700 text-white py-2.5 rounded-xl font-bold text-xs">Add to Earn Wallet</button>
+                </div>
+
+                <!-- Delete User Account -->
+                <div class="border border-red-300 rounded-2xl p-4 bg-red-50">
+                    <h4 class="font-black text-sm text-red-700 mb-3">🗑️ Delete User Account</h4>
+                    <input type="email" id="tool-delete-email" placeholder="User email (CAREFUL!)" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs">
+                    <button onclick="deleteUserAccount()" class="w-full bg-red-700 text-white py-2.5 rounded-xl font-bold text-xs">⚠️ Delete Account Data</button>
+                </div>
+
+                <!-- View User Full Info -->
+                <div class="border border-slate-300 rounded-2xl p-4 bg-slate-50">
+                    <h4 class="font-black text-sm text-slate-700 mb-3">🔍 Full User Info</h4>
+                    <input type="email" id="tool-info-email" placeholder="User email" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs">
+                    <button onclick="viewFullUserInfo()" class="w-full bg-slate-700 text-white py-2.5 rounded-xl font-bold text-xs">View All Fields</button>
+                    <div id="tool-info-result" class="mt-3 text-[10px] font-mono text-slate-700 bg-white border border-slate-200 rounded-xl p-2 hidden max-h-48 overflow-y-auto whitespace-pre-wrap"></div>
+                </div>
+
+                <!-- Set Total Deposited -->
+                <div class="border border-blue-200 rounded-2xl p-4 bg-blue-50">
+                    <h4 class="font-black text-sm text-blue-700 mb-3">💵 Set Total Deposited</h4>
+                    <input type="email" id="tool-tdep-email" placeholder="User email" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-2 outline-none font-bold text-xs">
+                    <input type="number" id="tool-tdep-amount" placeholder="Total deposited amount" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs">
+                    <button onclick="setTotalDeposited()" class="w-full bg-blue-600 text-white py-2.5 rounded-xl font-bold text-xs">Update</button>
+                </div>
+
+                <!-- View Security Logs -->
+                <div class="border border-orange-200 rounded-2xl p-4 bg-orange-50">
+                    <h4 class="font-black text-sm text-orange-700 mb-3">🛡️ Security Logs</h4>
+                    <input type="email" id="tool-sec-email" placeholder="User email (blank=all recent)" class="w-full bg-white border border-slate-200 p-2.5 rounded-xl mb-3 outline-none font-bold text-xs">
+                    <button onclick="viewSecurityLogs()" class="w-full bg-orange-600 text-white py-2.5 rounded-xl font-bold text-xs">View Logs</button>
+                    <div id="tool-sec-result" class="mt-3 space-y-1 hidden max-h-64 overflow-y-auto"></div>
+                </div>
+
+                <!-- Bulk Reset All Ad Claims -->
+                <div class="border border-cyan-200 rounded-2xl p-4 bg-cyan-50">
+                    <h4 class="font-black text-sm text-cyan-700 mb-3">📺 Bulk Reset All Ad Claims</h4>
+                    <p class="text-[10px] text-cyan-600 font-bold mb-3">Resets ad_claims_today=0 for ALL users at once (use daily if needed)</p>
+                    <button onclick="bulkResetAdClaims()" class="w-full bg-cyan-600 text-white py-2.5 rounded-xl font-bold text-xs">Reset All Users Claims</button>
+                </div>
+
+                <!-- Export Users CSV -->
+                <div class="border border-emerald-200 rounded-2xl p-4 bg-emerald-50">
+                    <h4 class="font-black text-sm text-emerald-700 mb-3">📊 Export Users CSV</h4>
+                    <p class="text-[10px] text-emerald-600 font-bold mb-3">Download all users as CSV for records/analytics</p>
+                    <button onclick="exportUsersCSV()" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl font-bold text-xs">⬇️ Download CSV</button>
+                </div>
+
             </div>
 
             <!-- Plan & Rate Settings -->
@@ -938,6 +1027,193 @@ async function changeRefCode() {
         alert(`✅ Referral code updated to "${newCode}" for ${email}`);
         document.getElementById('tool-refcode-email').value = '';
         document.getElementById('tool-refcode-new').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+// ─── 10 NEW ADMIN TOOLS ──────────────────────────────────
+
+async function recordVIPPayment() {
+    const email = document.getElementById('tool-vip-pay-email').value.trim();
+    const amount = parseFloat(document.getElementById('tool-vip-pay-amount').value);
+    if(!email) return alert('Enter email');
+    if(isNaN(amount) || amount <= 0) return alert('Enter amount');
+    try {
+        const user = await getUserByEmail(email);
+        const expiry = Date.now() + (30 * 24 * 60 * 60 * 1000);
+        await db.collection('users').doc(user.id).update({ is_vip: true, vip_expiry: expiry });
+        await db.collection('transactions').add({
+            user_id: user.id, transaction_type: 'VIP_PURCHASE', amount,
+            status: 'success', notes: 'VIP payment recorded by admin', created_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        await db.collection('admin_actions').add({ admin_email: adminUser.email, action: 'record_vip_payment', user_id: user.id, amount, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert(`✅ VIP granted & $${amount} payment recorded for ${email}`);
+        document.getElementById('tool-vip-pay-email').value = '';
+        document.getElementById('tool-vip-pay-amount').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function manualPlanPayout() {
+    const email = document.getElementById('tool-plan-email').value.trim();
+    const amount = parseFloat(document.getElementById('tool-plan-amount').value);
+    if(!email) return alert('Enter email');
+    if(isNaN(amount) || amount <= 0) return alert('Enter amount');
+    if(!confirm(`Credit $${amount.toFixed(2)} plan payout to ${email}?`)) return;
+    try {
+        const user = await getUserByEmail(email);
+        await db.collection('users').doc(user.id).update({ balance: firebase.firestore.FieldValue.increment(amount) });
+        await db.collection('transactions').add({
+            user_id: user.id, transaction_type: 'PLAN_RETURN', amount,
+            status: 'approved', notes: 'Manual plan payout by admin', created_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert(`✅ $${amount.toFixed(2)} plan payout credited to ${email}`);
+        document.getElementById('tool-plan-email').value = '';
+        document.getElementById('tool-plan-amount').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function forceEarnTransfer() {
+    const email = document.getElementById('tool-transfer-email').value.trim();
+    if(!email) return alert('Enter email');
+    try {
+        const user = await getUserByEmail(email);
+        const earn = user.earn_wallet || 0;
+        if(earn <= 0) return alert('No earn wallet balance to transfer');
+        if(!confirm(`Transfer $${earn.toFixed(2)} from Earn Wallet to Main Balance for ${email}?`)) return;
+        await db.collection('users').doc(user.id).update({
+            balance: firebase.firestore.FieldValue.increment(earn),
+            earn_wallet: 0
+        });
+        await db.collection('transactions').add({
+            user_id: user.id, transaction_type: 'EARN_TRANSFER', amount: earn,
+            status: 'approved', notes: 'Force transferred by admin', created_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert(`✅ $${earn.toFixed(2)} transferred from Earn→Main for ${email}`);
+        document.getElementById('tool-transfer-email').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function manualReferralBonus() {
+    const email = document.getElementById('tool-refbonus-email').value.trim();
+    const amount = parseFloat(document.getElementById('tool-refbonus-amount').value);
+    if(!email) return alert('Enter email');
+    if(isNaN(amount) || amount <= 0) return alert('Enter amount');
+    try {
+        const user = await getUserByEmail(email);
+        await db.collection('users').doc(user.id).update({ earn_wallet: firebase.firestore.FieldValue.increment(amount) });
+        await db.collection('transactions').add({
+            user_id: user.id, transaction_type: 'REFERRAL', amount,
+            status: 'approved', notes: 'Manual referral bonus by admin', created_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert(`✅ $${amount.toFixed(2)} referral bonus added to ${email}'s Earn Wallet`);
+        document.getElementById('tool-refbonus-email').value = '';
+        document.getElementById('tool-refbonus-amount').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function deleteUserAccount() {
+    const email = document.getElementById('tool-delete-email').value.trim();
+    if(!email) return alert('Enter email');
+    if(!confirm(`⚠️ WARNING: This will DELETE all Firestore data for ${email}.\n\nThis cannot be undone! Type email to confirm.`)) return;
+    const typed = prompt('Type the email to confirm deletion:');
+    if(typed !== email) return alert('Email mismatch. Cancelled.');
+    try {
+        const user = await getUserByEmail(email);
+        await db.collection('users').doc(user.id).delete();
+        await db.collection('admin_actions').add({ admin_email: adminUser.email, action: 'delete_user', user_id: user.id, email, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert(`✅ User data for ${email} deleted. Note: Firebase Auth account still exists — delete manually in Firebase Console if needed.`);
+        document.getElementById('tool-delete-email').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function viewFullUserInfo() {
+    const email = document.getElementById('tool-info-email').value.trim();
+    if(!email) return alert('Enter email');
+    const result = document.getElementById('tool-info-result');
+    try {
+        const user = await getUserByEmail(email);
+        const display = Object.entries(user).map(([k,v]) => {
+            if(k === 'id') return `id: ${v}`;
+            if(v && v.toDate) return `${k}: ${v.toDate().toLocaleString()}`;
+            return `${k}: ${JSON.stringify(v)}`;
+        }).join('\n');
+        result.innerText = display;
+        result.classList.remove('hidden');
+    } catch(e) { result.innerText = 'Error: '+e.message; result.classList.remove('hidden'); }
+}
+
+async function setTotalDeposited() {
+    const email = document.getElementById('tool-tdep-email').value.trim();
+    const amount = parseFloat(document.getElementById('tool-tdep-amount').value);
+    if(!email) return alert('Enter email');
+    if(isNaN(amount) || amount < 0) return alert('Enter valid amount');
+    try {
+        const user = await getUserByEmail(email);
+        await db.collection('users').doc(user.id).update({ total_deposited: amount });
+        alert(`✅ total_deposited set to $${amount.toFixed(2)} for ${email}`);
+        document.getElementById('tool-tdep-email').value = '';
+        document.getElementById('tool-tdep-amount').value = '';
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function viewSecurityLogs() {
+    const email = document.getElementById('tool-sec-email').value.trim();
+    const result = document.getElementById('tool-sec-result');
+    result.innerHTML = '<p class="text-xs text-center text-slate-400">Loading...</p>';
+    result.classList.remove('hidden');
+    try {
+        let query = db.collection('security_logs').orderBy('ts','desc').limit(30);
+        if(email) {
+            query = db.collection('security_logs').where('email','==',email).orderBy('ts','desc').limit(30);
+        }
+        const snap = await query.get();
+        if(snap.empty) { result.innerHTML = '<p class="text-xs text-center text-slate-400 py-2">No logs found</p>'; return; }
+        result.innerHTML = snap.docs.map(d => {
+            const l = d.data();
+            const date = l.ts ? new Date(l.ts.toDate()).toLocaleString() : '—';
+            const typeColor = l.type && l.type.includes('TAMPER') ? 'text-red-600' : l.type && l.type.includes('RATE') ? 'text-orange-600' : 'text-slate-700';
+            return `<div class="bg-white border border-slate-100 rounded-lg p-2">
+                <div class="flex justify-between"><span class="text-[10px] font-black ${typeColor}">${l.type||'—'}</span><span class="text-[9px] text-slate-400">${date}</span></div>
+                <p class="text-[9px] text-slate-600">${l.detail||l.data||'—'}</p>
+                <p class="text-[9px] text-slate-400">${l.email||l.uid||'—'}</p>
+            </div>`;
+        }).join('');
+    } catch(e) { result.innerHTML = `<p class="text-red-500 text-xs">${e.message}</p>`; }
+}
+
+async function bulkResetAdClaims() {
+    if(!confirm('Reset ad_claims_today to 0 for ALL users? This affects everyone.')) return;
+    try {
+        const snap = await db.collection('users').get();
+        const batch = db.batch();
+        let count = 0;
+        snap.docs.forEach(doc => {
+            batch.update(doc.ref, { ad_claims_today: 0, last_ad_claim_date: '' });
+            count++;
+        });
+        await batch.commit();
+        alert(`✅ Ad claims reset for ${count} users.`);
+    } catch(e) { alert('Error: '+e.message); }
+}
+
+async function exportUsersCSV() {
+    try {
+        const snap = await db.collection('users').orderBy('created_at','desc').get();
+        const rows = [['ID','Email','First Name','Last Name','Phone','Balance','Earn Wallet','Referrals','VIP','Total Deposited','Ref Code','Suspended','Created']];
+        snap.docs.forEach(d => {
+            const u = d.data();
+            const created = u.created_at ? new Date(u.created_at.toDate()).toLocaleDateString() : '—';
+            const isVip = u.is_vip && u.vip_expiry > Date.now() ? 'YES' : 'NO';
+            rows.push([d.id, u.email||'', u.first_name||'', u.last_name||'', u.phone||'', (u.balance||0).toFixed(2), (u.earn_wallet||0).toFixed(2), u.referrals||0, isVip, (u.total_deposited||0).toFixed(2), u.ref_code||'', u.suspended?'YES':'NO', created]);
+        });
+        const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'silverx_users_' + new Date().toISOString().split('T')[0] + '.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+        alert(`✅ CSV downloaded with ${snap.size} users.`);
     } catch(e) { alert('Error: '+e.message); }
 }
 
