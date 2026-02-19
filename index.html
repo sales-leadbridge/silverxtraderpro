@@ -68,8 +68,7 @@
         /* Section box dark bg for contrast */
         .section-dark { background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%); border-radius:24px; padding:28px 24px; border:2px solid rgba(14,165,233,0.3); }
 
-        .plan-premium { background:linear-gradient(160deg,#0f172a 0%,#1a2744 50%,#0f172a 100%); border:2px solid #FDB022; border-radius:24px; padding:20px 16px; text-align:center; position:relative; overflow:hidden; transition:all 0.3s; box-shadow:0 8px 32px rgba(253,176,34,0.25),inset 0 1px 0 rgba(253,176,34,0.15); }
-        .plan-premium::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,#FDB022,#F59E0B,transparent); }
+        .plan-premium { background:linear-gradient(160deg,#0f172a 0%,#1a2744 50%,#0f172a 100%); border:2px solid #FDB022; border-radius:24px; padding:20px 16px; text-align:center; position:relative; overflow:hidden; transition:all 0.3s; }
         .plan-premium:hover { transform:translateY(-6px); }
         .plan-tag-premium { position:absolute; top:10px; right:10px; background:linear-gradient(135deg,#F59E0B,#FDB022); color:#0f172a; padding:4px 10px; border-radius:10px; font-size:9px; font-weight:900; text-transform:uppercase; box-shadow:0 2px 8px rgba(253,176,34,0.4); }
         .plan-invest-amount { color:#FDB022; font-size:2rem; font-weight:900; text-shadow:0 0 20px rgba(253,176,34,0.4); }
@@ -249,11 +248,8 @@
 <!-- ── INVESTMENT PLANS ── -->
 <section id="plans-section" class="px-4 py-6 max-w-6xl mx-auto reveal-premium">
     <div class="text-center mb-6">
-        <div class="inline-block px-4 py-2 bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300 rounded-full mb-3 shadow-lg">
-            <span class="text-xs font-bold uppercase tracking-wider text-amber-700">💰 Investment Plans</span>
-        </div>
-        <h3 class="text-3xl font-black outfit uppercase mb-1" style="color:#F59E0B;">1-DAY PLANS</h3>
-        <p class="text-xs font-bold text-slate-600 uppercase">15% Profit Automatically After 24 Hours</p>
+        <h3 class="text-2xl font-black outfit text-premium uppercase mb-1">INVESTMENT PLANS</h3>
+        <p class="text-xs font-bold text-slate-500">1-Day Plans — 15% Profit Automatically After 24 Hours</p>
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
