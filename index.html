@@ -68,13 +68,14 @@
         /* Section box dark bg for contrast */
         .section-dark { background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%); border-radius:24px; padding:28px 24px; border:2px solid rgba(14,165,233,0.3); }
 
-        .plan-premium { background:linear-gradient(135deg,#FFFEF0 0%,#FEF7E0 100%); border:2px solid #FDB022; border-radius:24px; padding:24px 20px; text-align:center; position:relative; overflow:hidden; transition:all 0.3s; box-shadow:0 8px 32px rgba(253,176,34,0.2); }
-        .plan-premium:hover { transform:translateY(-6px); box-shadow:0 16px 48px rgba(253,176,34,0.3); }
-        .plan-tag-premium { position:absolute; top:12px; right:12px; background:linear-gradient(135deg,#F59E0B,#FDB022); color:white; padding:5px 12px; border-radius:10px; font-size:9px; font-weight:800; text-transform:uppercase; }
-        .plan-invest-amount { color:#F59E0B; font-size:2.2rem; font-weight:900; }
-        .plan-return-amount { color:#059669; font-size:1.8rem; font-weight:900; }
-        .plan-profit-box { background:linear-gradient(135deg,#ECFDF5 0%,#D1FAE5 100%); border:2px solid #10B981; border-radius:14px; padding:10px 14px; margin-top:8px; }
-        .plan-profit-amount { color:#059669; font-size:1.4rem; font-weight:900; }
+        .plan-premium { background:linear-gradient(160deg,#0f172a 0%,#1a2744 50%,#0f172a 100%); border:2px solid #FDB022; border-radius:24px; padding:20px 16px; text-align:center; position:relative; overflow:hidden; transition:all 0.3s; box-shadow:0 8px 32px rgba(253,176,34,0.25),inset 0 1px 0 rgba(253,176,34,0.15); }
+        .plan-premium::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,#FDB022,#F59E0B,transparent); }
+        .plan-premium:hover { transform:translateY(-6px); box-shadow:0 16px 48px rgba(253,176,34,0.4),0 0 40px rgba(253,176,34,0.15); border-color:#F59E0B; }
+        .plan-tag-premium { position:absolute; top:10px; right:10px; background:linear-gradient(135deg,#F59E0B,#FDB022); color:#0f172a; padding:4px 10px; border-radius:10px; font-size:9px; font-weight:900; text-transform:uppercase; box-shadow:0 2px 8px rgba(253,176,34,0.4); }
+        .plan-invest-amount { color:#FDB022; font-size:2rem; font-weight:900; text-shadow:0 0 20px rgba(253,176,34,0.4); }
+        .plan-return-amount { color:#34d399; font-size:1.7rem; font-weight:900; text-shadow:0 0 16px rgba(52,211,153,0.3); }
+        .plan-profit-box { background:linear-gradient(135deg,rgba(16,185,129,0.15) 0%,rgba(16,185,129,0.08) 100%); border:1.5px solid rgba(16,185,129,0.4); border-radius:14px; padding:8px 12px; margin-top:8px; backdrop-filter:blur(4px); }
+        .plan-profit-amount { color:#34d399; font-size:1.3rem; font-weight:900; }
 
         .vip-premium { background:linear-gradient(135deg,#2D1B69 0%,#3730A3 50%,#2D1B69 100%); border:2px solid #7C3AED; border-radius:28px; padding:32px 28px; position:relative; overflow:hidden; box-shadow:0 16px 64px rgba(124,58,237,0.35); }
         .vip-premium::before { content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%; background:radial-gradient(circle,rgba(124,58,237,0.15) 0%,transparent 70%); animation:rotate 15s linear infinite; }
@@ -173,19 +174,19 @@
             </p>
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 max-w-2xl mx-auto">
-                <div class="stat-premium">
+                <div class="stat-premium" style="border-color:rgba(56,189,248,0.5);background:rgba(14,165,233,0.15);">
                     <div class="text-2xl font-black outfit mb-1" style="color:#38bdf8;">CALL/PUT</div>
                     <div class="text-[9px] font-bold uppercase tracking-widest" style="color:#94a3b8;">Live Signals</div>
                 </div>
-                <div class="stat-premium">
+                <div class="stat-premium" style="border-color:rgba(52,211,153,0.5);background:rgba(16,185,129,0.15);">
                     <div class="text-2xl font-black outfit text-green-400 mb-1">15%</div>
                     <div class="text-[9px] font-bold uppercase tracking-widest" style="color:#94a3b8;">Daily Profit</div>
                 </div>
-                <div class="stat-premium">
+                <div class="stat-premium" style="border-color:rgba(56,189,248,0.5);background:rgba(14,165,233,0.12);">
                     <div class="text-2xl font-black outfit mb-1" style="color:#38bdf8;">98%</div>
                     <div class="text-[9px] font-bold uppercase tracking-widest" style="color:#94a3b8;">Accuracy</div>
                 </div>
-                <div class="stat-premium" style="border-color:rgba(52,211,153,0.4);background:rgba(16,185,129,0.15);">
+                <div class="stat-premium" style="border-color:rgba(52,211,153,0.7);background:rgba(16,185,129,0.22);box-shadow:0 0 20px rgba(52,211,153,0.25);">
                     <div class="text-2xl font-black outfit text-green-400 mb-1">15K+</div>
                     <div class="text-[9px] text-green-400 font-bold uppercase tracking-widest">Active Users</div>
                 </div>
@@ -259,56 +260,56 @@
         <div class="plan-premium">
             <div class="plan-tag-premium">Starter 🔥</div>
             <div class="plan-invest-amount outfit mb-1">$20</div>
-            <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
-            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
+            <div class="text-[10px] text-amber-400 font-bold uppercase mb-2">Invest</div>
+            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent my-2"></div>
             <div class="plan-return-amount outfit mb-1">$23</div>
-            <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
-            <div class="plan-profit-box"><div class="plan-profit-amount">+$3</div><div class="text-[9px] text-green-700 font-bold">15% PROFIT</div></div>
+            <div class="text-[10px] text-emerald-400 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$3</div><div class="text-[9px] text-emerald-400 font-bold">15% PROFIT</div></div>
         </div>
         <div class="plan-premium">
             <div class="plan-tag-premium">Popular ⭐</div>
             <div class="plan-invest-amount outfit mb-1">$40</div>
-            <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
-            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
+            <div class="text-[10px] text-amber-400 font-bold uppercase mb-2">Invest</div>
+            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent my-2"></div>
             <div class="plan-return-amount outfit mb-1">$46</div>
-            <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
-            <div class="plan-profit-box"><div class="plan-profit-amount">+$6</div><div class="text-[9px] text-green-700 font-bold">15% PROFIT</div></div>
+            <div class="text-[10px] text-emerald-400 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$6</div><div class="text-[9px] text-emerald-400 font-bold">15% PROFIT</div></div>
         </div>
         <div class="plan-premium">
             <div class="plan-tag-premium">Best 💎</div>
             <div class="plan-invest-amount outfit mb-1">$80</div>
-            <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
-            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
+            <div class="text-[10px] text-amber-400 font-bold uppercase mb-2">Invest</div>
+            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent my-2"></div>
             <div class="plan-return-amount outfit mb-1">$92</div>
-            <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
-            <div class="plan-profit-box"><div class="plan-profit-amount">+$12</div><div class="text-[9px] text-green-700 font-bold">15% PROFIT</div></div>
+            <div class="text-[10px] text-emerald-400 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$12</div><div class="text-[9px] text-emerald-400 font-bold">15% PROFIT</div></div>
         </div>
         <div class="plan-premium">
             <div class="plan-tag-premium">Pro 🚀</div>
             <div class="plan-invest-amount outfit mb-1">$160</div>
-            <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
-            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
+            <div class="text-[10px] text-amber-400 font-bold uppercase mb-2">Invest</div>
+            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent my-2"></div>
             <div class="plan-return-amount outfit mb-1">$184</div>
-            <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
-            <div class="plan-profit-box"><div class="plan-profit-amount">+$24</div><div class="text-[9px] text-green-700 font-bold">15% PROFIT</div></div>
+            <div class="text-[10px] text-emerald-400 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$24</div><div class="text-[9px] text-emerald-400 font-bold">15% PROFIT</div></div>
         </div>
         <div class="plan-premium">
             <div class="plan-tag-premium">Elite 👑</div>
             <div class="plan-invest-amount outfit mb-1">$320</div>
-            <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
-            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
+            <div class="text-[10px] text-amber-400 font-bold uppercase mb-2">Invest</div>
+            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent my-2"></div>
             <div class="plan-return-amount outfit mb-1">$368</div>
-            <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
-            <div class="plan-profit-box"><div class="plan-profit-amount">+$48</div><div class="text-[9px] text-green-700 font-bold">15% PROFIT</div></div>
+            <div class="text-[10px] text-emerald-400 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$48</div><div class="text-[9px] text-emerald-400 font-bold">15% PROFIT</div></div>
         </div>
         <div class="plan-premium border-4 border-yellow-400">
             <div class="plan-tag-premium" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">Supreme 🏆</div>
             <div class="plan-invest-amount outfit mb-1">$640</div>
-            <div class="text-[10px] text-amber-700 font-bold uppercase mb-2">Invest</div>
-            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-2"></div>
+            <div class="text-[10px] text-amber-400 font-bold uppercase mb-2">Invest</div>
+            <div class="h-0.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent my-2"></div>
             <div class="plan-return-amount outfit mb-1">$736</div>
-            <div class="text-[10px] text-green-700 font-bold uppercase mb-2">Return</div>
-            <div class="plan-profit-box"><div class="plan-profit-amount">+$96</div><div class="text-[9px] text-green-700 font-bold">15% PROFIT</div></div>
+            <div class="text-[10px] text-emerald-400 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$96</div><div class="text-[9px] text-emerald-400 font-bold">15% PROFIT</div></div>
         </div>
     </div>
 
@@ -519,7 +520,7 @@
                 <div class="w-14 h-14 rounded-full overflow-hidden mx-auto mb-2 border-2 border-sky-200">
                     <img src="logo.jpg" alt="Silver X" class="w-full h-full object-cover" onerror="this.parentNode.style.background='#0ea5e9'">
                 </div>
-                <h3 class="text-2xl font-black outfit text-premium uppercase mb-1">CREATE ACCOUNT</h3>
+                <h3 class="text-2xl font-black outfit text-slate-800 uppercase mb-1">CREATE ACCOUNT</h3>
                 <p class="text-xs text-slate-500 font-bold">Join Silver X Community • Get $10 Joining Bonus</p>
             </div>
             <div class="space-y-3">
