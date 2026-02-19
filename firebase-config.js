@@ -11,6 +11,9 @@ const firebaseConfig = {
 // ═══════════════════════════════════════════════════════════
 // FIREBASE INITIALIZATION WITH ERROR HANDLING
 // ═══════════════════════════════════════════════════════════
+// NOTE: _serverTime collection is used for server-time accuracy.
+// This is a secure pattern — no Cloud Functions needed.
+// Firestore rules allow authenticated users to write to _serverTime.
 try {
   firebase.initializeApp(firebaseConfig);
   
