@@ -768,7 +768,7 @@ async function handleSignup(){
             last_name:lname,
             phone,
             ref_code:refCode,
-            referred_by:null,
+            referred_by: ref && ref.length > 3 ? ref.toUpperCase() : null,
             referral_processed:false,
             balance:0,
             earn_wallet:0,
@@ -1004,7 +1004,8 @@ async function processReferralBonus(code){
         const isVIP = refData.is_vip && refData.vip_expiry > serverNow;
         const reward = isVIP ? CFG.ref_bonus_vip : CFG.ref_bonus_free;
         
-        // ✅ UPDATE REFERRER'S EARN WALLET (Referral rewards go to earn wallet)
+        // ✅ UPDATE REFERRER'S EARN WALLET AND REFERRALS COUNT
+        // Note: Rules allow earn_wallet+referrals increment for ANY authenticated user
         await db.collection('users').doc(refDoc.id).update({
             referrals: firebase.firestore.FieldValue.increment(1),
             earn_wallet: firebase.firestore.FieldValue.increment(reward)
@@ -1022,8 +1023,9 @@ async function processReferralBonus(code){
         });
         
         // ✅ MARK CURRENT USER AS PROCESSED
+        // Note: referred_by is set at account creation via signup if needed,
+        // or stored in referral_processed. We only mark processed here.
         await db.collection('users').doc(currentUser.uid).update({
-            referred_by: code,
             referral_processed: true
         });
         
@@ -1164,13 +1166,13 @@ async function handlePlanClick3(idx){
         await new Promise(r=>setTimeout(r,3000));
         const serverNow=await getServerTime(); // ✅ SERVER TIME
         const withdrawAt=serverNow+(24*60*60*1000);
-        const batch=db.batch();
+        // ✅ DEDUCT BALANCE FIRST
+        await db.collection('users').doc(currentUser.uid).update({
+            balance:firebase.firestore.FieldValue.increment(-pl.price)
+        });
         
-        // ✅ DEDUCT BALANCE IMMEDIATELY
-        batch.update(db.collection('users').doc(currentUser.uid),{balance:firebase.firestore.FieldValue.increment(-pl.price)});
-        
-        const planRef=db.collection('plans').doc();
-        batch.set(planRef,{
+        // ✅ CREATE PLAN RECORD
+        await db.collection('plans').add({
             user_id:currentUser.uid,
             plan_index:idx,
             plan_name:pl.name,
@@ -1182,8 +1184,6 @@ async function handlePlanClick3(idx){
             withdraw_available_at:withdrawAt,
             created_at:firebase.firestore.FieldValue.serverTimestamp()
         });
-        
-        await batch.commit();
         isProcessing=false;closePopupGeneric();await loadPlans();toast(pl.name+' Plan Activated! Returns in 24h!');
     }catch(e){
         isProcessing=false;closePopupGeneric();
@@ -1668,18 +1668,31 @@ async function autoMaturePlans(){
     try{
         const serverNow=await getServerTime(); // ✅ SERVER TIME
         const snap=await db.collection('plans').where('user_id','==',currentUser.uid).where('status','==','active').get();
-        const batch=db.batch();
         let maturedCount=0,totalMatured=0;
-        snap.forEach(doc=>{
+        for(const doc of snap.docs){
             const p=doc.data();
             if(serverNow>=p.withdraw_available_at){ // ✅ Compare with server time
-                batch.update(db.collection('users').doc(currentUser.uid),{balance:firebase.firestore.FieldValue.increment(p.total_return)});
-                batch.update(db.collection('plans').doc(doc.id),{status:'completed',auto_matured:true,matured_at:serverNow});
-                maturedCount++;totalMatured+=p.total_return;
+                try{
+                    // Update balance separately (rules evaluate each write independently)
+                    await db.collection('users').doc(currentUser.uid).update({
+                        balance:firebase.firestore.FieldValue.increment(p.total_return)
+                    });
+                    await db.collection('plans').doc(doc.id).update({
+                        status:'completed',auto_matured:true,matured_at:serverNow
+                    });
+                    await db.collection('transactions').add({
+                        user_id:currentUser.uid,
+                        transaction_type:'PLAN_RETURN',
+                        amount:p.total_return,
+                        status:'approved',
+                        notes:`Auto matured: ${p.plan_name} plan`,
+                        created_at:firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    maturedCount++;totalMatured+=p.total_return;
+                }catch(planErr){console.error('Plan mature error:',planErr);}
             }
-        });
+        }
         if(maturedCount>0){
-            await batch.commit();
             await loadPlans();
             toast('💰 $'+totalMatured.toFixed(2)+' auto-credited from '+maturedCount+' plan(s)!');
         }
@@ -2059,7 +2072,7 @@ async function checkBoosterExpiry(){
 // ═══════════════════════════════════════════════════════════
 // AD CLAIM RESET — Server date based
 // ═══════════════════════════════════════════════════════════
-async function checkAdClaimReset(){
+async function checkDailyAdClaimReset(){
     if(!currentUser)return;
     try{
         const serverDate=await getServerDateStr();
@@ -2074,19 +2087,16 @@ async function checkAdClaimReset(){
 }
 
 // ═══════════════════════════════════════════════════════════
-// SECURITY SUSPEND
+// SECURITY SUSPEND — Logs event and signs out (admin reviews logs and suspends)
 // ═══════════════════════════════════════════════════════════
 async function triggerSecuritySuspend(reason){
     try{
         await db.collection('security_logs').add({
             user_id:currentUser?currentUser.uid:'unknown',
             user_email:currentUser?currentUser.email:'unknown',
-            reason, timestamp:firebase.firestore.FieldValue.serverTimestamp(), action:'auto_suspend'
+            reason, timestamp:firebase.firestore.FieldValue.serverTimestamp(), action:'auto_suspend_flagged'
         });
-        if(currentUser){
-            await db.collection('users').doc(currentUser.uid).update({suspended:true,suspend_reason:reason});
-        }
-        toast('⚠️ Account suspended');
+        toast('⚠️ Security violation detected. Signing out.');
         setTimeout(()=>{firebase.auth().signOut();location.reload();},2000);
     }catch(e){}
 }
