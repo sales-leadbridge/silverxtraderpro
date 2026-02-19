@@ -230,7 +230,12 @@
     <aside id="sidebar-main" class="sidebar" style="padding:10px; padding-bottom:60px;">
         
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-black outfit sky-text uppercase tracking-tight">Silver X</h2>
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full overflow-hidden border border-sky-300 flex-shrink-0">
+                    <img src="logo.jpg" alt="SX" class="w-full h-full object-cover" onerror="this.parentNode.style.background='#0ea5e9'">
+                </div>
+                <h2 class="text-lg font-black outfit sky-text uppercase tracking-tight">Silver X</h2>
+            </div>
             <button onclick="toggleSidebar()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"><i data-lucide="x" class="w-4 h-4"></i></button>
         </div>
 
@@ -308,7 +313,12 @@
     
     <header class="bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-[5000] px-4 py-3 flex items-center justify-between">
         <button onclick="toggleSidebar()" class="text-slate-500"><i data-lucide="menu" class="w-5 h-5"></i></button>
-        <h1 class="text-base font-black outfit sky-text uppercase tracking-tight">Silver X</h1>
+        <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-full overflow-hidden border border-sky-300 flex-shrink-0">
+                <img src="logo.jpg" alt="SX" class="w-full h-full object-cover" onerror="this.parentNode.style.background='#0ea5e9'">
+            </div>
+            <h1 class="text-base font-black outfit sky-text uppercase tracking-tight">Silver X</h1>
+        </div>
         <div class="flex items-center gap-2">
             <span id="header-bal" class="text-[12px] font-black text-green-600">$0.00</span>
             <button onclick="handleVipClick()" id="vip-main-btn" class="px-3 py-1.5 rounded-xl text-[9px] shadow-md btn-supreme uppercase font-bold">GET VIP</button>
@@ -351,7 +361,7 @@
                     <div>
                         <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Earn Wallet</p>
                         <h2 class="text-3xl font-black outfit text-yellow-600" id="earn-wallet-balance">$0.00</h2>
-                        <p class="text-[9px] text-slate-400 mt-0.5">Referrals, Commissions, Ad Claims</p>
+                        <p class="text-[9px] text-slate-400 mt-0.5">Ad Claims · Booster · Promo Codes · Milestones · Referrals · Deposit Commission</p>
                     </div>
                     <div class="w-12 h-12 rounded-2xl bg-yellow-100 flex items-center justify-center">
                         <i data-lucide="star" class="w-6 h-6 text-yellow-500"></i>
@@ -384,10 +394,29 @@
             <div class="glass-card p-4 mb-4 border-2 border-yellow-400">
                 <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mb-1">Earn Wallet</p>
                 <h2 class="text-3xl font-black outfit text-yellow-600" id="earn-wallet-invite">$0.00</h2>
-                <p class="text-[9px] text-slate-400 mt-0.5">Referrals · Commissions · Ad Claims</p>
+                <p class="text-[9px] text-slate-400 mt-0.5">Ad Claims · Promos · Milestones · Referrals · Deposit Commission</p>
                 <button onclick="showTransferToMain()" class="w-full mt-3 bg-yellow-500 text-white py-2.5 rounded-2xl font-bold uppercase text-[11px] shadow-lg">Transfer to Main</button>
             </div>
             
+            <!-- DEPOSIT COMMISSION INFO -->
+            <div class="glass-card p-4 mb-4 border border-green-200">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="outfit text-[13px] font-black text-green-700 uppercase tracking-tight">💰 Deposit Commission</h3>
+                    <span class="text-[9px] font-bold bg-green-100 text-green-700 px-2 py-1 rounded-lg">3% Auto</span>
+                </div>
+                <p class="text-[10px] text-slate-500 mb-2">Earn <strong class="text-green-600">3% commission</strong> automatically whenever your referred user deposits funds. No action required!</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="bg-green-50 rounded-xl p-2 text-center border border-green-100">
+                        <p class="text-[8px] text-green-500 font-bold uppercase">Rate</p>
+                        <p class="text-lg font-black text-green-600">3%</p>
+                    </div>
+                    <div class="bg-green-50 rounded-xl p-2 text-center border border-green-100">
+                        <p class="text-[8px] text-green-500 font-bold uppercase">Goes To</p>
+                        <p class="text-[11px] font-black text-green-600">Earn Wallet</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="glass-card p-4 mb-4 border border-sky-200">
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="outfit text-[13px] font-black sky-text uppercase tracking-tight">Daily Ad Claim</h3>
@@ -480,10 +509,10 @@ const adsCollection = [
     "https://www.effectivegatecpm.com/p85rfz3v8?key=b50205713bdb8a8e9b85dc14013c31f7"
 ];
 const WALLETS = { binance:"403009858", trc20:"TGzsm8guzbaBsbNa9JLPR3WTRzFRy6B6FG" };
-const VIP_PRICE = 250;
+const VIP_PRICE = 199;
 const PLANS = [
-    {name:"MICRO",price:20,roi:20},{name:"STARTER",price:40,roi:20},{name:"BASIC",price:80,roi:20},
-    {name:"PRO",price:160,roi:20},{name:"ELITE",price:320,roi:20},{name:"SUPREME",price:640,roi:20}
+    {name:"MICRO",price:20,roi:15},{name:"STARTER",price:40,roi:15},{name:"BASIC",price:80,roi:15},
+    {name:"PRO",price:160,roi:15},{name:"ELITE",price:320,roi:15},{name:"SUPREME",price:640,roi:15}
 ];
 const MILESTONES = [{count:25,bonus:10},{count:50,bonus:20},{count:100,bonus:30},{count:250,bonus:40},{count:500,bonus:50}];
 // Promo codes config (admin manages codes in Firestore 'promo_codes' collection)
@@ -764,8 +793,25 @@ async function loadUserData(){
             if(userData) userData.total_deposited = total;
         });
 
-    unsubscribeTx=db.collection('transactions').where('user_id','==',currentUser.uid).orderBy('created_at','desc').limit(30).onSnapshot((snap)=>{
+    unsubscribeTx=db.collection('transactions').where('user_id','==',currentUser.uid).orderBy('created_at','desc').limit(30).onSnapshot(async(snap)=>{
+        const prevTxs = state.transactions || [];
         state.transactions=snap.docs.map(d=>({id:d.id,...d.data()}));
+        
+        // Check for newly approved deposits and trigger commission
+        for(const doc of snap.docs){
+            const tx = doc.data();
+            if(tx.transaction_type === 'DEPOSIT' && (tx.status === 'success' || tx.status === 'approved')){
+                const prevTx = prevTxs.find(t => t.id === doc.id);
+                const wasApproved = prevTx && (prevTx.status === 'success' || prevTx.status === 'approved');
+                if(!wasApproved && !tx.commission_triggered){
+                    // New approval - trigger deposit commission
+                    await triggerDepositCommission(currentUser.uid, parseFloat(tx.amount)||0);
+                    // Mark as commission triggered
+                    try{ await db.collection('transactions').doc(doc.id).update({commission_triggered:true}); }catch(e){}
+                }
+            }
+        }
+        
         renderTransactions();
     });
 }
@@ -1618,44 +1664,87 @@ async function handleAdClaim(){
     const maxClaims=state.boosterActive&&state.boosterExpiry>Date.now()?3:1;
     if(claims>=maxClaims)return toast('Daily claim limit reached!');
     
-    // Launch a 5-min countdown ad
-    let secondsLeft=300; // 5 minutes
-    showPopupGeneric(`
-        <h3 class="text-xl font-black outfit mb-3 text-center sky-text">📺 Watch Ad</h3>
-        <div class="text-center py-4">
-            <div class="w-24 h-24 rounded-full bg-sky-50 border-4 border-sky-500 flex items-center justify-center mx-auto mb-4">
-                <span id="ad-countdown" class="text-2xl font-black sky-text">5:00</span>
+    // Open fullscreen ad page
+    const adUrl = adsCollection[state.adIdx % adsCollection.length];
+    state.adIdx = (state.adIdx + 1) % adsCollection.length;
+    
+    // Create fullscreen ad overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'ad-claim-fullscreen';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:999999;background:#000;display:flex;flex-direction:column;';
+    
+    let secondsLeft = 300;
+    const mins = Math.floor(secondsLeft/60);
+    const secs = secondsLeft % 60;
+    
+    overlay.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#0f172a;border-bottom:1px solid #1e293b;z-index:2;flex-shrink:0;">
+            <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:28px;height:28px;border-radius:50%;overflow:hidden;border:1.5px solid #0ea5e9;">
+                    <img src="logo.jpg" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentNode.style.background='#0ea5e9'">
+                </div>
+                <span style="color:#38bdf8;font-weight:900;font-size:12px;font-family:'Space Grotesk',sans-serif;text-transform:uppercase;">Silver X Ads</span>
             </div>
-            <p class="text-sm font-bold text-slate-700 mb-1">Ad is playing...</p>
-            <p class="text-xs text-slate-400">Stay on this screen to earn <strong class="text-green-600">$2.00</strong></p>
-            <div class="w-full bg-slate-100 rounded-full h-2 mt-4">
-                <div id="ad-progress-bar" class="bg-sky-500 h-2 rounded-full transition-all" style="width:0%"></div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <div style="background:#1e293b;border:1.5px solid #0ea5e9;border-radius:10px;padding:6px 14px;font-family:'Space Grotesk',sans-serif;font-weight:900;font-size:13px;color:#38bdf8;" id="ad-claim-timer">${mins}:${secs < 10 ? '0' : ''}${secs}</div>
+                <div style="background:#22C55E;border-radius:10px;padding:6px 14px;font-weight:900;font-size:12px;color:#fff;text-transform:uppercase;">+$2.00</div>
             </div>
         </div>
-        <button id="ad-close-btn" disabled onclick="closePopupGeneric()" class="popup-btn-secondary mt-2 opacity-40">Please wait...</button>`);
+        <div style="position:relative;flex:1;overflow:hidden;">
+            <iframe src="${adUrl}" style="width:100%;height:100%;border:none;background:#fff;" allow="autoplay;scripts"></iframe>
+            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:#1e293b;">
+                <div id="ad-progress-line" style="height:100%;background:linear-gradient(90deg,#0ea5e9,#38bdf8);width:0%;transition:width 1s linear;"></div>
+            </div>
+        </div>
+        <div style="padding:12px 16px;background:#0f172a;border-top:1px solid #1e293b;flex-shrink:0;">
+            <div style="background:#1e293b;border-radius:12px;height:6px;margin-bottom:10px;overflow:hidden;">
+                <div id="ad-bar" style="height:100%;background:linear-gradient(90deg,#0ea5e9,#38bdf8);width:0%;transition:width 1s linear;border-radius:12px;"></div>
+            </div>
+            <button id="ad-claim-final-btn" disabled onclick="completeAdClaimFromFullscreen()" 
+                style="width:100%;background:#374151;color:#9ca3af;border:none;border-radius:14px;padding:14px;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:1px;cursor:not-allowed;font-family:'Space Grotesk',sans-serif;transition:all 0.3s;">
+                ⏳ Watch Ad — <span id="ad-claim-countdown-text">${mins}:${secs < 10 ? '0' : ''}${secs} remaining</span>
+            </button>
+        </div>`;
     
-    isProcessing=true;
-    const interval=setInterval(()=>{
+    document.body.appendChild(overlay);
+    document.body.classList.add('modal-open');
+    isProcessing = true;
+    
+    const interval = setInterval(() => {
         secondsLeft--;
-        const pct=(1-(secondsLeft/300))*100;
-        const m=Math.floor(secondsLeft/60);
-        const s=secondsLeft%60;
-        const cd=document.getElementById('ad-countdown');
-        const pb=document.getElementById('ad-progress-bar');
-        const closeBtn=document.getElementById('ad-close-btn');
-        if(cd)cd.innerText=m+':'+(s<10?'0':'')+s;
-        if(pb)pb.style.width=pct+'%';
-        if(secondsLeft<=0){
+        const pct = ((300 - secondsLeft) / 300) * 100;
+        const m = Math.floor(secondsLeft / 60);
+        const s = secondsLeft % 60;
+        const timeStr = m + ':' + (s < 10 ? '0' : '') + s;
+        
+        const timerEl = document.getElementById('ad-claim-timer');
+        const barEl = document.getElementById('ad-bar');
+        const progLine = document.getElementById('ad-progress-line');
+        const countText = document.getElementById('ad-claim-countdown-text');
+        const claimBtn = document.getElementById('ad-claim-final-btn');
+        
+        if(timerEl) timerEl.innerText = timeStr;
+        if(barEl) barEl.style.width = pct + '%';
+        if(progLine) progLine.style.width = pct + '%';
+        if(countText) countText.innerText = secondsLeft > 0 ? timeStr + ' remaining' : 'Done!';
+        
+        if(secondsLeft <= 0){
             clearInterval(interval);
-            creditAdClaim();
+            if(claimBtn){
+                claimBtn.disabled = false;
+                claimBtn.style.background = 'linear-gradient(135deg,#22C55E,#16a34a)';
+                claimBtn.style.color = '#fff';
+                claimBtn.style.cursor = 'pointer';
+                claimBtn.style.boxShadow = '0 6px 20px rgba(34,197,94,0.4)';
+                claimBtn.innerHTML = '🎉 Claim $2.00 Now!';
+            }
         }
-    },1000);
+    }, 1000);
     
-    // Store interval for cleanup
-    window._adClaimInterval=interval;
+    window._adClaimInterval = interval;
 }
 
-async function creditAdClaim(){
+async function completeAdClaimFromFullscreen(){
     const today=getTodayDateStr();
     const newClaims=(state.lastAdClaimDate===today?state.adClaimsToday:0)+1;
     try{
@@ -1673,11 +1762,17 @@ async function creditAdClaim(){
             created_at:firebase.firestore.FieldValue.serverTimestamp()
         });
         isProcessing=false;
-        closePopupGeneric();
+        // Remove fullscreen overlay
+        const overlay = document.getElementById('ad-claim-fullscreen');
+        if(overlay) overlay.remove();
+        document.body.classList.remove('modal-open');
+        if(window._adClaimInterval) clearInterval(window._adClaimInterval);
         toast('🎉 $2.00 added to Earn Wallet!');
     }catch(e){
         isProcessing=false;
-        closePopupGeneric();
+        const overlay = document.getElementById('ad-claim-fullscreen');
+        if(overlay) overlay.remove();
+        document.body.classList.remove('modal-open');
         toast('Error: '+e.message);
     }
 }
@@ -1944,7 +2039,7 @@ function openAboutModal(){
             </div>
             <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
                 <div class="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center flex-shrink-0"><i data-lucide="crown" class="w-5 h-5 text-yellow-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">VIP Membership</p><p class="text-[11px] text-slate-500 mt-0.5">16 pairs, ad-free, fast withdrawals, WhatsApp support, recovery sessions — $250 for 30 days.</p></div>
+                <div><p class="text-[13px] font-black text-black">VIP Membership</p><p class="text-[11px] text-slate-500 mt-0.5">16 pairs, ad-free, fast withdrawals, WhatsApp support, recovery sessions — $199 for 30 days.</p></div>
             </div>
         </div>
         <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-700 py-3 rounded-2xl font-bold uppercase text-xs mt-4">Close</button>`;
