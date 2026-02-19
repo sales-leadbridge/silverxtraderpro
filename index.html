@@ -70,7 +70,7 @@
 
         .plan-premium { background:linear-gradient(160deg,#0f172a 0%,#1a2744 50%,#0f172a 100%); border:2px solid #FDB022; border-radius:24px; padding:20px 16px; text-align:center; position:relative; overflow:hidden; transition:all 0.3s; }
         .plan-premium:hover { transform:translateY(-6px); }
-        .plan-tag-premium { position:absolute; top:10px; right:10px; background:linear-gradient(135deg,#F59E0B,#FDB022); color:#0f172a; padding:4px 10px; border-radius:10px; font-size:9px; font-weight:900; text-transform:uppercase; box-shadow:0 2px 8px rgba(253,176,34,0.4); }
+        .plan-tag-premium { position:absolute; top:8px; right:8px; background:linear-gradient(135deg,#F59E0B,#FDB022); color:#0f172a; padding:3px 7px; border-radius:8px; font-size:8px; font-weight:900; text-transform:uppercase; max-width:55%; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; }
         .plan-invest-amount { color:#FDB022; font-size:2rem; font-weight:900; text-shadow:0 0 20px rgba(253,176,34,0.4); }
         .plan-return-amount { color:#34d399; font-size:1.7rem; font-weight:900; text-shadow:0 0 16px rgba(52,211,153,0.3); }
         .plan-profit-box { background:linear-gradient(135deg,rgba(16,185,129,0.15) 0%,rgba(16,185,129,0.08) 100%); border:1.5px solid rgba(16,185,129,0.4); border-radius:14px; padding:8px 12px; margin-top:8px; backdrop-filter:blur(4px); }
@@ -105,7 +105,7 @@
         @media (max-width:640px) { .hero-premium{padding:28px 20px;} .btn-premium{padding:14px 24px;font-size:12px;} }
 
         .auth-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(8px); z-index:99999; display:flex; align-items:center; justify-content:center; padding:16px; }
-        .auth-box { background:#fff; border-radius:24px; padding:32px 28px 28px; max-width:460px; width:100%; box-shadow:0 24px 80px rgba(0,0,0,0.3); max-height:92vh; overflow-y:auto; position:relative; }
+        .auth-box { background:#fff; border-radius:24px; padding:24px 20px 22px; max-width:460px; width:100%; box-shadow:0 24px 80px rgba(0,0,0,0.3); max-height:92vh; overflow-y:auto; position:relative; }
         .auth-close { position:absolute; top:14px; right:14px; width:32px; height:32px; border-radius:50%; background:#f1f5f9; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:#64748b; transition:0.2s; }
         .auth-close:hover { background:#e2e8f0; color:#0f172a; }
 
@@ -124,6 +124,25 @@
 
         /* Text stroke for readability on light bg */
         .stroke-text { -webkit-text-stroke:0.5px rgba(0,0,0,0.15); }
+
+        /* ── EXTRA SMALL SCREENS (320px–380px phones) ── */
+        @media (max-width:380px) {
+            .plan-premium { padding:14px 10px; }
+            .plan-return-amount { font-size:1.3rem; }
+            .plan-profit-amount { font-size:1.1rem; }
+            .auth-box { padding:18px 14px 16px; border-radius:18px; }
+            .stat-premium { padding:14px 10px; }
+            .benefit-premium { padding:10px 12px; gap:10px; }
+            .ref-premium { padding:20px 16px; }
+            .milestone-premium { padding:20px 16px; }
+            .vip-premium { padding:24px 18px; }
+        }
+        /* ── DESKTOP LARGE SCREEN POLISH ── */
+        @media (min-width:1024px) {
+            .plan-premium { padding:28px 22px; }
+            .hero-premium { padding:56px 40px; }
+            .glass-premium { border-radius:28px; }
+        }
     </style>
 </head>
 <body>
@@ -133,11 +152,11 @@
     <div class="flex justify-between items-center max-w-6xl mx-auto">
         <div class="flex items-center gap-3">
             <div class="logo-circle float-premium">
-                <img src="logo.jpg" alt="Silver X Trader" onerror="this.parentNode.style.background='#0ea5e9'">
+                <img src="logo.jpg" alt="Silver X Trader" class="w-full h-full object-cover" width="42" height="42" onerror="this.parentNode.style.background='#0ea5e9'">
             </div>
             <div>
                 <h1 class="text-base font-black outfit text-premium uppercase tracking-tight leading-none">SILVER X</h1>
-                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Supreme Elite</p>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Supreme Elite</p>
             </div>
         </div>
         <div class="flex items-center gap-2">
@@ -175,19 +194,19 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 max-w-2xl mx-auto">
                 <div class="stat-premium" style="border-color:rgba(56,189,248,0.5);background:rgba(14,165,233,0.15);">
                     <div class="text-2xl font-black outfit mb-1" style="color:#38bdf8;">CALL/PUT</div>
-                    <div class="text-[9px] font-bold uppercase tracking-widest" style="color:#94a3b8;">Live Signals</div>
+                    <div class="text-[10px] font-bold uppercase tracking-widest" style="color:#94a3b8;">Live Signals</div>
                 </div>
                 <div class="stat-premium" style="border-color:rgba(52,211,153,0.5);background:rgba(16,185,129,0.15);">
                     <div class="text-2xl font-black outfit text-green-400 mb-1">15%</div>
-                    <div class="text-[9px] font-bold uppercase tracking-widest" style="color:#94a3b8;">Daily Profit</div>
+                    <div class="text-[10px] font-bold uppercase tracking-widest" style="color:#94a3b8;">Daily Profit</div>
                 </div>
                 <div class="stat-premium" style="border-color:rgba(56,189,248,0.5);background:rgba(14,165,233,0.12);">
                     <div class="text-2xl font-black outfit mb-1" style="color:#38bdf8;">98%</div>
-                    <div class="text-[9px] font-bold uppercase tracking-widest" style="color:#94a3b8;">Accuracy</div>
+                    <div class="text-[10px] font-bold uppercase tracking-widest" style="color:#94a3b8;">Accuracy</div>
                 </div>
                 <div class="stat-premium" style="border-color:rgba(52,211,153,0.7);background:rgba(16,185,129,0.22);box-shadow:0 0 20px rgba(52,211,153,0.25);">
                     <div class="text-2xl font-black outfit text-green-400 mb-1">15K+</div>
-                    <div class="text-[9px] text-green-400 font-bold uppercase tracking-widest">Active Users</div>
+                    <div class="text-[10px] text-green-400 font-bold uppercase tracking-widest">Active Users</div>
                 </div>
             </div>
 
@@ -252,66 +271,66 @@
         <p class="text-xs font-bold text-slate-500">1-Day Plans — 15% Profit Automatically After 24 Hours</p>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3" style="overflow:hidden;">
         <!-- Plan 1: Cyan/Sky -->
         <div class="plan-premium" style="border-color:#22d3ee;box-shadow:0 8px 32px rgba(34,211,238,0.25),inset 0 1px 0 rgba(34,211,238,0.15);">
             <div class="plan-tag-premium" style="background:linear-gradient(135deg,#06b6d4,#22d3ee);color:#0f172a;">Starter 🔥</div>
-            <div class="outfit mb-1" style="color:#ffffff;font-size:2rem;font-weight:900;">$20</div>
-            <div class="outfit text-[10px] font-bold uppercase mb-2" style="color:#ffffff;">Invest</div>
+            <div class="outfit mb-1" style="color:#ffffff;font-size:1.6rem;font-weight:900;">$20</div>
+            <div class="outfit text-[11px] font-bold uppercase mb-2" style="color:#ffffff;">Invest</div>
             <div class="h-0.5 my-2" style="background:linear-gradient(90deg,transparent,#22d3ee,transparent);"></div>
             <div class="plan-return-amount outfit mb-1">$23</div>
-            <div class="text-[10px] text-emerald-400 font-bold uppercase mb-2">Return</div>
-            <div class="plan-profit-box"><div class="plan-profit-amount">+$3</div><div class="text-[9px] text-emerald-400 font-bold">15% PROFIT</div></div>
+            <div class="text-[11px] text-emerald-400 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$3</div><div class="text-[11px] text-emerald-400 font-bold">15% PROFIT</div></div>
         </div>
         <!-- Plan 2: Green/Emerald -->
         <div class="plan-premium" style="border-color:#10b981;box-shadow:0 8px 32px rgba(16,185,129,0.25),inset 0 1px 0 rgba(16,185,129,0.15);">
             <div class="plan-tag-premium" style="background:linear-gradient(135deg,#059669,#10b981);color:#fff;">Popular ⭐</div>
-            <div class="outfit mb-1" style="color:#ffffff;font-size:2rem;font-weight:900;">$40</div>
-            <div class="outfit text-[10px] font-bold uppercase mb-2" style="color:#ffffff;">Invest</div>
+            <div class="outfit mb-1" style="color:#ffffff;font-size:1.6rem;font-weight:900;">$40</div>
+            <div class="outfit text-[11px] font-bold uppercase mb-2" style="color:#ffffff;">Invest</div>
             <div class="h-0.5 my-2" style="background:linear-gradient(90deg,transparent,#10b981,transparent);"></div>
             <div class="plan-return-amount outfit mb-1">$46</div>
-            <div class="text-[10px] text-emerald-400 font-bold uppercase mb-2">Return</div>
-            <div class="plan-profit-box"><div class="plan-profit-amount">+$6</div><div class="text-[9px] text-emerald-400 font-bold">15% PROFIT</div></div>
+            <div class="text-[11px] text-emerald-400 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$6</div><div class="text-[11px] text-emerald-400 font-bold">15% PROFIT</div></div>
         </div>
         <!-- Plan 3: Blue/Indigo -->
         <div class="plan-premium" style="border-color:#6366f1;box-shadow:0 8px 32px rgba(99,102,241,0.25),inset 0 1px 0 rgba(99,102,241,0.15);">
             <div class="plan-tag-premium" style="background:linear-gradient(135deg,#4f46e5,#6366f1);color:#fff;">Best 💎</div>
-            <div class="outfit mb-1" style="color:#ffffff;font-size:2rem;font-weight:900;">$80</div>
-            <div class="outfit text-[10px] font-bold uppercase mb-2" style="color:#ffffff;">Invest</div>
+            <div class="outfit mb-1" style="color:#ffffff;font-size:1.6rem;font-weight:900;">$80</div>
+            <div class="outfit text-[11px] font-bold uppercase mb-2" style="color:#ffffff;">Invest</div>
             <div class="h-0.5 my-2" style="background:linear-gradient(90deg,transparent,#6366f1,transparent);"></div>
             <div class="plan-return-amount outfit mb-1">$92</div>
-            <div class="text-[10px] text-emerald-400 font-bold uppercase mb-2">Return</div>
-            <div class="plan-profit-box"><div class="plan-profit-amount">+$12</div><div class="text-[9px] text-emerald-400 font-bold">15% PROFIT</div></div>
+            <div class="text-[11px] text-emerald-400 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$12</div><div class="text-[11px] text-emerald-400 font-bold">15% PROFIT</div></div>
         </div>
         <!-- Plan 4: Orange/Amber -->
         <div class="plan-premium" style="border-color:#f97316;box-shadow:0 8px 32px rgba(249,115,22,0.25),inset 0 1px 0 rgba(249,115,22,0.15);">
             <div class="plan-tag-premium" style="background:linear-gradient(135deg,#ea580c,#f97316);color:#fff;">Pro 🚀</div>
-            <div class="outfit mb-1" style="color:#ffffff;font-size:2rem;font-weight:900;">$160</div>
-            <div class="outfit text-[10px] font-bold uppercase mb-2" style="color:#ffffff;">Invest</div>
+            <div class="outfit mb-1" style="color:#ffffff;font-size:1.6rem;font-weight:900;">$160</div>
+            <div class="outfit text-[11px] font-bold uppercase mb-2" style="color:#ffffff;">Invest</div>
             <div class="h-0.5 my-2" style="background:linear-gradient(90deg,transparent,#f97316,transparent);"></div>
             <div class="plan-return-amount outfit mb-1">$184</div>
-            <div class="text-[10px] text-emerald-400 font-bold uppercase mb-2">Return</div>
-            <div class="plan-profit-box"><div class="plan-profit-amount">+$24</div><div class="text-[9px] text-emerald-400 font-bold">15% PROFIT</div></div>
+            <div class="text-[11px] text-emerald-400 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$24</div><div class="text-[11px] text-emerald-400 font-bold">15% PROFIT</div></div>
         </div>
         <!-- Plan 5: Pink/Rose -->
         <div class="plan-premium" style="border-color:#f43f5e;box-shadow:0 8px 32px rgba(244,63,94,0.25),inset 0 1px 0 rgba(244,63,94,0.15);">
             <div class="plan-tag-premium" style="background:linear-gradient(135deg,#e11d48,#f43f5e);color:#fff;">Elite 👑</div>
-            <div class="outfit mb-1" style="color:#ffffff;font-size:2rem;font-weight:900;">$320</div>
-            <div class="outfit text-[10px] font-bold uppercase mb-2" style="color:#ffffff;">Invest</div>
+            <div class="outfit mb-1" style="color:#ffffff;font-size:1.6rem;font-weight:900;">$320</div>
+            <div class="outfit text-[11px] font-bold uppercase mb-2" style="color:#ffffff;">Invest</div>
             <div class="h-0.5 my-2" style="background:linear-gradient(90deg,transparent,#f43f5e,transparent);"></div>
             <div class="plan-return-amount outfit mb-1">$368</div>
-            <div class="text-[10px] text-emerald-400 font-bold uppercase mb-2">Return</div>
-            <div class="plan-profit-box"><div class="plan-profit-amount">+$48</div><div class="text-[9px] text-emerald-400 font-bold">15% PROFIT</div></div>
+            <div class="text-[11px] text-emerald-400 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$48</div><div class="text-[11px] text-emerald-400 font-bold">15% PROFIT</div></div>
         </div>
         <!-- Plan 6: Purple/Violet (Supreme) -->
         <div class="plan-premium" style="border-color:#a855f7;border-width:3px;box-shadow:0 8px 40px rgba(168,85,247,0.35),0 0 60px rgba(168,85,247,0.15),inset 0 1px 0 rgba(168,85,247,0.2);">
             <div class="plan-tag-premium" style="background:linear-gradient(135deg,#7C3AED,#a855f7);color:#fff;">Supreme 🏆</div>
-            <div class="outfit mb-1" style="color:#ffffff;font-size:2rem;font-weight:900;">$640</div>
-            <div class="outfit text-[10px] font-bold uppercase mb-2" style="color:#ffffff;">Invest</div>
+            <div class="outfit mb-1" style="color:#ffffff;font-size:1.6rem;font-weight:900;">$640</div>
+            <div class="outfit text-[11px] font-bold uppercase mb-2" style="color:#ffffff;">Invest</div>
             <div class="h-0.5 my-2" style="background:linear-gradient(90deg,transparent,#a855f7,transparent);"></div>
             <div class="plan-return-amount outfit mb-1">$736</div>
-            <div class="text-[10px] text-emerald-400 font-bold uppercase mb-2">Return</div>
-            <div class="plan-profit-box"><div class="plan-profit-amount">+$96</div><div class="text-[9px] text-emerald-400 font-bold">15% PROFIT</div></div>
+            <div class="text-[11px] text-emerald-400 font-bold uppercase mb-2">Return</div>
+            <div class="plan-profit-box"><div class="plan-profit-amount">+$96</div><div class="text-[11px] text-emerald-400 font-bold">15% PROFIT</div></div>
         </div>
     </div>
 
@@ -425,10 +444,10 @@
             <div class="float-premium mb-3"><i data-lucide="trophy" class="w-14 h-14 mx-auto" style="color:#8B5CF6;"></i></div>
             <div class="text-sm font-black outfit uppercase mb-3" style="color:#8B5CF6;">Milestone Bonuses</div>
             <div class="grid grid-cols-2 gap-2">
-                <div class="bg-white/60 rounded-xl p-2"><div class="text-xl font-black outfit" style="color:#8B5CF6;">$10</div><div class="text-[9px] font-bold text-slate-600">25 Refs</div></div>
-                <div class="bg-white/60 rounded-xl p-2"><div class="text-xl font-black outfit" style="color:#8B5CF6;">$20</div><div class="text-[9px] font-bold text-slate-600">50 Refs</div></div>
-                <div class="bg-white/60 rounded-xl p-2"><div class="text-xl font-black outfit" style="color:#8B5CF6;">$30</div><div class="text-[9px] font-bold text-slate-600">100 Refs</div></div>
-                <div class="bg-white/60 rounded-xl p-2"><div class="text-xl font-black outfit" style="color:#8B5CF6;">$50</div><div class="text-[9px] font-bold text-slate-600">500 Refs</div></div>
+                <div class="bg-white/60 rounded-xl p-2"><div class="text-xl font-black outfit" style="color:#8B5CF6;">$10</div><div class="text-[11px] font-bold text-slate-600">25 Refs</div></div>
+                <div class="bg-white/60 rounded-xl p-2"><div class="text-xl font-black outfit" style="color:#8B5CF6;">$20</div><div class="text-[11px] font-bold text-slate-600">50 Refs</div></div>
+                <div class="bg-white/60 rounded-xl p-2"><div class="text-xl font-black outfit" style="color:#8B5CF6;">$30</div><div class="text-[11px] font-bold text-slate-600">100 Refs</div></div>
+                <div class="bg-white/60 rounded-xl p-2"><div class="text-xl font-black outfit" style="color:#8B5CF6;">$50</div><div class="text-[11px] font-bold text-slate-600">500 Refs</div></div>
             </div>
         </div>
     </div>
