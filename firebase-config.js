@@ -138,43 +138,15 @@ try {
   };
   
   // ── PREVENT FIRESTORE DIRECT MANIPULATION ──
-  // CRITICAL: This must be done BEFORE freezing the object
-  if(window.db && window.db.collection) {
-    const originalCollection = window.db.collection.bind(window.db);
-    
-    window.db.collection = function(collectionName) {
-      const collectionRef = originalCollection(collectionName);
-      
-      // Monitor updates to users collection
-      if(collectionName === 'users') {
-        const originalUpdate = collectionRef.doc.bind(collectionRef);
-        collectionRef.doc = function(docId) {
-          const docRef = originalUpdate(docId);
-          const originalDocUpdate = docRef.update.bind(docRef);
-          
-          docRef.update = function(data) {
-            // Log any direct manipulation attempts
-            if(data && (data.balance !== undefined || data.referrals !== undefined || data.is_vip !== undefined)) {
-              logSecurityEvent('DIRECT_USER_UPDATE', `Fields: ${Object.keys(data).join(', ')}`);
-            }
-            return originalDocUpdate(data);
-          };
-          
-          return docRef;
-        };
-      }
-      
-      return collectionRef;
-    };
-  }
+  // NOTE: Security is enforced at the Firestore Rules level (server-side).
+  // Client-side monitoring logs suspicious activity for admin review.
+  // We do NOT freeze db since it breaks legitimate operations. Auth is frozen.
   
-  // Freeze critical objects AFTER proxying
-  if (window.db) {
-    Object.freeze(window.db);
-  }
   if (window.auth) {
     Object.freeze(window.auth);
   }
+  // db is intentionally NOT frozen — freezing it breaks .collection() calls
+  // Server-side Firestore Rules are the real security layer
   
   // ── DEVELOPER TOOLS DETECTION ──
   let devToolsOpen = false;
