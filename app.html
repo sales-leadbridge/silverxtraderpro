@@ -2113,6 +2113,197 @@ async function triggerSecuritySuspend(reason){
     };
 })();
 
+// ═══════════════════════════════════════════════════════════
+// ── UTILITY FUNCTIONS (toast, tabs, sidebar, popups, etc) ──
+// ═══════════════════════════════════════════════════════════
+
+// ─── TOAST ───────────────────────────────────────────────────
+let _toastTimer=null;
+function toast(msg){
+    const el=document.getElementById('toast');
+    if(!el)return;
+    el.innerText=msg;
+    el.style.transform='translateY(0) translateX(-50%)';
+    el.style.opacity='1';
+    if(_toastTimer)clearTimeout(_toastTimer);
+    _toastTimer=setTimeout(()=>{
+        el.style.transform='translateY(-160px) translateX(-50%)';
+        el.style.opacity='0';
+    },3000);
+}
+
+// ─── TAB SWITCHER ────────────────────────────────────────────
+function switchTab(tab){
+    ['bot','wallet','invest','invite'].forEach(t=>{
+        const sec=document.getElementById('sec-'+t);
+        const nav=document.getElementById('nav-'+t);
+        if(sec) sec.classList.toggle('hidden', t!==tab);
+        if(nav){
+            if(t===tab){
+                nav.classList.add('nav-active');
+                nav.style.color='var(--primary)';
+            } else {
+                nav.classList.remove('nav-active');
+                nav.style.color='';
+            }
+        }
+    });
+}
+
+// ─── SIDEBAR ─────────────────────────────────────────────────
+function toggleSidebar(){
+    const sb=document.getElementById('sidebar-main');
+    const ov=document.getElementById('sb-overlay');
+    if(!sb||!ov)return;
+    const isOpen=sb.classList.contains('active');
+    sb.classList.toggle('active',!isOpen);
+    ov.style.display=isOpen?'none':'block';
+    document.body.classList.toggle('modal-open',!isOpen);
+}
+
+// ─── LOGOUT ──────────────────────────────────────────────────
+async function handleLogout(){
+    if(unsubscribeUser){unsubscribeUser();unsubscribeUser=null;}
+    if(unsubscribeTx){unsubscribeTx();unsubscribeTx=null;}
+    if(unsubscribeConfig){unsubscribeConfig();unsubscribeConfig=null;}
+    await firebase.auth().signOut();
+    window.location.href='index.html';
+}
+
+// ─── BUTTON LOADER HELPER ─────────────────────────────────────
+function setBtn(btnId,txtId,ldrId,enabled){
+    const btn=document.getElementById(btnId);
+    const txt=document.getElementById(txtId);
+    const ldr=document.getElementById(ldrId);
+    if(btn)btn.disabled=!enabled;
+    if(txt)txt.classList.toggle('hidden',!enabled);
+    if(ldr)ldr.classList.toggle('hidden',enabled);
+}
+
+// ─── GENERIC POPUP ───────────────────────────────────────────
+function showPopupGeneric(html){
+    let popup=document.getElementById('popup-generic-overlay');
+    if(!popup){
+        popup=document.createElement('div');
+        popup.id='popup-generic-overlay';
+        popup.className='popup-overlay';
+        popup.innerHTML='<div id="popup-generic-box" class="popup-box"></div>';
+        document.body.appendChild(popup);
+    }
+    document.getElementById('popup-generic-box').innerHTML=html;
+    popup.style.display='flex';
+    document.body.classList.add('modal-open');
+    lucide.createIcons();
+}
+
+function closePopupGeneric(){
+    const popup=document.getElementById('popup-generic-overlay');
+    if(popup){popup.style.display='none';}
+    document.body.classList.remove('modal-open');
+    isProcessing=false;
+}
+
+// ─── MODAL (deposit/withdraw) ────────────────────────────────
+function closeModal(){
+    document.getElementById('modal-overlay').classList.add('hidden');
+    document.body.classList.remove('modal-open');
+    isProcessing=false;
+}
+
+// ─── UPDATE VIP UI ───────────────────────────────────────────
+function updateVIPUI(){
+    const btn=document.getElementById('vip-main-btn');
+    const sidebarVip=document.getElementById('sidebar-vip-status');
+    if(state.isVIP){
+        if(btn){btn.innerText='VIP ✓';btn.style.background='linear-gradient(135deg,#a855f7,#7c3aed)';}
+        if(sidebarVip){sidebarVip.innerText='VIP ELITE';sidebarVip.style.color='#a855f7';}
+    } else {
+        if(btn){btn.innerText='GET VIP';btn.style.background='';}
+        if(sidebarVip){sidebarVip.innerText='FREE';sidebarVip.style.color='';}
+    }
+}
+
+// ─── UPDATE SIDEBAR INFO ─────────────────────────────────────
+function updateSidebarInfo(){
+    if(!userData)return;
+    const name=document.getElementById('sidebar-name');
+    const email=document.getElementById('sidebar-email');
+    if(name)name.innerText=(userData.first_name||'')+' '+(userData.last_name||'');
+    if(email)email.innerText=userData.email||'';
+}
+
+// ─── COPY REFERRAL LINK ──────────────────────────────────────
+function copyReferralLink(){
+    const code=state.refCode||'';
+    if(!code)return toast('Referral code not loaded yet');
+    const link=window.location.origin+window.location.pathname.replace('app.html','index.html')+'?ref='+code;
+    navigator.clipboard.writeText(link).then(()=>{
+        toast('Referral link copied!');
+    }).catch(()=>{
+        // Fallback
+        const el=document.createElement('textarea');
+        el.value=link;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        toast('Referral link copied!');
+    });
+}
+
+// ─── WHATSAPP SUPPORT (VIP only) ────────────────────────────
+function openSupport(){
+    if(!state.isVIP)return toast('VIP membership required for WhatsApp support');
+    window.open('https://wa.me/923294007913?text=Hi%20Silver%20X%20VIP%20Support','_blank');
+}
+
+// ─── RECOVERY SESSION (VIP only) ────────────────────────────
+function contactForRecovery(){
+    if(!state.isVIP)return toast('VIP membership required for Recovery Sessions');
+    window.open('https://wa.me/923294007913?text=Hi%20I%20need%20a%20Recovery%20Session','_blank');
+}
+
+// ─── PRIVACY POLICY ──────────────────────────────────────────
+function openPrivacyPolicy(){
+    showPopupGeneric(`
+        <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
+        <h3 class="text-lg font-black outfit mb-3 text-center sky-text">Privacy Policy & Terms</h3>
+        <div class="text-[11px] text-slate-600 space-y-3 max-h-64 overflow-y-auto pr-1">
+            <p><strong class="text-black">1. Data Collection:</strong> We collect your name, email, phone, and transaction data to operate the platform.</p>
+            <p><strong class="text-black">2. Trading Risk:</strong> Binary options trading involves substantial risk. Past performance does not guarantee future results.</p>
+            <p><strong class="text-black">3. Platform Signals:</strong> Signals are AI-generated for educational purposes only. Silver X Trader is not a licensed financial advisor.</p>
+            <p><strong class="text-black">4. Deposits & Withdrawals:</strong> All transactions are processed manually. Processing time is 15 minutes to 3 hours.</p>
+            <p><strong class="text-black">5. VIP Membership:</strong> VIP is valid for 30 days from purchase date. No auto-renewal. Non-refundable.</p>
+            <p><strong class="text-black">6. Referral Program:</strong> Referral bonuses are credited to Earn Wallet and subject to transfer minimums.</p>
+            <p><strong class="text-black">7. Account Suspension:</strong> We reserve the right to suspend accounts for fraudulent activity.</p>
+            <p><strong class="text-black">8. Contact:</strong> WhatsApp +92 329 4007913</p>
+        </div>
+        <button onclick="closePopupGeneric()" class="popup-btn-primary mt-4">I Understand</button>
+    `);
+}
+
+// ─── ABOUT MODAL ─────────────────────────────────────────────
+function openAboutModal(){
+    showPopupGeneric(`
+        <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
+        <div class="text-center">
+            <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-sky-400 mx-auto mb-3">
+                <img src="logo.jpg" class="w-full h-full object-cover" onerror="this.parentNode.style.background='#0ea5e9'">
+            </div>
+            <h3 class="text-xl font-black outfit sky-text mb-1">SILVER X TRADER</h3>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-4">Supreme Elite Terminal</p>
+            <div class="space-y-2 text-left text-[11px]">
+                <div class="flex justify-between p-2 bg-slate-50 rounded-xl"><span class="text-slate-500">Version</span><span class="font-bold">2.0 Elite</span></div>
+                <div class="flex justify-between p-2 bg-slate-50 rounded-xl"><span class="text-slate-500">Pairs</span><span class="font-bold">16 (8 Free + 8 VIP)</span></div>
+                <div class="flex justify-between p-2 bg-slate-50 rounded-xl"><span class="text-slate-500">Accuracy</span><span class="font-bold text-green-600">84–98%</span></div>
+                <div class="flex justify-between p-2 bg-slate-50 rounded-xl"><span class="text-slate-500">Supported</span><span class="font-bold">Quotex & Pocket Option</span></div>
+                <div class="flex justify-between p-2 bg-slate-50 rounded-xl"><span class="text-slate-500">Support</span><span class="font-bold">WhatsApp 24/7</span></div>
+            </div>
+            <button onclick="closePopupGeneric()" class="popup-btn-primary mt-4">Close</button>
+        </div>
+    `);
+}
+
 </script>
 </body>
 </html>
