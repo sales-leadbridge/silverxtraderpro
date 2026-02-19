@@ -368,7 +368,7 @@
                     </div>
                 </div>
                 <button onclick="showTransferToMain()" class="w-full mt-2 bg-yellow-500 text-white py-3 rounded-2xl font-bold uppercase text-[11px] shadow-lg">Transfer to Main</button>
-                <p class="text-[9px] text-slate-400 text-center mt-2">Min $120 required to transfer</p>
+                <p class="text-[9px] text-slate-400 text-center mt-2" id="earn-min-label">Min $120 required to transfer</p>
             </div>
             
             <div class="glass-card p-4 mb-4">
@@ -520,9 +520,105 @@ const PROMO_REWARD = 0.50; // default reward per promo code
 const PAIRS = ["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD","USD/CAD","BTC/USDT","ETH/USDT","EUR/GBP","GBP/JPY","EUR/JPY","AUD/CAD","NZD/USD","EUR/AUD","SOL/USDT","BNB/USDT"];
 
 // ─── STATE ───────────────────────────────────────────────────
-let currentUser=null, userData=null, unsubscribeUser=null, unsubscribeTx=null;
+let currentUser=null, userData=null, unsubscribeUser=null, unsubscribeTx=null, unsubscribeConfig=null;
 let isProcessing=false, currentTxFilter='all', claimedMilestones=[];
 let state={isVIP:false,vipExpiry:0,adIdx:0,activePair:null,balance:0,earnWallet:0,plans:{},refCode:'',referrals:0,recoverySessions:[true,true],transactions:[],leaderboard:[],adClaimsToday:0,lastAdClaimDate:'',boosterActive:false,boosterExpiry:0,totalDeposited:0};
+
+// ─── PLATFORM CONFIG (loaded from Firestore) ─────────────────
+let CFG = {
+    vip_price: 199,
+    investment_roi: 15,
+    ref_bonus_free: 1.00,
+    ref_bonus_vip: 2.00,
+    referral_commission_rate: 0.03,
+    ad_reward: 2.00,
+    earn_transfer_min: 120,
+    withdrawal_min: 10,
+    deposit_min: 10,
+    withdrawals_frozen: false,
+    maintenance_mode: false,
+    wallet_binance: WALLETS.binance,
+    wallet_trc20: WALLETS.trc20
+};
+
+// ─── SERVER TIME — Core Security Function ────────────────────
+// Uses Firestore server timestamp — immune to device clock manipulation
+async function getServerTime(){
+    try{
+        const ref=db.collection('_serverTime').doc('t');
+        await ref.set({t:firebase.firestore.FieldValue.serverTimestamp()});
+        const snap=await ref.get();
+        return snap.data().t.toMillis();
+    }catch(e){
+        // Fallback to local time if Firestore unavailable
+        return Date.now();
+    }
+}
+
+async function getServerDateStr(){
+    const ms=await getServerTime();
+    return new Date(ms).toISOString().slice(0,10);
+}
+
+// ─── LOAD PLATFORM CONFIG ────────────────────────────────────
+async function loadPlatformConfig(){
+    try{
+        const snap=await db.collection('config').doc('platform').get();
+        if(snap.exists) applyConfig(snap.data());
+    }catch(e){}
+}
+
+function applyConfig(data){
+    if(data.vip_price!==undefined) CFG.vip_price=parseFloat(data.vip_price)||199;
+    if(data.investment_roi!==undefined) CFG.investment_roi=parseFloat(data.investment_roi)||15;
+    if(data.ref_bonus_free!==undefined) CFG.ref_bonus_free=parseFloat(data.ref_bonus_free)||1.00;
+    if(data.ref_bonus_vip!==undefined) CFG.ref_bonus_vip=parseFloat(data.ref_bonus_vip)||2.00;
+    if(data.referral_commission_rate!==undefined) CFG.referral_commission_rate=parseFloat(data.referral_commission_rate)||0.03;
+    if(data.ad_reward!==undefined) CFG.ad_reward=parseFloat(data.ad_reward)||2.00;
+    if(data.earn_transfer_min!==undefined) CFG.earn_transfer_min=parseFloat(data.earn_transfer_min)||120;
+    if(data.withdrawal_min!==undefined) CFG.withdrawal_min=parseFloat(data.withdrawal_min)||10;
+    if(data.deposit_min!==undefined) CFG.deposit_min=parseFloat(data.deposit_min)||10;
+    if(data.withdrawals_frozen!==undefined) CFG.withdrawals_frozen=!!data.withdrawals_frozen;
+    if(data.wallet_binance) { CFG.wallet_binance=data.wallet_binance; WALLETS.binance=data.wallet_binance; }
+    if(data.wallet_trc20) { CFG.wallet_trc20=data.wallet_trc20; WALLETS.trc20=data.wallet_trc20; }
+    // Update UI labels dynamically
+    const earnMinLabel=document.getElementById('earn-min-label');
+    if(earnMinLabel) earnMinLabel.innerText='Min $'+CFG.earn_transfer_min+' required to transfer';
+}
+
+// ─── LIVE CONFIG LISTENER (admin changes auto-reflect) ────────
+function startConfigListener(){
+    if(unsubscribeConfig) unsubscribeConfig();
+    unsubscribeConfig=db.collection('config').doc('platform').onSnapshot(snap=>{
+        if(!snap.exists)return;
+        const data=snap.data();
+        // Maintenance mode — kick user immediately
+        if(data.maintenance_mode){
+            document.getElementById('main-layout').innerHTML=`<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#F8FAFC;padding:24px;text-align:center;font-family:'Plus Jakarta Sans',sans-serif;">
+                <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;margin-bottom:20px;border:3px solid #0ea5e9;"><img src="logo.jpg" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentNode.style.background='#0ea5e9'"></div>
+                <h1 style="font-size:28px;font-weight:900;color:#0ea5e9;margin-bottom:8px;font-family:'Space Grotesk',sans-serif;">SILVER X TRADER</h1>
+                <div style="background:#FEF2F2;border:2px solid #EF4444;border-radius:16px;padding:20px 24px;max-width:380px;margin-bottom:24px;">
+                    <p style="font-size:22px;margin-bottom:8px;">🔧</p>
+                    <p style="font-weight:800;font-size:16px;color:#DC2626;margin-bottom:4px;">UNDER MAINTENANCE</p>
+                    <p style="font-size:12px;color:#64748b;font-weight:600;">We're upgrading the platform. Back soon!</p>
+                </div>
+                <a href="https://wa.me/923294007913" style="background:#25D366;color:#fff;padding:14px 28px;border-radius:14px;font-weight:700;text-decoration:none;font-size:13px;">💬 Contact Support</a>
+            </div>`;
+            return;
+        }
+        applyConfig(data);
+        // Platform notice banner
+        if(data.notice_active&&data.notice_text){
+            let nb=document.getElementById('platform-notice-banner');
+            if(!nb){nb=document.createElement('div');nb.id='platform-notice-banner';nb.style.cssText='padding:10px 16px;font-size:11px;font-weight:700;text-align:center;border-bottom:1px solid rgba(0,0,0,0.08);';document.getElementById('main-layout').prepend(nb);}
+            nb.style.background=data.notice_type==='warning'?'#fff7ed':data.notice_type==='danger'?'#fef2f2':'#eff6ff';
+            nb.style.color=data.notice_type==='warning'?'#c2410c':data.notice_type==='danger'?'#dc2626':'#1d4ed8';
+            nb.innerText=data.notice_text;
+        } else {
+            const nb=document.getElementById('platform-notice-banner');if(nb)nb.remove();
+        }
+    });
+}
 
 // ─── OBFUSCATED SIGNAL ENGINE ────────────────────────────────
 const _SIG=(function(){
@@ -546,6 +642,8 @@ window.addEventListener('load',async()=>{
     const urlRef=getUrlParam('ref');
     if(urlRef){showSignup();setTimeout(()=>{document.getElementById('su-ref').value=urlRef;},300);}
 
+    // ✅ LOAD PLATFORM CONFIG FIRST
+    await loadPlatformConfig();
 
     // ✅ MAINTENANCE MODE CHECK
     try {
@@ -574,20 +672,34 @@ window.addEventListener('load',async()=>{
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('main-layout').classList.remove('hidden');
             renderBotCards();renderPlans();renderMilestones();
-            // Auto-check 24hr plan maturation on load
+            // ✅ Start live config listener
+            startConfigListener();
+            // ✅ Run all auto checks on load
             await autoMaturePlans();
+            await checkVipExpiry();
+            await checkBoosterExpiry();
+            await checkDailyAdClaimReset();
         } else {
             window.location.href='index.html';
         }
     });
     
-    // ✅ CHECK VIP EXPIRY + BOOSTER EXPIRY + AUTO MATURE PLANS EVERY 30 SECONDS
+    // ✅ AUTO CHECKS EVERY 30 SECONDS
     setInterval(async()=>{
         await checkVipExpiry();
         await checkBoosterExpiry();
         await autoMaturePlans();
         await autoCheckMilestones();
+        await checkDailyAdClaimReset();
     }, 30000);
+    
+    // ✅ MAINTENANCE CHECK EVERY 60 SECONDS
+    setInterval(async()=>{
+        try{
+            const snap=await db.collection('config').doc('platform').get();
+            if(snap.exists&&snap.data().maintenance_mode) location.reload();
+        }catch(e){}
+    }, 60000);
 });
 
 // ─── AUTH SWITCHERS ──────────────────────────────────────────
@@ -755,6 +867,14 @@ async function loadUserData(){
     unsubscribeUser=db.collection('users').doc(currentUser.uid).onSnapshot(async(doc)=>{
         if(!doc.exists)return;
         userData={id:doc.id,...doc.data()};
+        
+        // ✅ AUTO-SUSPEND CHECK — realtime
+        if(userData.suspended){
+            toast('⚠️ Account suspended. Contact support.');
+            setTimeout(()=>handleLogout(),2000);
+            return;
+        }
+        
         state.refCode=userData.ref_code;
         state.balance=parseFloat(userData.balance)||0;
         state.earnWallet=parseFloat(userData.earn_wallet)||0;
@@ -768,12 +888,10 @@ async function loadUserData(){
         state.boosterExpiry=userData.booster_expiry||0;
         state.totalDeposited=parseFloat(userData.total_deposited)||0;
         
-        // ✅ AUTO CHECK VIP EXPIRY ON DATA LOAD
+        // ✅ SERVER TIME BASED CHECKS
         await checkVipExpiry();
-        // ✅ AUTO CHECK BOOSTER EXPIRY
         await checkBoosterExpiry();
-        // ✅ RESET DAILY AD CLAIMS IF NEW DAY
-        checkDailyAdClaimReset();
+        await checkDailyAdClaimReset();
         
         updateBalanceUI();updateVIPUI();updateSidebarInfo();
         await loadPlans();await loadLeaderboard();await loadClaimedMilestones();
@@ -804,10 +922,8 @@ async function loadUserData(){
                 const prevTx = prevTxs.find(t => t.id === doc.id);
                 const wasApproved = prevTx && (prevTx.status === 'success' || prevTx.status === 'approved');
                 if(!wasApproved && !tx.commission_triggered){
-                    // New approval - trigger deposit commission
-                    await triggerDepositCommission(currentUser.uid, parseFloat(tx.amount)||0);
-                    // Mark as commission triggered
-                    try{ await db.collection('transactions').doc(doc.id).update({commission_triggered:true}); }catch(e){}
+                    // New approval - trigger deposit commission with doc ID to prevent double
+                    await triggerDepositCommission(currentUser.uid, parseFloat(tx.amount)||0, doc.id);
                 }
             }
         }
@@ -883,10 +999,10 @@ async function processReferralBonus(code){
             return;
         }
         
-        const isVIP = refData.is_vip && refData.vip_expiry > Date.now();
-        const reward = isVIP ? 2.00 : 1.00;
-        
-        console.log('✅ Found referrer:', refData.email, '| Reward: $' + reward);
+        // ✅ SERVER TIME: Check VIP status accurately
+        const serverNow=await getServerTime();
+        const isVIP = refData.is_vip && refData.vip_expiry > serverNow;
+        const reward = isVIP ? CFG.ref_bonus_vip : CFG.ref_bonus_free;
         
         // ✅ UPDATE REFERRER'S EARN WALLET (Referral rewards go to earn wallet)
         await db.collection('users').doc(refDoc.id).update({
@@ -1046,7 +1162,8 @@ async function handlePlanClick3(idx){
         <div class="flex flex-col items-center py-6"><div class="w-14 h-14 border-4 border-sky-500 border-t-transparent rounded-full animate-spin mb-3"></div><p class="text-sm text-slate-600 font-bold">Processing...</p></div>`);
     try{
         await new Promise(r=>setTimeout(r,3000));
-        const now=Date.now(),withdrawAt=now+(24*60*60*1000); // 24 HOURS
+        const serverNow=await getServerTime(); // ✅ SERVER TIME
+        const withdrawAt=serverNow+(24*60*60*1000);
         const batch=db.batch();
         
         // ✅ DEDUCT BALANCE IMMEDIATELY
@@ -1061,7 +1178,7 @@ async function handlePlanClick3(idx){
             plan_roi:pl.roi,
             total_return:totalReturn,
             status:'active',
-            started_at:now,
+            started_at:serverNow,
             withdraw_available_at:withdrawAt,
             created_at:firebase.firestore.FieldValue.serverTimestamp()
         });
@@ -1082,10 +1199,11 @@ async function withdrawPlanReturns(idx){
         if(snap.empty){isProcessing=false;return toast('Plan not found');}
         const planDoc=snap.docs[0],planData=planDoc.data();
         
-        // ✅ STRICT 24-HOUR VALIDATION
-        if(Date.now()<planData.withdraw_available_at){
+        // ✅ SERVER TIME VALIDATION — mobile clock manipulation proof
+        const serverNow=await getServerTime();
+        if(serverNow<planData.withdraw_available_at){
             isProcessing=false;
-            const ms=planData.withdraw_available_at-Date.now();
+            const ms=planData.withdraw_available_at-serverNow;
             const h=Math.floor(ms/(1000*60*60));
             const m=Math.floor((ms%(1000*60*60))/(1000*60));
             return toast('Not ready yet! '+h+'h '+m+'m remaining');
@@ -1099,7 +1217,7 @@ async function withdrawPlanReturns(idx){
             transaction_type:'PLAN_RETURN',
             amount:planData.total_return,
             status:'approved',
-            notes:`24h plan return: ${planData.plan_name} ($${planData.plan_price} + 20% ROI)`,
+            notes:`24h plan return: ${planData.plan_name} ($${planData.plan_price} + ${planData.plan_roi}% ROI)`,
             created_at:firebase.firestore.FieldValue.serverTimestamp()
         });
         
@@ -1111,9 +1229,10 @@ async function withdrawPlanReturns(idx){
 async function handleVipClick(){
     if(isProcessing)return;
     
-    // ✅ CHECK IF VIP IS STILL ACTIVE
-    if(state.isVIP&&state.vipExpiry>Date.now()){
-        const d=Math.ceil((state.vipExpiry-Date.now())/(1000*60*60*24));
+    // ✅ SERVER TIME CHECK
+    const serverNow=await getServerTime();
+    if(state.isVIP&&state.vipExpiry>serverNow){
+        const d=Math.ceil((state.vipExpiry-serverNow)/(1000*60*60*24));
         return toast('VIP Active: '+d+' Days Left');
     }
     
@@ -1164,8 +1283,9 @@ async function activateVipNow(){
     document.getElementById('vip-act-ldr').classList.remove('hidden');
     await new Promise(r=>setTimeout(r,3000));
     try{
-        // ✅ VIP EXPIRES EXACTLY AFTER 30 DAYS
-        const vipExpiry=Date.now()+(30*24*60*60*1000);
+        // ✅ SERVER TIME for accurate VIP expiry
+        const serverNow=await getServerTime();
+        const vipExpiry=serverNow+(30*24*60*60*1000);
         await db.collection('users').doc(currentUser.uid).update({
             balance:firebase.firestore.FieldValue.increment(-VIP_PRICE),
             is_vip:true,
@@ -1394,8 +1514,16 @@ async function submitWithdraw(){
         if(!address||address.length<10)return toast('Enter valid TRC20 address');
     }
     
-    if(!amount||amount<10)return toast('Min withdrawal $10');
+    if(!amount||amount<CFG.withdrawal_min)return toast('Min withdrawal $'+CFG.withdrawal_min);
     if(amount>state.balance)return toast('Insufficient balance');
+    
+    // ✅ REAL-TIME WITHDRAWAL FREEZE CHECK from Firestore
+    try{
+        const cfgSnap=await db.collection('config').doc('platform').get();
+        if(cfgSnap.exists&&cfgSnap.data().withdrawals_frozen){
+            return toast('⚠️ Withdrawals are temporarily frozen. Contact support.');
+        }
+    }catch(e){}
     
     isProcessing=true;setBtn('wd-btn','wd-btn-txt','wd-btn-ldr',false);
     try{
@@ -1534,20 +1662,19 @@ function updateBalanceUI(){
     updateAdClaimUI();
 }
 
-// ─── AUTO MATURE PLANS (24hr check on load) ──────────────────
+// ─── AUTO MATURE PLANS — SERVER TIME BASED ───────────────────
 async function autoMaturePlans(){
     if(!currentUser)return;
     try{
+        const serverNow=await getServerTime(); // ✅ SERVER TIME
         const snap=await db.collection('plans').where('user_id','==',currentUser.uid).where('status','==','active').get();
-        const now=Date.now();
         const batch=db.batch();
         let maturedCount=0,totalMatured=0;
         snap.forEach(doc=>{
             const p=doc.data();
-            if(now>=p.withdraw_available_at){
-                // Auto-credit main balance and complete plan
+            if(serverNow>=p.withdraw_available_at){ // ✅ Compare with server time
                 batch.update(db.collection('users').doc(currentUser.uid),{balance:firebase.firestore.FieldValue.increment(p.total_return)});
-                batch.update(db.collection('plans').doc(doc.id),{status:'completed',auto_matured:true,matured_at:now});
+                batch.update(db.collection('plans').doc(doc.id),{status:'completed',auto_matured:true,matured_at:serverNow});
                 maturedCount++;totalMatured+=p.total_return;
             }
         });
@@ -1561,7 +1688,7 @@ async function autoMaturePlans(){
 
 // ─── TRANSFER EARN WALLET TO MAIN ────────────────────────────
 function showTransferToMain(){
-    if(state.earnWallet<120){
+    if(state.earnWallet<CFG.earn_transfer_min){
         showPopupGeneric(`
             <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
             <div class="flex flex-col items-center text-center py-2">
@@ -1569,10 +1696,10 @@ function showTransferToMain(){
                     <i data-lucide="alert-circle" class="w-8 h-8 text-yellow-500"></i>
                 </div>
                 <h3 class="text-xl font-black outfit text-yellow-600 mb-2">Minimum Not Met</h3>
-                <p class="text-sm text-slate-600 mb-3">You need at least <strong>$120.00</strong> in your Earn Wallet to transfer.</p>
+                <p class="text-sm text-slate-600 mb-3">You need at least <strong>$${CFG.earn_transfer_min.toFixed(2)}</strong> in your Earn Wallet to transfer.</p>
                 <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 w-full mb-3">
                     <p class="text-xs text-yellow-700 font-bold">Current Earn Wallet: <span class="text-yellow-800 text-sm">$${state.earnWallet.toFixed(2)}</span></p>
-                    <p class="text-xs text-yellow-600 mt-1">Need $${(120-state.earnWallet).toFixed(2)} more</p>
+                    <p class="text-xs text-yellow-600 mt-1">Need $${(CFG.earn_transfer_min-state.earnWallet).toFixed(2)} more</p>
                 </div>
                 <button onclick="closePopupGeneric()" class="popup-btn-secondary">Got It</button>
             </div>`);
@@ -1616,13 +1743,7 @@ async function executeTransferToMain(){
 // ─── DAILY AD CLAIM ──────────────────────────────────────────
 function getTodayDateStr(){return new Date().toISOString().slice(0,10);}
 
-function checkDailyAdClaimReset(){
-    const today=getTodayDateStr();
-    if(state.lastAdClaimDate!==today){
-        state.adClaimsToday=0;
-        // Will be synced from DB on next relevant action
-    }
-}
+// Note: checkDailyAdClaimReset() is server-time based — defined above in auto-checks section
 
 function updateAdClaimUI(){
     const badge=document.getElementById('ad-claim-badge');
@@ -1633,16 +1754,15 @@ function updateAdClaimUI(){
     if(!badge)return;
     const today=getTodayDateStr();
     const claims=state.lastAdClaimDate===today?state.adClaimsToday:0;
-    const maxClaims=state.boosterActive&&state.boosterExpiry>Date.now()?3:1;
+    const boosterOk=state.boosterActive&&state.boosterExpiry>Date.now();
+    const maxClaims=boosterOk?3:1;
+    const adReward=CFG.ad_reward||2;
     badge.innerText=claims+'/'+maxClaims+' Today';
     const canClaim=claims<maxClaims;
-    if(btn){
-        btn.disabled=!canClaim;
-        btn.style.opacity=canClaim?'1':'0.5';
-    }
-    if(btnTxt)btnTxt.innerText=canClaim?'Claim $2 Now':'Claimed Today';
+    if(btn){btn.disabled=!canClaim;btn.style.opacity=canClaim?'1':'0.5';}
+    if(btnTxt)btnTxt.innerText=canClaim?'Claim $'+adReward.toFixed(2)+' Now':'Claimed Today';
     if(boosterBtn&&boosterTxt){
-        if(state.boosterActive&&state.boosterExpiry>Date.now()){
+        if(boosterOk){
             const d=Math.ceil((state.boosterExpiry-Date.now())/(1000*60*60*24));
             boosterTxt.innerText='Active: '+d+'d left (3 claims/day)';
             boosterBtn.innerText='Active';
@@ -1659,10 +1779,15 @@ function updateAdClaimUI(){
 
 async function handleAdClaim(){
     if(isProcessing)return;
-    const today=getTodayDateStr();
-    const claims=state.lastAdClaimDate===today?state.adClaimsToday:0;
-    const maxClaims=state.boosterActive&&state.boosterExpiry>Date.now()?3:1;
+    // ✅ SERVER DATE check
+    const serverDate=await getServerDateStr();
+    const claims=state.lastAdClaimDate===serverDate?state.adClaimsToday:0;
+    const serverNow=await getServerTime();
+    const maxClaims=state.boosterActive&&state.boosterExpiry>serverNow?3:1;
     if(claims>=maxClaims)return toast('Daily claim limit reached!');
+    
+    // ✅ Record server session start time for final validation
+    window._adSessionStart=serverNow;
     
     // Open fullscreen ad page
     const adUrl = adsCollection[state.adIdx % adsCollection.length];
@@ -1745,29 +1870,36 @@ async function handleAdClaim(){
 }
 
 async function completeAdClaimFromFullscreen(){
-    const today=getTodayDateStr();
-    const newClaims=(state.lastAdClaimDate===today?state.adClaimsToday:0)+1;
+    // ✅ DOUBLE VERIFY WITH SERVER TIME — prevents timer skip cheat
+    const serverNow=await getServerTime();
+    const sessionStart=window._adSessionStart||0;
+    if(serverNow-sessionStart<295000){ // Allow 5s tolerance on 300s
+        toast('⚠️ Watch the full ad first!');
+        return;
+    }
+    const serverDate=await getServerDateStr(); // ✅ SERVER DATE
+    const newClaims=(state.lastAdClaimDate===serverDate?state.adClaimsToday:0)+1;
+    const adReward=CFG.ad_reward||2; // ✅ CFG value
     try{
         await db.collection('users').doc(currentUser.uid).update({
-            earn_wallet:firebase.firestore.FieldValue.increment(2),
+            earn_wallet:firebase.firestore.FieldValue.increment(adReward),
             ad_claims_today:newClaims,
-            last_ad_claim_date:today
+            last_ad_claim_date:serverDate
         });
         await db.collection('transactions').add({
             user_id:currentUser.uid,
             transaction_type:'AD_CLAIM',
-            amount:2,
+            amount:adReward,
             status:'approved',
             notes:'Daily Ad Claim reward',
             created_at:firebase.firestore.FieldValue.serverTimestamp()
         });
         isProcessing=false;
-        // Remove fullscreen overlay
         const overlay = document.getElementById('ad-claim-fullscreen');
         if(overlay) overlay.remove();
         document.body.classList.remove('modal-open');
         if(window._adClaimInterval) clearInterval(window._adClaimInterval);
-        toast('🎉 $2.00 added to Earn Wallet!');
+        toast('🎉 $'+adReward.toFixed(2)+' added to Earn Wallet!');
     }catch(e){
         isProcessing=false;
         const overlay = document.getElementById('ad-claim-fullscreen');
@@ -1811,7 +1943,8 @@ async function activateBooster(){
     if(isProcessing)return;isProcessing=true;
     closePopupGeneric();
     try{
-        const boosterExpiry=Date.now()+(30*24*60*60*1000);
+        const serverNow=await getServerTime(); // ✅ SERVER TIME
+        const boosterExpiry=serverNow+(30*24*60*60*1000);
         await db.collection('users').doc(currentUser.uid).update({
             balance:firebase.firestore.FieldValue.increment(-30),
             booster_active:true,
@@ -1829,41 +1962,30 @@ async function activateBooster(){
     }catch(e){isProcessing=false;toast('Error: '+e.message);}
 }
 
-async function checkBoosterExpiry(){
-    if(!currentUser||!userData)return;
-    if(state.boosterActive&&state.boosterExpiry&&Date.now()>=state.boosterExpiry){
-        try{
-            await db.collection('users').doc(currentUser.uid).update({booster_active:false,booster_expiry:0});
-            state.boosterActive=false;state.boosterExpiry=0;
-            toast('⚠️ Ad Claim Booster expired');
-            updateAdClaimUI();
-        }catch(e){console.error('Booster expiry error:',e);}
-    }
-}
-
-// ─── 3% DEPOSIT COMMISSION FOR UPLINE ────────────────────────
-// Called after deposit is approved (admin flow) — here we expose a client trigger
-// that credits 3% of deposit amount to referrer's earn wallet
-async function triggerDepositCommission(userId, depositAmount){
+// ─── 3% DEPOSIT COMMISSION — SECURE NO DOUBLE TRIGGER ────────
+async function triggerDepositCommission(userId, depositAmount, txDocId){
     try{
+        // ✅ MARK commission_triggered FIRST to prevent double trigger
+        if(txDocId){
+            try{ await db.collection('transactions').doc(txDocId).update({commission_triggered:true}); }catch(e){}
+        }
         const userDoc=await db.collection('users').doc(userId).get();
         if(!userDoc.exists)return;
         const udata=userDoc.data();
         if(!udata.referred_by)return;
-        // Find referrer by ref code
         const snap=await db.collection('users').where('ref_code','==',udata.referred_by).limit(1).get();
         if(snap.empty)return;
         const refDoc=snap.docs[0];
-        const commission=parseFloat((depositAmount*0.03).toFixed(2));
-        await db.collection('users').doc(refDoc.id).update({
-            earn_wallet:firebase.firestore.FieldValue.increment(commission)
-        });
+        const commission=parseFloat((depositAmount*CFG.referral_commission_rate).toFixed(2)); // ✅ CFG rate
+        if(commission<=0)return;
+        await db.collection('users').doc(refDoc.id).update({earn_wallet:firebase.firestore.FieldValue.increment(commission)});
         await db.collection('transactions').add({
             user_id:refDoc.id,
             transaction_type:'DEPOSIT_COMMISSION',
             amount:commission,
             status:'approved',
-            notes:`3% deposit commission from referral deposit of $${depositAmount}`,
+            from_user:userId,
+            notes:`${(CFG.referral_commission_rate*100).toFixed(0)}% deposit commission from referral deposit of $${depositAmount}`,
             created_at:firebase.firestore.FieldValue.serverTimestamp()
         });
     }catch(e){console.error('Deposit commission error:',e);}
@@ -1898,256 +2020,86 @@ async function redeemPromoCode(){
     }catch(e){isProcessing=false;if(btn)btn.disabled=false;toast('Error: '+e.message);}
 }
 
-async function checkVipExpiry() {
-    if (!currentUser || !userData) return;
-    
-    if (state.isVIP && state.vipExpiry) {
-        if (Date.now() >= state.vipExpiry) {
-            try {
-                // ✅ AUTO REVERT TO FREE USER
-                await db.collection('users').doc(currentUser.uid).update({
-                    is_vip: false,
-                    vip_expiry: 0
-                });
-                state.isVIP = false;
-                state.vipExpiry = 0;
+// ═══════════════════════════════════════════════════════════
+// VIP EXPIRY — Server time based
+// ═══════════════════════════════════════════════════════════
+async function checkVipExpiry(){
+    if(!currentUser||!userData)return;
+    if(state.isVIP&&state.vipExpiry){
+        try{
+            const serverNow=await getServerTime();
+            if(serverNow>=state.vipExpiry){
+                await db.collection('users').doc(currentUser.uid).update({is_vip:false,vip_expiry:0});
+                state.isVIP=false; state.vipExpiry=0;
                 toast('⚠️ VIP membership expired');
-                updateVIPUI();
-                renderBotCards();
-            } catch(e) {
-                console.error('VIP expiry error:', e);
+                updateVIPUI(); renderBotCards();
             }
-        }
+        }catch(e){console.error('VIP expiry error:',e);}
     }
 }
 
-function updateVIPUI(){
-    const btn=document.getElementById('vip-main-btn');
-    const sideVip=document.getElementById('sidebar-vip-status');
-    const sideRec=document.getElementById('sidebar-recovery-txt');
-    
-    if(state.isVIP&&state.vipExpiry>Date.now()){
-        const d=Math.ceil((state.vipExpiry-Date.now())/(1000*60*60*24));
-        if(btn){btn.innerText='VIP ('+d+'D)';btn.style.background='#22C55E';btn.style.boxShadow='0 4px 12px rgba(34,197,94,0.35)';}
-        if(sideVip){sideVip.innerText='VIP ACTIVE';sideVip.className='text-[10px] font-black text-green-600';}
-        if(sideRec){
-            const s1=state.recoverySessions[0]?'Active':'Used';
-            const s2=state.recoverySessions[1]?'Active':'Used';
-            sideRec.innerText='S1:'+s1+' S2:'+s2;
-            sideRec.className='text-[8px] font-bold text-green-600';
-        }
-        // Unlock VIP pairs
-        for(let i=8;i<16;i++){const c=document.getElementById('card-'+i);if(c){c.classList.remove('opacity-50','grayscale');document.getElementById('status-'+i).innerText='SYNC';}}
-    } else {
-        if(btn){btn.innerText='GET VIP';btn.style.background='';btn.style.boxShadow='';}
-        if(sideVip){sideVip.innerText='FREE';sideVip.className='text-[10px] font-black text-slate-400';}
-        if(sideRec){sideRec.innerText='VIP Only';sideRec.className='text-[9px] font-black text-slate-400';}
-        // Lock VIP pairs
-        for(let i=8;i<16;i++){const c=document.getElementById('card-'+i);if(c){c.classList.add('opacity-50','grayscale');document.getElementById('status-'+i).innerText='LOCKED';}}
+// ═══════════════════════════════════════════════════════════
+// BOOSTER EXPIRY — Server time based
+// ═══════════════════════════════════════════════════════════
+async function checkBoosterExpiry(){
+    if(!currentUser||!userData)return;
+    if(state.boosterActive&&state.boosterExpiry){
+        try{
+            const serverNow=await getServerTime();
+            if(serverNow>=state.boosterExpiry){
+                await db.collection('users').doc(currentUser.uid).update({booster_active:false,booster_expiry:0});
+                state.boosterActive=false; state.boosterExpiry=0;
+                toast('⚠️ Ad Claim Booster expired');
+                updateAdClaimUI();
+            }
+        }catch(e){console.error('Booster expiry error:',e);}
     }
 }
 
-function updateSidebarInfo(){
-    const nameEl=document.getElementById('sidebar-name');
-    const emailEl=document.getElementById('sidebar-email');
-    if(nameEl)nameEl.innerText=((userData.first_name||'')+' '+(userData.last_name||'')).trim()||currentUser.email;
-    if(emailEl)emailEl.innerText=currentUser.email;
-}
-
-// ─── PRIVACY POLICY ──────────────────────────────────────────
-function openPrivacyPolicy(){
-    document.getElementById('modal-overlay').classList.remove('hidden');
-    document.body.classList.add('modal-open');
-    document.getElementById('modal-body').innerHTML=`
-        <h2 class="text-lg font-black mb-4 outfit sky-text uppercase">Privacy Policy</h2>
-        <div class="h-96 overflow-y-auto pr-2 space-y-3">
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0"><i data-lucide="file-text" class="w-5 h-5 text-sky-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Educational Platform</p><p class="text-[11px] text-slate-500 mt-0.5">Silver X is an educational simulation platform. All signals are algorithmic predictions for learning purposes only, not financial advice or guaranteed outcomes.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0"><i data-lucide="shield" class="w-5 h-5 text-green-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Data Protection</p><p class="text-[11px] text-slate-500 mt-0.5">Your personal information is encrypted and securely stored on Firebase servers. We never share your data with third parties without consent.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0"><i data-lucide="alert-triangle" class="w-5 h-5 text-red-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Risk Disclosure</p><p class="text-[11px] text-slate-500 mt-0.5">Trading involves substantial risk of loss. You acknowledge full responsibility for all trading decisions and accept 100% liability for any financial losses incurred.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center flex-shrink-0"><i data-lucide="ban" class="w-5 h-5 text-orange-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">No Refund Policy</p><p class="text-[11px] text-slate-500 mt-0.5">All transactions including VIP subscriptions and plan purchases are final and non-refundable. Please review all features carefully before making any purchase.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0"><i data-lucide="user-check" class="w-5 h-5 text-purple-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Age Requirement</p><p class="text-[11px] text-slate-500 mt-0.5">Platform is restricted to users aged 18 years or older. By creating an account, you confirm you meet this age requirement in your jurisdiction.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0"><i data-lucide="globe" class="w-5 h-5 text-blue-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">International Compliance</p><p class="text-[11px] text-slate-500 mt-0.5">Platform complies with international AML (Anti-Money Laundering) standards. We reserve the right to verify identity and reject suspicious transactions.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center flex-shrink-0"><i data-lucide="copyright" class="w-5 h-5 text-yellow-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Intellectual Property</p><p class="text-[11px] text-slate-500 mt-0.5">All algorithms, code, designs, and branding are proprietary to Silver X. Unauthorized copying, distribution, or reverse engineering is strictly prohibited.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0"><i data-lucide="x-circle" class="w-5 h-5 text-red-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Account Termination</p><p class="text-[11px] text-slate-500 mt-0.5">Admin reserves the right to suspend or terminate accounts at any time for violations of terms, suspicious activity, or any other reason deemed necessary.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center flex-shrink-0"><i data-lucide="trending-up" class="w-5 h-5 text-indigo-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Accuracy Disclaimer</p><p class="text-[11px] text-slate-500 mt-0.5">Signal accuracy percentages are statistical estimates based on historical data. Past performance does not guarantee future results or profitability in live trading.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0"><i data-lucide="receipt" class="w-5 h-5 text-green-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Tax Responsibility</p><p class="text-[11px] text-slate-500 mt-0.5">You are solely responsible for reporting and paying all applicable taxes in your jurisdiction. Silver X does not provide tax advice or filing services.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0"><i data-lucide="cloud-off" class="w-5 h-5 text-gray-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Service Interruptions</p><p class="text-[11px] text-slate-500 mt-0.5">Platform is not liable for service interruptions due to maintenance, technical issues, or force majeure events beyond our reasonable control.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0"><i data-lucide="check-circle" class="w-5 h-5 text-sky-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Acceptance of Terms</p><p class="text-[11px] text-slate-500 mt-0.5">By creating an account and using this platform, you irrevocably accept all terms and policies. Continued use constitutes ongoing acceptance of any updates.</p></div>
-            </div>
-        </div>
-        <button onclick="closeModal()" class="w-full bg-black text-white py-3 rounded-2xl font-bold uppercase text-xs mt-4">I Accept</button>`;
-    lucide.createIcons();
-}
-
-// ─── ABOUT SILVER X ──────────────────────────────────────────
-function openAboutModal(){
-    document.getElementById('modal-overlay').classList.remove('hidden');
-    document.body.classList.add('modal-open');
-    document.getElementById('modal-body').innerHTML=`
-        <h2 class="text-lg font-black mb-4 outfit sky-text uppercase">About Silver X</h2>
-        <div class="space-y-3">
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0"><i data-lucide="cpu" class="w-5 h-5 text-sky-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">AI-Powered Trading Bot</p><p class="text-[11px] text-slate-500 mt-0.5">Advanced algorithmic analysis generates real-time signals across forex & crypto markets.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0"><i data-lucide="shield-check" class="w-5 h-5 text-green-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">100% Secure Platform</p><p class="text-[11px] text-slate-500 mt-0.5">All data encrypted on Firebase. Firestore rules prevent any unauthorized balance changes.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0"><i data-lucide="trending-up" class="w-5 h-5 text-sky-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Investment Plans</p><p class="text-[11px] text-slate-500 mt-0.5">6 plans ($20–$640) with 20% fixed ROI in 24 hours. Capital + profit auto-credited.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0"><i data-lucide="users" class="w-5 h-5 text-sky-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Referral Rewards</p><p class="text-[11px] text-slate-500 mt-0.5">Earn $1.00 (Free) or $2.00 (VIP) per invite + 3% deposit commission in Earn Wallet.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center flex-shrink-0"><i data-lucide="crown" class="w-5 h-5 text-yellow-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">VIP Membership</p><p class="text-[11px] text-slate-500 mt-0.5">16 pairs, ad-free, fast withdrawals, WhatsApp support, recovery sessions — $199 for 30 days.</p></div>
-            </div>
-        </div>
-        <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-700 py-3 rounded-2xl font-bold uppercase text-xs mt-4">Close</button>`;
-    lucide.createIcons();
-}
-
-// ─── HELPERS ─────────────────────────────────────────────────
-function closeModal(){document.getElementById('modal-overlay').classList.add('hidden');document.body.classList.remove('modal-open');}
-function toast(msg){const t=document.getElementById('toast');t.innerText=msg;t.classList.remove('-translate-y-40');setTimeout(()=>t.classList.add('-translate-y-40'),2800);}
-function setBtn(btnId,txtId,ldrId,enable){const btn=document.getElementById(btnId),txt=document.getElementById(txtId),ldr=document.getElementById(ldrId);if(!btn)return;btn.disabled=!enable;if(txt)txt.classList.toggle('hidden',!enable);if(ldr)ldr.classList.toggle('hidden',enable);}
-function toggleSidebar(){const sb=document.getElementById('sidebar-main');sb.classList.toggle('active');document.getElementById('sb-overlay').style.display=sb.classList.contains('active')?'block':'none';if(sb.classList.contains('active'))document.body.classList.add('modal-open');else document.body.classList.remove('modal-open');}
-function switchTab(t){
-    ['bot','wallet','invest','invite'].forEach(x=>{
-        document.getElementById('sec-'+x).classList.add('hidden');
-        const n=document.getElementById('nav-'+x);n.classList.remove('nav-active','text-sky-600');n.classList.add('text-slate-300');
-    });
-    document.getElementById('sec-'+t).classList.remove('hidden');
-    const a=document.getElementById('nav-'+t);a.classList.add('nav-active','text-sky-600');a.classList.remove('text-slate-300');
-    document.getElementById('sidebar-main').classList.remove('active');document.getElementById('sb-overlay').style.display='none';
-    lucide.createIcons();
-}
-function openSupport(){if(!state.isVIP)return toast('WhatsApp Support is VIP-only');window.open("https://wa.me/923294007913","_blank");}
-function contactForRecovery(){
-    if(!state.isVIP||state.vipExpiry<=Date.now())return toast('Recovery is VIP-only');
-    const avail=state.recoverySessions.filter(s=>s).length;
-    if(avail===0)return toast('All Recovery Sessions Used');
-    window.open("https://wa.me/923294007913?text=Hi, I want to activate my recovery session","_blank");
-}
-function copyReferralLink(){const link=location.origin+location.pathname+'?ref='+state.refCode;navigator.clipboard.writeText(link).then(()=>toast('Referral Link Copied!')).catch(()=>toast('Copy failed'));}
-
-// ✅ FIX 3: Enhanced logout with complete session cleanup
-function handleLogout(){
-    if(unsubscribeUser)unsubscribeUser();
-    if(unsubscribeTx)unsubscribeTx();
-    
-    // Clear all state
-    state = {
-        balance:0,
-        earnWallet:0,
-        referrals:0,
-        refCode:'',
-        isVIP:false,
-        vipExpiry:0,
-        recoverySessions:[],
-        transactions:[],
-        plans:{},
-        leaderboard:[],
-        activePair:null,
-        adIdx:0,
-        adClaimsToday:0,
-        lastAdClaimDate:'',
-        boosterActive:false,
-        boosterExpiry:0
-    };
-    
-    // Clear any localStorage
+// ═══════════════════════════════════════════════════════════
+// AD CLAIM RESET — Server date based
+// ═══════════════════════════════════════════════════════════
+async function checkAdClaimReset(){
+    if(!currentUser)return;
     try{
-        localStorage.clear();
+        const serverDate=await getServerDateStr();
+        if(state.lastAdClaimDate!==serverDate&&state.adClaimsToday>0){
+            await db.collection('users').doc(currentUser.uid).update({
+                ad_claims_today:0, last_ad_claim_date:serverDate
+            });
+            state.adClaimsToday=0; state.lastAdClaimDate=serverDate;
+            updateAdClaimUI();
+        }
     }catch(e){}
-    
-    // Firebase signout and reload
-    firebase.auth().signOut().then(()=>{
-        window.location.href='index.html';
-    }).catch(e=>{
-        console.error('Logout error:', e);
-        location.reload(); // Force reload anyway
-    });
 }
 
-// ─── GENERIC POPUP ───────────────────────────────────────────
-function showPopupGeneric(html){let el=document.getElementById('generic-popup');if(el)el.remove();el=document.createElement('div');el.className='popup-overlay';el.id='generic-popup';el.innerHTML=`<div class="popup-box">${html}</div>`;document.body.appendChild(el);document.body.classList.add('modal-open');lucide.createIcons();}
-function closePopupGeneric(){const el=document.getElementById('generic-popup');if(el)el.remove();document.body.classList.remove('modal-open');}
-
-// ═══ AUTO-SUSPEND SECURITY ═══
-async function triggerSecuritySuspend(reason) {
-    try {
+// ═══════════════════════════════════════════════════════════
+// SECURITY SUSPEND
+// ═══════════════════════════════════════════════════════════
+async function triggerSecuritySuspend(reason){
+    try{
         await db.collection('security_logs').add({
-            user_id: currentUser.uid,
-            user_email: currentUser.email,
-            reason: reason,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            ip: 'client',
-            action: 'auto_suspend'
+            user_id:currentUser?currentUser.uid:'unknown',
+            user_email:currentUser?currentUser.email:'unknown',
+            reason, timestamp:firebase.firestore.FieldValue.serverTimestamp(), action:'auto_suspend'
         });
-        await db.collection('users').doc(currentUser.uid).update({
-            suspended: true,
-            suspend_reason: reason
-        });
-        toast('⚠️ Account suspended due to security violation');
-        setTimeout(() => {
-            firebase.auth().signOut();
-            location.reload();
-        }, 2000);
-    } catch (e) {
-        console.error('Security log failed:', e);
-    }
+        if(currentUser){
+            await db.collection('users').doc(currentUser.uid).update({suspended:true,suspend_reason:reason});
+        }
+        toast('⚠️ Account suspended');
+        setTimeout(()=>{firebase.auth().signOut();location.reload();},2000);
+    }catch(e){}
 }
 
-// Monitor console tampering attempts
-(function() {
-    const originalLog = console.log;
-    console.log = function() {
-        if (arguments[0] && typeof arguments[0] === 'string') {
-            if (arguments[0].includes('balance') || arguments[0].includes('db.collection')) {
+(function(){
+    const originalLog=console.log;
+    console.log=function(){
+        if(arguments[0]&&typeof arguments[0]==='string'){
+            if(arguments[0].includes('balance')&&arguments[0].includes('db.collection')){
                 triggerSecuritySuspend('Console tampering detected');
             }
         }
-        originalLog.apply(console, arguments);
+        originalLog.apply(console,arguments);
     };
 })();
 
