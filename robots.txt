@@ -1,5 +1,6 @@
 User-agent: *
-Disallow: /skmanagerprivate900.html
-Disallow: /firebase-config.js
+Allow: /index.html
+Allow: /app.html
+Disallow: /
 
 Sitemap: https://silverxtrader.com/sitemap.xml
