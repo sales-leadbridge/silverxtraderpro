@@ -1028,14 +1028,19 @@ async function approveDeposit(txId, userId, amount){
     if(!confirm(`Approve deposit of $${amount}?`)) return;
     try {
         const batch = db.batch();
-        batch.update(db.collection('transactions').doc(txId), { status:'success', approved_at: firebase.firestore.FieldValue.serverTimestamp(), approved_by: adminUser.email });
+        batch.update(db.collection('transactions').doc(txId), {
+            status:'success',
+            approved_at: firebase.firestore.FieldValue.serverTimestamp(),
+            approved_by: adminUser.email,
+            commission_triggered: true  // Prevent client-side double trigger
+        });
         batch.update(db.collection('users').doc(userId), {
             balance: firebase.firestore.FieldValue.increment(amount),
             total_deposited: firebase.firestore.FieldValue.increment(amount)
         });
         await batch.commit();
 
-        // Trigger deposit commission for referrer
+        // Trigger deposit commission for referrer (admin side)
         await triggerDepositCommission(userId, amount);
         
         logAdminAction('approve_deposit', { txId, userId, amount });
