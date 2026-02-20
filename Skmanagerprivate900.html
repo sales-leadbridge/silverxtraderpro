@@ -793,7 +793,7 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 
 // ─── GLOBALS ──────────────────────────────────────────────────
-const ADMIN_EMAILS = ['ska75470@gmail.com'];
+// ✅ FIX: Admin emails removed from client code — verified via Firestore admin_roles
 let adminUser = null;
 let allUsers = [];
 let analyticsFilter = '1d';
@@ -813,14 +813,26 @@ async function adminLogin(){
     const errEl = document.getElementById('login-error');
     errEl.classList.add('hidden');
 
-    if(!ADMIN_EMAILS.includes(email)){
-        errEl.textContent = '❌ Access denied. Not an admin email.';
+    if(!email || !pass){
+        errEl.textContent = '❌ Enter email and password.';
         errEl.classList.remove('hidden');
         return;
     }
 
     try {
+        // Step 1: Firebase Auth login
         const cred = await auth.signInWithEmailAndPassword(email, pass);
+
+        // ✅ FIX: Step 2 — Server-side admin verification via Firestore admin_roles
+        // This cannot be bypassed from browser console (Firestore Rules enforce it)
+        const adminDoc = await db.collection('admin_roles').doc(cred.user.uid).get();
+        if(!adminDoc.exists || adminDoc.data().is_admin !== true){
+            await auth.signOut();
+            errEl.textContent = '❌ Access denied. Not authorized as admin.';
+            errEl.classList.remove('hidden');
+            return;
+        }
+
         adminUser = cred.user;
         loginTime = new Date();
         document.getElementById('admin-login').classList.add('hidden');
@@ -831,8 +843,13 @@ async function adminLogin(){
         initDashboard();
         logAdminAction('login', {});
     } catch(e){
-        errEl.textContent = '❌ ' + e.message;
-        errEl.classList.remove('hidden');
+        // If already signed out above, ignore sign-out errors
+        if(e.code !== 'auth/no-current-user'){
+            errEl.textContent = '❌ ' + (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential'
+                ? 'Invalid email or password.'
+                : e.message);
+            errEl.classList.remove('hidden');
+        }
     }
 }
 
@@ -1475,18 +1492,20 @@ async function setDepositMin(){
 }
 
 async function approveAllPendingDeposits(){
-    if(!confirm('⚡ Approve ALL pending deposits? This will credit all pending amounts to users.')) return;
     const snap = await db.collection('transactions').where('status','==','pending').where('transaction_type','==','DEPOSIT').get();
     if(snap.empty){ alert('No pending deposits'); return; }
-    let count = 0;
+    // ✅ FIX: Show count + total amount in confirmation — prevents accidental mass approve
+    const totalAmt = snap.docs.reduce((s,d) => s + (d.data().amount||0), 0);
+    if(!confirm('⚡ Approve ALL ' + snap.size + ' pending deposits?\nTotal: $' + totalAmt.toFixed(2) + '\n\nThis cannot be undone.')) return;
+    let count = 0, failed = 0;
     for(const d of snap.docs){
         const tx = d.data();
         try {
             await approveDeposit(d.id, tx.user_id, tx.amount);
             count++;
-        } catch(e) {}
+        } catch(e) { failed++; }
     }
-    alert(`✅ Approved ${count} deposits!`);
+    alert('✅ Approved ' + count + ' deposits!' + (failed ? ' (' + failed + ' failed)' : ''));
 }
 
 async function cancelUserWithdrawals(){
