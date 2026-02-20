@@ -239,7 +239,8 @@ try {
   const TRUSTED_SCRIPT_DOMAINS = [
     'gstatic.com', 'googleapis.com', 'firebaseapp.com', 'firebase.com',
     'cdn.tailwindcss.com', 'unpkg.com', 'fonts.googleapis.com',
-    'cdnjs.cloudflare.com', 'effectivegatecpm.com', 'wa.me'
+    'cdnjs.cloudflare.com', 'effectivegatecpm.com', 'wa.me',
+    'highperformanceformat.com'
   ];
   
   if (window.MutationObserver) {
@@ -263,7 +264,7 @@ try {
   // ── MONITOR NETWORK REQUESTS (only truly external, suspicious domains) ──
   const TRUSTED_FETCH_DOMAINS = [
     'firebaseapp.com', 'googleapis.com', 'gstatic.com',
-    'firebase.com', 'effectivegatecpm.com'
+    'firebase.com', 'effectivegatecpm.com', 'highperformanceformat.com'
   ];
   const originalFetch = window.fetch;
   window.fetch = function(...args) {
