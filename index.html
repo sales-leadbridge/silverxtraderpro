@@ -621,17 +621,36 @@ const revealObserver = new IntersectionObserver(entries => {
 }, {threshold:0.06});
 document.querySelectorAll('.reveal-premium').forEach(el => revealObserver.observe(el));
 
+// ✅ MAINTENANCE MODE CHECK
+(async function(){
+    try{
+        const snap = await db.collection('config').doc('platform').get();
+        if(snap.exists && snap.data().maintenance_mode){
+            document.body.innerHTML = `<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#F8FAFC;padding:24px;text-align:center;font-family:'Plus Jakarta Sans',sans-serif;">
+                <h1 style="font-size:28px;font-weight:900;color:#0ea5e9;margin-bottom:8px;">SILVER X TRADER</h1>
+                <div style="background:#FEF2F2;border:2px solid #EF4444;border-radius:16px;padding:20px 24px;max-width:380px;margin-bottom:24px;">
+                    <p style="font-size:22px;margin-bottom:8px;">🔧</p>
+                    <p style="font-weight:800;font-size:16px;color:#DC2626;margin-bottom:4px;">UNDER MAINTENANCE</p>
+                    <p style="font-size:12px;color:#64748b;font-weight:600;">We're upgrading the platform. Back soon!</p>
+                </div>
+                <a href="https://wa.me/923294007913" style="background:#25D366;color:#fff;padding:14px 28px;border-radius:14px;font-weight:700;text-decoration:none;font-size:13px;">💬 Contact Support</a>
+            </div>`;
+        }
+    }catch(e){}
+})();
+
 // Check auth
 firebase.auth().onAuthStateChanged(user => {
     if (user) window.location.replace("app.html");
 });
 
-// URL ref param pre-fill
+// URL ref param pre-fill + handle #signup from app.html redirect
 (function(){
     const r = new URLSearchParams(window.location.search).get('ref');
-    if(r) {
+    const hash = window.location.hash;
+    if(hash === '#signup' || r) {
         openAuthPopup('signup');
-        setTimeout(()=>{ const el=document.getElementById('su-ref'); if(el) el.value=r; }, 300);
+        setTimeout(()=>{ const el=document.getElementById('su-ref'); if(el && r) el.value=r; }, 300);
     }
 })();
 
@@ -720,7 +739,7 @@ async function handleSignup() {
             if(!snap.empty && snap.docs[0].id !== uid) {
                 referrerId = snap.docs[0].id;
                 referrerData = snap.docs[0].data();
-                const isVIP = referrerData.is_vip && referrerData.vip_expiry > Date.now();
+                const isVIP = referrerData.is_vip && referrerData.vip_expiry > firebase.firestore.Timestamp.now().toMillis();
                 const bonus = isVIP ? 2 : 1;
                 await db.collection('users').doc(referrerId).update({
                     referrals: firebase.firestore.FieldValue.increment(1),
