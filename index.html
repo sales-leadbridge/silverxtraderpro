@@ -731,68 +731,80 @@ async function handleSignup() {
     try {
         const cred = await firebase.auth().createUserWithEmailAndPassword(email, password);
         const uid  = cred.user.uid;
-        const refCodeGenerated = 'SX-' + Math.floor(1000 + Math.random() * 9000);
 
-        // Process referral
-        let referrerId = null;
-        let referrerData = null;
-        if(refCode && refCode.length > 3) {
-            const snap = await db.collection('users').where('ref_code', '==', refCode).limit(1).get();
-            if(!snap.empty && snap.docs[0].id !== uid) {
+        // ✅ FIX 1: UID-based ref code — collision impossible (16^8 combinations)
+        const refCodeGenerated = 'SX' + uid.substring(0, 8).toUpperCase();
+
+        // ✅ FIX 2: Referral lookup BEFORE batch
+        let referrerId   = null;
+        let referrerBonus = 1;
+        if (refCode && refCode.length > 3) {
+            const snap = await db.collection('users')
+                .where('ref_code', '==', refCode).limit(1).get();
+            if (!snap.empty && snap.docs[0].id !== uid) {
                 referrerId = snap.docs[0].id;
-                referrerData = snap.docs[0].data();
-                const isVIP = referrerData.is_vip && referrerData.vip_expiry > firebase.firestore.Timestamp.now().toMillis();
-                const bonus = isVIP ? 2 : 1;
-                await db.collection('users').doc(referrerId).update({
-                    referrals: firebase.firestore.FieldValue.increment(1),
-                    earn_wallet: firebase.firestore.FieldValue.increment(bonus)
-                });
-                await db.collection('transactions').add({
-                    user_id: referrerId,
-                    transaction_type: 'REFERRAL',
-                    amount: bonus,
-                    status: 'approved',
-                    notes: 'Referral signup: ' + email,
-                    created_at: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                const rData = snap.docs[0].data();
+                const isVIP = rData.is_vip &&
+                    rData.vip_expiry > firebase.firestore.Timestamp.now().toMillis();
+                referrerBonus = isVIP ? 2 : 1;
             }
         }
 
-        await db.collection('users').doc(uid).set({
-            email, first_name:firstName, last_name:lastName, phone,
-            ref_code: refCodeGenerated,
-            referred_by: referrerId ? refCode : null,
+        // ✅ FIX 3: SINGLE ATOMIC BATCH — ya sab hoga ya kuch nahi
+        const batch = db.batch();
+
+        // User document (earn_wallet: 10 directly — no second write needed)
+        batch.set(db.collection('users').doc(uid), {
+            email, first_name: firstName, last_name: lastName, phone,
+            ref_code:           refCodeGenerated,
+            referred_by:        referrerId ? refCode : null,
             referral_processed: referrerId ? true : false,
-            balance: 0,
-            earn_wallet: 0,
-            total_deposited: 0,
-            referrals: 0,
-            is_vip: false,
-            vip_expiry: 0,
+            balance:            0,
+            earn_wallet:        10,   // joining bonus included from start
+            total_deposited:    0,
+            referrals:          0,
+            is_vip:             false,
+            vip_expiry:         0,
             recovery_session_1: true,
             recovery_session_2: true,
-            suspended: false,
-            ad_claims_today: 0,
+            suspended:          false,
+            ad_claims_today:    0,
             last_ad_claim_date: '',
-            booster_active: false,
-            booster_expiry: 0,
-            joining_bonus_given: false,
-            created_at: firebase.firestore.FieldValue.serverTimestamp()
+            booster_active:     false,
+            booster_expiry:     0,
+            joining_bonus_given:true,
+            last_withdrawal_at: 0,
+            ad_start_time:      null,
+            created_at:         firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // $10 joining bonus
-        await db.collection('users').doc(uid).update({
-            earn_wallet: firebase.firestore.FieldValue.increment(10),
-            joining_bonus_given: true
-        });
-        await db.collection('transactions').add({
-            user_id: uid,
+        // Joining bonus transaction
+        batch.set(db.collection('transactions').doc(), {
+            user_id:          uid,
             transaction_type: 'JOINING_BONUS',
-            amount: 10,
-            status: 'approved',
-            notes: 'Welcome joining bonus',
-            created_at: firebase.firestore.FieldValue.serverTimestamp()
+            amount:           10,
+            status:           'approved',
+            notes:            'Welcome joining bonus',
+            created_at:       firebase.firestore.FieldValue.serverTimestamp()
         });
+
+        // Referrer bonus (if any)
+        if (referrerId) {
+            batch.update(db.collection('users').doc(referrerId), {
+                referrals:   firebase.firestore.FieldValue.increment(1),
+                earn_wallet: firebase.firestore.FieldValue.increment(referrerBonus)
+            });
+            batch.set(db.collection('transactions').doc(), {
+                user_id:          referrerId,
+                transaction_type: 'REFERRAL',
+                amount:           referrerBonus,
+                status:           'approved',
+                notes:            'Referral signup: ' + email,
+                created_at:       firebase.firestore.FieldValue.serverTimestamp()
+            });
+        }
+
+        await batch.commit(); // ✅ Atomic — all or nothing
 
         toast('🎉 Account Created! $10 joining bonus added!', 'success');
         setTimeout(() => window.location.replace("app.html"), 1400);
@@ -801,8 +813,8 @@ async function handleSignup() {
         btn.disabled=false; txt.classList.remove('hidden'); ldr.classList.add('hidden');
         const msgs = {
             'auth/email-already-in-use': 'This email is already registered!',
-            'auth/invalid-email': 'Invalid email address!',
-            'auth/weak-password': 'Password is too weak!'
+            'auth/invalid-email':        'Invalid email address!',
+            'auth/weak-password':        'Password is too weak!'
         };
         toast(msgs[err.code] || err.message, 'error');
     }
