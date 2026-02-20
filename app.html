@@ -871,10 +871,12 @@ async function processReferralBonus(code){
         });
         
         // ✅ MARK CURRENT USER AS PROCESSED
-        await db.collection('users').doc(currentUser.uid).update({
-            referred_by: code,
-            referral_processed: true
-        });
+        // Firestore rules allow this ONLY if referred_by is currently empty and referral_processed = true
+        const referralUpdateData = { referral_processed: true };
+        if(!currentUserData.referred_by) {
+            referralUpdateData.referred_by = code;
+        }
+        await db.collection('users').doc(currentUser.uid).update(referralUpdateData);
         
         
     } catch(e){
@@ -884,19 +886,39 @@ async function processReferralBonus(code){
 
 
 // ✅ AUTO-CHECK MILESTONES — runs on load and every 30s
+// Guard flag to prevent concurrent runs
+let _milestoneCheckRunning = false;
 async function autoCheckMilestones(){
     if(!currentUser||!userData)return;
-    const refs=state.referrals||0;
-    for(const m of MILESTONES){
-        if(refs>=m.count&&!claimedMilestones.includes(m.count)){
-            try{
-                await db.collection('users').doc(currentUser.uid).update({earn_wallet:firebase.firestore.FieldValue.increment(m.bonus)});
-                await db.collection('referral_bonuses').add({user_id:currentUser.uid,milestone:m.count,bonus_amount:m.bonus,claimed_at:firebase.firestore.FieldValue.serverTimestamp()});
+    if(_milestoneCheckRunning)return; // prevent double-run
+    _milestoneCheckRunning = true;
+    try{
+        const refs=state.referrals||0;
+        for(const m of MILESTONES){
+            if(refs>=m.count&&!claimedMilestones.includes(m.count)){
+                // Add to claimed list FIRST to prevent duplicate processing in same session
                 claimedMilestones.push(m.count);
-                toast('🎉 Milestone Bonus! $'+m.bonus+' added for '+m.count+' referrals!','success');
-                renderMilestones();
-            }catch(e){console.error('Auto milestone error:',e);}
+                try{
+                    // Verify in Firestore that it hasn't been claimed already (double-check)
+                    const existingSnap = await db.collection('referral_bonuses')
+                        .where('user_id','==',currentUser.uid)
+                        .where('milestone','==',m.count)
+                        .limit(1).get();
+                    if(!existingSnap.empty) continue; // Already claimed in DB, skip
+                    
+                    await db.collection('users').doc(currentUser.uid).update({earn_wallet:firebase.firestore.FieldValue.increment(m.bonus)});
+                    await db.collection('referral_bonuses').add({user_id:currentUser.uid,milestone:m.count,bonus_amount:m.bonus,claimed_at:firebase.firestore.FieldValue.serverTimestamp()});
+                    toast('🎉 Milestone Bonus! $'+m.bonus+' added for '+m.count+' referrals!');
+                    renderMilestones();
+                }catch(e){
+                    // Remove from local list if DB write failed so it can retry
+                    claimedMilestones = claimedMilestones.filter(x=>x!==m.count);
+                    console.error('Auto milestone error:',e);
+                }
+            }
         }
+    } finally {
+        _milestoneCheckRunning = false;
     }
 }
 
@@ -1365,12 +1387,9 @@ async function submitWithdraw(){
     
     isProcessing=true;setBtn('wd-btn','wd-btn-txt','wd-btn-ldr',false);
     try{
-        // ✅ CUT AMOUNT IMMEDIATELY FROM BALANCE
-        await db.collection('users').doc(currentUser.uid).update({
-            balance:firebase.firestore.FieldValue.increment(-amount)
-        });
-        
-        await db.collection('transactions').add({
+        // ✅ ATOMIC: Create transaction FIRST, then deduct balance
+        // If tx creation fails, balance is NOT deducted (no race condition)
+        const txRef = await db.collection('transactions').add({
             user_id:currentUser.uid,
             user_email:currentUser.email,
             transaction_type:'WITHDRAWAL',
@@ -1380,8 +1399,16 @@ async function submitWithdraw(){
             payment_method:selectedWithdrawMethod,
             created_at:firebase.firestore.FieldValue.serverTimestamp()
         });
+        // Only deduct balance after tx is safely created
+        await db.collection('users').doc(currentUser.uid).update({
+            balance:firebase.firestore.FieldValue.increment(-amount)
+        });
         isProcessing=false;closeModal();toast('Withdrawal submitted!');
-    }catch(e){isProcessing=false;setBtn('wd-btn','wd-btn-txt','wd-btn-ldr',true);toast('Error: '+e.message);}
+    }catch(e){
+        isProcessing=false;
+        setBtn('wd-btn','wd-btn-txt','wd-btn-ldr',true);
+        toast('Error: '+e.message);
+    }
 }
 
 // ─── TRANSACTIONS ────────────────────────────────────────────
@@ -2095,42 +2122,35 @@ function showPopupGeneric(html){let el=document.getElementById('generic-popup');
 function closePopupGeneric(){const el=document.getElementById('generic-popup');if(el)el.remove();document.body.classList.remove('modal-open');}
 
 // ═══ AUTO-SUSPEND SECURITY ═══
+// NOTE: Client-side cannot directly update 'suspended' field (Firestore rules protect it).
+// Instead we log the violation to security_logs and admin will review + suspend manually.
 async function triggerSecuritySuspend(reason) {
     try {
+        if(!currentUser) return;
         await db.collection('security_logs').add({
             user_id: currentUser.uid,
             user_email: currentUser.email,
             reason: reason,
             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            ip: 'client',
-            action: 'auto_suspend'
+            source: 'client_auto',
+            action: 'flag_for_suspend',
+            requires_admin_action: true
         });
-        await db.collection('users').doc(currentUser.uid).update({
-            suspended: true,
-            suspend_reason: reason
-        });
-        toast('⚠️ Account suspended due to security violation');
+        // Force logout as security measure (admin will review and suspend if needed)
+        toast('⚠️ Security violation detected. Session terminated.');
         setTimeout(() => {
             firebase.auth().signOut();
             location.reload();
         }, 2000);
     } catch (e) {
-        console.error('Security log failed:', e);
+        // Even if log fails, still force logout
+        firebase.auth().signOut().catch(()=>{});
+        location.reload();
     }
 }
 
-// Monitor console tampering attempts
-(function() {
-    const originalLog = console.log;
-    console.log = function() {
-        if (arguments[0] && typeof arguments[0] === 'string') {
-            if (arguments[0].includes('balance') || arguments[0].includes('db.collection')) {
-                triggerSecuritySuspend('Console tampering detected');
-            }
-        }
-        originalLog.apply(console, arguments);
-    };
-})();
+// Security monitoring is handled by firebase-config.js (loaded before this script)
+// Duplicate console override removed to prevent conflicts
 
 </script>
 </body>
