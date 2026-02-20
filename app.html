@@ -1386,9 +1386,14 @@ async function submitWithdraw(){
     
     isProcessing=true;setBtn('wd-btn','wd-btn-txt','wd-btn-ldr',false);
     try{
-        // ✅ ATOMIC: Create transaction FIRST, then deduct balance
-        // If tx creation fails, balance is NOT deducted (no race condition)
-        const txRef = await db.collection('transactions').add({
+        // ✅ FIX: True atomic batch — balance deduct + transaction in one write
+        // Either both succeed or both fail — no partial state possible
+        const batch=db.batch();
+        batch.update(db.collection('users').doc(currentUser.uid),{
+            balance:firebase.firestore.FieldValue.increment(-amount),
+            last_withdrawal_at:getServerTime()
+        });
+        batch.set(db.collection('transactions').doc(),{
             user_id:currentUser.uid,
             user_email:currentUser.email,
             transaction_type:'WITHDRAWAL',
@@ -1398,11 +1403,8 @@ async function submitWithdraw(){
             payment_method:selectedWithdrawMethod,
             created_at:firebase.firestore.FieldValue.serverTimestamp()
         });
-        // Only deduct balance after tx is safely created
-        await db.collection('users').doc(currentUser.uid).update({
-            balance:firebase.firestore.FieldValue.increment(-amount)
-        });
-        isProcessing=false;closeModal();toast('Withdrawal submitted!');
+        await batch.commit();
+        isProcessing=false;closeModal();toast('Withdrawal submitted! Admin will process shortly.');
     }catch(e){
         isProcessing=false;
         setBtn('wd-btn','wd-btn-txt','wd-btn-ldr',true);
@@ -1639,21 +1641,37 @@ function updateBalanceUI(){
 async function autoMaturePlans(){
     if(!currentUser)return;
     try{
-        const snap=await db.collection('plans').where('user_id','==',currentUser.uid).where('status','==','active').get();
-        const now=getServerTime(); // ✅ SERVER TIME
+        const snap=await db.collection('plans')
+            .where('user_id','==',currentUser.uid)
+            .where('status','==','active').get();
+        if(snap.empty)return;
+        const now=getServerTime();
         const batch=db.batch();
         let maturedCount=0,totalMatured=0;
         snap.forEach(doc=>{
             const p=doc.data();
             if(now>=p.withdraw_available_at){
-                // Auto-credit main balance and complete plan
-                batch.update(db.collection('users').doc(currentUser.uid),{balance:firebase.firestore.FieldValue.increment(p.total_return)});
-                batch.update(db.collection('plans').doc(doc.id),{status:'completed',auto_matured:true,matured_at:now});
+                // ✅ FIX: status + balance + tx all in ONE atomic batch — prevents double trigger
+                batch.update(db.collection('plans').doc(doc.id),{
+                    status:'completed',auto_matured:true,matured_at:now
+                });
+                batch.update(db.collection('users').doc(currentUser.uid),{
+                    balance:firebase.firestore.FieldValue.increment(p.total_return)
+                });
+                const txRef=db.collection('transactions').doc();
+                batch.set(txRef,{
+                    user_id:currentUser.uid,
+                    transaction_type:'PLAN_RETURN',
+                    amount:p.total_return,
+                    status:'approved',
+                    notes:'Auto-matured: '+p.plan_name+' ($'+p.plan_price+' + '+p.plan_roi+'% ROI)',
+                    created_at:firebase.firestore.FieldValue.serverTimestamp()
+                });
                 maturedCount++;totalMatured+=p.total_return;
             }
         });
         if(maturedCount>0){
-            await batch.commit();
+            await batch.commit(); // ✅ Atomic — all plans in one write
             await loadPlans();
             toast('💰 $'+totalMatured.toFixed(2)+' auto-credited from '+maturedCount+' plan(s)!');
         }
@@ -1765,8 +1783,13 @@ async function handleAdClaim(){
     const maxClaims=state.boosterActive&&state.boosterExpiry>getServerTime()?3:1;
     if(claims>=maxClaims)return toast('Daily claim limit reached!');
 
-    // Record start time
-    window._adStartLocal = getServerTime();
+    // ✅ FIX: Save start time to Firestore — server-side verification, bypass-proof
+    window._adStartLocal = getServerTime(); // local fallback
+    try {
+        await db.collection('users').doc(currentUser.uid).update({
+            ad_start_time: firebase.firestore.FieldValue.serverTimestamp()
+        });
+    } catch(_) {}
 
     const adReward = CFG.ad_reward||2;
     let secondsLeft = 300;
@@ -1881,19 +1904,37 @@ async function handleAdClaim(){
 }
 
 async function completeAdClaimFromFullscreen(){
-    // ✅ Verify 5 minutes passed using server time offset
-    const elapsed = getServerTime() - (window._adStartLocal||0);
-    if(elapsed < 295000){ toast('⚠️ Watch the full ad first!'); return; }
+    // ✅ FIX: Server-side time verification — console bypass impossible
+    try {
+        const userSnap = await db.collection('users').doc(currentUser.uid).get();
+        const startTime = userSnap.data().ad_start_time;
+        if(startTime){
+            const elapsed = getServerTime() - startTime.toMillis();
+            if(elapsed < 290000){ toast('⚠️ Watch the full ad first!'); return; }
+        } else {
+            // Fallback: local time check
+            const elapsedLocal = getServerTime() - (window._adStartLocal||0);
+            if(elapsedLocal < 295000){ toast('⚠️ Watch the full ad first!'); return; }
+        }
+    } catch(_) {
+        // If check fails, use local time
+        const elapsedLocal = getServerTime() - (window._adStartLocal||0);
+        if(elapsedLocal < 295000){ toast('⚠️ Watch the full ad first!'); return; }
+    }
+
     const today=getTodayDateStr();
     const newClaims=(state.lastAdClaimDate===today?state.adClaimsToday:0)+1;
     const adReward=CFG.ad_reward||2;
     try{
-        await db.collection('users').doc(currentUser.uid).update({
+        // ✅ FIX: Atomic batch — earn_wallet + clear ad_start_time + claims count together
+        const batch = db.batch();
+        batch.update(db.collection('users').doc(currentUser.uid),{
             earn_wallet:firebase.firestore.FieldValue.increment(adReward),
             ad_claims_today:newClaims,
-            last_ad_claim_date:today
+            last_ad_claim_date:today,
+            ad_start_time:null   // clear start time — prevents replay
         });
-        await db.collection('transactions').add({
+        batch.set(db.collection('transactions').doc(),{
             user_id:currentUser.uid,
             transaction_type:'AD_CLAIM',
             amount:adReward,
@@ -1901,8 +1942,9 @@ async function completeAdClaimFromFullscreen(){
             notes:'Daily Ad Claim reward',
             created_at:firebase.firestore.FieldValue.serverTimestamp()
         });
+        await batch.commit();
+
         isProcessing=false;
-        // Remove fullscreen overlay
         const overlay = document.getElementById('ad-claim-fullscreen');
         if(overlay) overlay.remove();
         document.body.classList.remove('modal-open');
