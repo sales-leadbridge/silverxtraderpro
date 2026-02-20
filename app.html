@@ -616,6 +616,9 @@ window.addEventListener('load',async()=>{
         await autoCheckMilestones();
     }, 30000);
 
+    // ✅ REFRESH PLAN COUNTDOWN TIMERS EVERY MINUTE (live update without Firestore)
+    setInterval(()=>{ if(document.getElementById('sec-invest')&&!document.getElementById('sec-invest').classList.contains('hidden')) renderPlans(); }, 60000);
+
     // maintenance check every 60s
     setInterval(async()=>{try{const s=await db.collection('config').doc('platform').get();if(s.exists&&s.data().maintenance_mode)location.reload();}catch(e){}},60000);
 });
@@ -1511,6 +1514,27 @@ function revealSignal(i){
     document.getElementById('acc-'+i).innerText=accuracy;
 }
 
+// ─── AUTO MATURE PLANS (checks every 30s if any plan is ready) ──────────────
+// ─── ABOUT MODAL ──────────────────────────────────────────────
+function openAboutModal(){
+    showPopupGeneric(`
+        <button class="popup-x-btn" onclick="closePopupGeneric()"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
+        <div class="flex flex-col items-center text-center py-2">
+            <div class="w-16 h-16 rounded-full overflow-hidden mb-3 border-2 border-sky-200"><img src="logo.jpg" class="w-full h-full object-cover" onerror="this.parentNode.style.background='#0ea5e9'"></div>
+            <h3 class="text-2xl font-black outfit sky-text mb-1">SILVER X TRADER</h3>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-4">Version 2.0 — Supreme Elite Terminal</p>
+        </div>
+        <div class="space-y-2 text-left">
+            <div class="p-3 bg-sky-50 rounded-xl border border-sky-200"><p class="text-xs font-black text-sky-700">🤖 AI Signal Engine</p><p class="text-[11px] text-slate-500">Proprietary algorithm generating CALL/PUT signals for 16 currency & crypto pairs with 95–98% accuracy.</p></div>
+            <div class="p-3 bg-green-50 rounded-xl border border-green-200"><p class="text-xs font-black text-green-700">💰 Investment Plans</p><p class="text-[11px] text-slate-500">6 plans with 15% fixed ROI in 24 hours. Capital + profit auto-credited on maturity.</p></div>
+            <div class="p-3 bg-yellow-50 rounded-xl border border-yellow-200"><p class="text-xs font-black text-yellow-700">🎁 Earn System</p><p class="text-[11px] text-slate-500">Daily ad claims, referral bonuses, deposit commissions, promo codes & milestones.</p></div>
+            <div class="p-3 bg-purple-50 rounded-xl border border-purple-200"><p class="text-xs font-black text-purple-700">👑 VIP Access</p><p class="text-[11px] text-slate-500">$199/30 days — 16 pairs, ad-free, double referral rewards, WhatsApp support & recovery sessions.</p></div>
+        </div>
+        <div class="mt-4 text-center"><p class="text-[9px] text-slate-400 font-bold">© 2026 Silver X Trader. All rights reserved.</p></div>
+        <button onclick="closePopupGeneric()" class="popup-btn-secondary mt-3">Close</button>`);
+    lucide.createIcons();
+}
+
 // ─── UI UPDATES ──────────────────────────────────────────────
 function updateBalanceUI(){
     const b='$'+state.balance.toFixed(2);
@@ -1520,6 +1544,7 @@ function updateBalanceUI(){
     ['earn-wallet-balance','earn-wallet-invite','sidebar-earn'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerText=ewb;});
     const rc=document.getElementById('ref-count');if(rc)rc.innerText=state.referrals;
     const sr=document.getElementById('sidebar-refs');if(sr)sr.innerText=state.referrals;
+    // Referral earnings = referrals * rate (approximate display)
     const rate=state.isVIP?2.00:1.00;
     const re=document.getElementById('ref-earnings');if(re)re.innerText='$'+(state.referrals*rate).toFixed(2);
     const mc=document.getElementById('my-ref-code');if(mc)mc.innerText=state.refCode||'—';
@@ -1656,20 +1681,19 @@ async function handleAdClaim(){
     const claims=state.lastAdClaimDate===today?state.adClaimsToday:0;
     const maxClaims=state.boosterActive&&state.boosterExpiry>getServerTime()?3:1;
     if(claims>=maxClaims)return toast('Daily claim limit reached!');
-    
-    // Record start time for server-side verification
+
+    // Record start time
     window._adStartLocal = getServerTime();
-    
+
     const adReward = CFG.ad_reward||2;
+    let secondsLeft = 300;
+    const fmt = s => Math.floor(s/60)+':'+(s%60<10?'0':'')+(s%60);
+
+    // Build overlay HTML (no script tags here — inject ads via JS below)
     const overlay = document.createElement('div');
     overlay.id = 'ad-claim-fullscreen';
     overlay.style.cssText = 'position:fixed;inset:0;z-index:999999;background:#0f172a;display:flex;flex-direction:column;overflow:hidden;';
-    
-    let secondsLeft = 300;
-    const fmt = s => Math.floor(s/60)+':'+(s%60<10?'0':'')+(s%60);
-    
     overlay.innerHTML = `
-        <!-- HEADER -->
         <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#0f172a;border-bottom:1px solid #1e293b;flex-shrink:0;">
             <div style="display:flex;align-items:center;gap:8px;">
                 <div style="width:28px;height:28px;border-radius:50%;overflow:hidden;border:1.5px solid #0ea5e9;"><img src="logo.jpg" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentNode.style.background='#0ea5e9'"></div>
@@ -1680,41 +1704,14 @@ async function handleAdClaim(){
                 <div style="background:#22C55E;border-radius:10px;padding:6px 14px;font-weight:900;font-size:12px;color:#fff;">+$${adReward.toFixed(2)}</div>
             </div>
         </div>
-        <!-- PROGRESS BAR -->
         <div style="height:4px;background:#1e293b;flex-shrink:0;"><div id="ad-progress-line" style="height:100%;background:linear-gradient(90deg,#0ea5e9,#38bdf8);width:0%;transition:width 1s linear;"></div></div>
-        <!-- AD SLOTS -->
-        <div style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:10px;">
-            <!-- SLOT 1: Popunder #1 (background) -->
-            <script src="https://pl28642599.effectivegatecpm.com/93/a6/86/93a686a4eaa2407c4acf84b47f5a34e3.js"></script>
-            <!-- SLOT 2: Popunder #2 (background) -->
-            <script src="https://pl28756295.effectivegatecpm.com/fc/17/cf/fc17cfd41ac2625f5a0075059355dfd0.js"></script>
-            <!-- SLOT 3: Top Banner 320x50 Mobile -->
-            <div style="background:#1e293b;border-radius:12px;min-height:60px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:6px;">
-                <script> atOptions = { 'key' : '55a786a7f988f0fd4fc9a79f5f603245', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script>
-                <script src="https://www.highperformanceformat.com/55a786a7f988f0fd4fc9a79f5f603245/invoke.js"></script>
-            </div>
-            <!-- SLOT 4: Main Rectangle 300x250 -->
-            <div style="background:#1e293b;border-radius:12px;min-height:260px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:6px;">
-                <script> atOptions = { 'key' : 'f667f609de40ee5be5bdd14ad3be7d04', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} }; </script>
-                <script src="https://www.highperformanceformat.com/f667f609de40ee5be5bdd14ad3be7d04/invoke.js"></script>
-            </div>
-            <!-- SLOT 5: Second Rectangle 300x250 -->
-            <div style="background:#1e293b;border-radius:12px;min-height:260px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:6px;">
-                <script> atOptions = { 'key' : 'c74d7a11ca2a6cfa3aba03b90f5888f0', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} }; </script>
-                <script src="https://www.highperformanceformat.com/c74d7a11ca2a6cfa3aba03b90f5888f0/invoke.js"></script>
-            </div>
-            <!-- SLOT 6: Native Container Ad -->
-            <div style="background:#1e293b;border-radius:12px;overflow:hidden;padding:6px;">
-                <script async="async" data-cfasync="false" src="https://pl28642600.effectivegatecpm.com/8c1aaf1130429dd18c7a9211f01bdb07/invoke.js"></script>
-                <div id="container-8c1aaf1130429dd18c7a9211f01bdb07"></div>
-            </div>
-            <!-- SLOT 7: Bottom Banner 320x50 -->
-            <div style="background:#1e293b;border-radius:12px;min-height:60px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:6px;">
-                <script> atOptions = { 'key' : '176ca819e8dd79380005cd639d66f63a', 'format' : 'iframe', 'height' : 60, 'width' : 468, 'params' : {} }; </script>
-                <script src="https://www.highperformanceformat.com/176ca819e8dd79380005cd639d66f63a/invoke.js"></script>
-            </div>
+        <div id="ad-slots-container" style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:10px;">
+            <div id="ad-slot-banner1" style="background:#1e293b;border-radius:12px;min-height:60px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;"></div>
+            <div id="ad-slot-rect1" style="background:#1e293b;border-radius:12px;min-height:260px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;"></div>
+            <div id="ad-slot-native" style="background:#1e293b;border-radius:12px;min-height:100px;overflow:hidden;padding:4px;"></div>
+            <div id="ad-slot-rect2" style="background:#1e293b;border-radius:12px;min-height:100px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;"></div>
+            <div id="ad-slot-banner2" style="background:#1e293b;border-radius:12px;min-height:60px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;"></div>
         </div>
-        <!-- CLAIM BAR -->
         <div style="padding:12px 16px;background:#0f172a;border-top:1px solid #1e293b;flex-shrink:0;">
             <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
                 <span style="color:#64748b;font-size:10px;font-weight:700;">Watch full ad to earn reward</span>
@@ -1726,11 +1723,57 @@ async function handleAdClaim(){
                 ⏳ Watch Ad — <span id="ad-btn-txt">${fmt(secondsLeft)} remaining</span>
             </button>
         </div>`;
-    
+
     document.body.appendChild(overlay);
     document.body.classList.add('modal-open');
     isProcessing = true;
-    
+
+    // ✅ INJECT ADS PROPERLY via createElement (innerHTML scripts don't execute)
+    function _loadAdScript(src, callback){
+        const s = document.createElement('script');
+        s.src = src; s.async = true;
+        if(callback) s.onload = callback;
+        document.head.appendChild(s);
+    }
+    function _injectIframeAd(containerId, key, w, h){
+        const wrap = document.getElementById(containerId);
+        if(!wrap) return;
+        // Set atOptions then inject invoke.js
+        const optScript = document.createElement('script');
+        optScript.text = `window.atOptions = {'key':'${key}','format':'iframe','height':${h},'width':${w},'params':{}};`;
+        wrap.appendChild(optScript);
+        const invScript = document.createElement('script');
+        invScript.src = `https://www.highperformanceformat.com/${key}/invoke.js`;
+        invScript.async = true;
+        wrap.appendChild(invScript);
+    }
+
+    // Slot 1: 320x50 mobile banner
+    _injectIframeAd('ad-slot-banner1','55a786a7f988f0fd4fc9a79f5f603245',320,50);
+    // Slot 2: 300x250 main rectangle
+    _injectIframeAd('ad-slot-rect1','f667f609de40ee5be5bdd14ad3be7d04',300,250);
+    // Slot 3: Native container (effectivegatecpm)
+    (function(){
+        const nativeWrap = document.getElementById('ad-slot-native');
+        if(nativeWrap){
+            const d = document.createElement('div');
+            d.id = 'container-8c1aaf1130429dd18c7a9211f01bdb07';
+            nativeWrap.appendChild(d);
+            _loadAdScript('https://pl28642600.effectivegatecpm.com/8c1aaf1130429dd18c7a9211f01bdb07/invoke.js');
+        }
+    })();
+    // Slot 4: 728x90 (acts as 300x100 on mobile)
+    _injectIframeAd('ad-slot-rect2','c74d7a11ca2a6cfa3aba03b90f5888f0',728,90);
+    // Slot 5: 468x60 banner
+    _injectIframeAd('ad-slot-banner2','176ca819e8dd79380005cd639d66f63a',468,60);
+    // Popunders (background — fire once)
+    if(!window._popundersLoaded){
+        window._popundersLoaded = true;
+        _loadAdScript('https://pl28642599.effectivegatecpm.com/93/a6/86/93a686a4eaa2407c4acf84b47f5a34e3.js');
+        _loadAdScript('https://pl28756295.effectivegatecpm.com/fc/17/cf/fc17cfd41ac2625f5a0075059355dfd0.js');
+    }
+
+    // ✅ TIMER
     const interval = setInterval(() => {
         secondsLeft--;
         const pct = ((300-secondsLeft)/300)*100;
@@ -2030,37 +2073,6 @@ function openPrivacyPolicy(){
 }
 
 // ─── ABOUT SILVER X ──────────────────────────────────────────
-function openAboutModal(){
-    document.getElementById('modal-overlay').classList.remove('hidden');
-    document.body.classList.add('modal-open');
-    document.getElementById('modal-body').innerHTML=`
-        <h2 class="text-lg font-black mb-4 outfit sky-text uppercase">About Silver X</h2>
-        <div class="space-y-3">
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0"><i data-lucide="cpu" class="w-5 h-5 text-sky-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">AI-Powered Trading Bot</p><p class="text-[11px] text-slate-500 mt-0.5">Advanced algorithmic analysis generates real-time signals across forex & crypto markets.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0"><i data-lucide="shield-check" class="w-5 h-5 text-green-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">100% Secure Platform</p><p class="text-[11px] text-slate-500 mt-0.5">All data encrypted on Firebase. Firestore rules prevent any unauthorized balance changes.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0"><i data-lucide="trending-up" class="w-5 h-5 text-sky-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Investment Plans</p><p class="text-[11px] text-slate-500 mt-0.5">6 plans ($20–$640) with 15% fixed ROI in 24 hours. Capital + profit auto-credited.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0"><i data-lucide="users" class="w-5 h-5 text-sky-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">Referral Rewards</p><p class="text-[11px] text-slate-500 mt-0.5">Earn $1.00 (Free) or $2.00 (VIP) per invite + 3% deposit commission in Earn Wallet.</p></div>
-            </div>
-            <div class="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center flex-shrink-0"><i data-lucide="crown" class="w-5 h-5 text-yellow-600"></i></div>
-                <div><p class="text-[13px] font-black text-black">VIP Membership</p><p class="text-[11px] text-slate-500 mt-0.5">16 pairs, ad-free, fast withdrawals, WhatsApp support, recovery sessions — $199 for 30 days.</p></div>
-            </div>
-        </div>
-        <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-700 py-3 rounded-2xl font-bold uppercase text-xs mt-4">Close</button>`;
-    lucide.createIcons();
-}
-
 // ─── HELPERS ─────────────────────────────────────────────────
 function closeModal(){document.getElementById('modal-overlay').classList.add('hidden');document.body.classList.remove('modal-open');}
 function toast(msg){const t=document.getElementById('toast');t.innerText=msg;t.classList.remove('-translate-y-40');setTimeout(()=>t.classList.add('-translate-y-40'),2800);}
@@ -2083,7 +2095,17 @@ function contactForRecovery(){
     if(avail===0)return toast('All Recovery Sessions Used');
     window.open("https://wa.me/923294007913?text=Hi, I want to activate my recovery session","_blank");
 }
-function copyReferralLink(){const link=location.origin+location.pathname+'?ref='+state.refCode;navigator.clipboard.writeText(link).then(()=>toast('Referral Link Copied!')).catch(()=>toast('Copy failed'));}
+function copyReferralLink(){
+    const base=location.origin+'/';
+    const link=base+'?ref='+state.refCode;
+    navigator.clipboard.writeText(link).then(()=>toast('Referral Link Copied!')).catch(()=>{
+        // Fallback for browsers without clipboard API
+        const el=document.createElement('textarea');
+        el.value=link;document.body.appendChild(el);el.select();
+        document.execCommand('copy');document.body.removeChild(el);
+        toast('Referral Link Copied!');
+    });
+}
 
 // ✅ FIX 3: Enhanced logout with complete session cleanup
 function handleLogout(){
