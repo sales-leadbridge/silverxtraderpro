@@ -167,14 +167,14 @@
 <body>
 
 
-<div id="splash" class="fixed inset-0 z-[100000] bg-white flex flex-col items-center justify-center" style="display:flex;">
+<div id="splash" class="fixed inset-0 z-[100000] bg-white flex flex-col items-center justify-center">
     <div class="w-14 h-14 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
     <h1 class="mt-6 text-3xl font-black outfit sky-text uppercase tracking-tight">Silver X</h1>
     <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-4">Initializing...</p>
 </div>
 
 
-<div id="auth-screen" class="hidden fixed inset-0 z-[90000] bg-white items-center justify-center p-5 overflow-y-auto" style="display:none;">
+<div id="auth-screen" class="hidden fixed inset-0 z-[90000] bg-white flex items-center justify-center p-5 overflow-y-auto">
     <div class="w-full max-w-sm glass-card p-6 sm:p-8 text-center border shadow-xl my-8">
         <h2 id="auth-title" class="text-3xl font-black outfit mb-1 sky-text uppercase">LOGIN</h2>
         <p id="auth-subtitle" class="text-[10px] text-slate-400 font-bold uppercase mb-6 tracking-wide">Secure Terminal Access</p>
@@ -217,11 +217,11 @@
 <div id="ad-gate-master">
     <div class="ad-timer-label" id="ad-timer-val">15s REMAINING</div>
     <button onclick="terminateAdStream()" class="ad-terminate-btn flex items-center gap-2"><i data-lucide="power" class="w-3 h-3"></i> EXIT</button>
-    <iframe id="ad-frame" src="" class="w-full h-full border-none bg-white" allow="autoplay" sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-popups-to-escape-sandbox"></iframe>
+    <iframe id="ad-frame" src="" class="w-full h-full border-none bg-white" allow="autoplay"></iframe>
 </div>
 
 
-<div id="main-layout" class="hidden min-h-screen pb-24" style="display:none;">
+<div id="main-layout" class="hidden min-h-screen pb-24">
 
     
     <div id="sb-overlay" class="sidebar-dim" onclick="toggleSidebar()"></div>
@@ -595,17 +595,16 @@ window.addEventListener('load',async()=>{
             // load platform config
             try{const cs=await db.collection('config').doc('platform').get();if(cs.exists)applyConfig(cs.data());}catch(e){}
             // live config listener
-            unsubscribeConfig=db.collection('config').doc('platform').onSnapshot(s=>{if(s.exists)applyConfig(s.data());});
+            db.collection('config').doc('platform').onSnapshot(s=>{if(s.exists)applyConfig(s.data());});
             await loadUserData();
-            document.getElementById('splash').style.display='none';
-            document.getElementById('auth-screen').style.display='none';
-            document.getElementById('main-layout').style.display='block';
+            document.getElementById('splash').classList.add('hidden');
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('main-layout').classList.remove('hidden');
             renderBotCards();renderPlans();renderMilestones();
             // Auto-check 24hr plan maturation on load
             await autoMaturePlans();
         } else {
-            // Not logged in — redirect to index
-            window.location.replace('index.html');
+            window.location.href='index.html';
         }
     });
     
@@ -755,17 +754,17 @@ async function loadUserData(){
         await autoCheckMilestones();
     });
 
-    // Compute total deposited — check both 'success' (admin approved) and 'approved' statuses
-    Promise.all([
-        db.collection('transactions').where('user_id','==',currentUser.uid).where('transaction_type','==','DEPOSIT').where('status','==','success').get(),
-        db.collection('transactions').where('user_id','==',currentUser.uid).where('transaction_type','==','DEPOSIT').where('status','==','approved').get()
-    ]).then(([s1,s2])=>{
-        let total = 0;
-        s1.forEach(d=>{ total += parseFloat(d.data().amount)||0; });
-        s2.forEach(d=>{ total += parseFloat(d.data().amount)||0; });
-        state.totalDeposited = total;
-        if(userData) userData.total_deposited = total;
-    });
+    // Compute total deposited from approved deposits
+    db.collection('transactions').where('user_id','==',currentUser.uid)
+        .where('transaction_type','==','DEPOSIT')
+        .where('status','==','success')
+        .get().then(snap=>{
+            let total = 0;
+            snap.forEach(d=>{ total += parseFloat(d.data().amount)||0; });
+            state.totalDeposited = total;
+            // Update userData too so withdrawal check works
+            if(userData) userData.total_deposited = total;
+        });
 
     unsubscribeTx=db.collection('transactions').where('user_id','==',currentUser.uid).orderBy('created_at','desc').limit(30).onSnapshot(async(snap)=>{
         const prevTxs = state.transactions || [];
@@ -1151,10 +1150,9 @@ async function activateVipNow(){
     await new Promise(r=>setTimeout(r,3000));
     try{
         // ✅ VIP EXPIRES EXACTLY AFTER 30 DAYS
-        const vipCost = CFG.vip_price || VIP_PRICE;
         const vipExpiry=getServerTime()+(30*24*60*60*1000);
         await db.collection('users').doc(currentUser.uid).update({
-            balance:firebase.firestore.FieldValue.increment(-vipCost),
+            balance:firebase.firestore.FieldValue.increment(-VIP_PRICE),
             is_vip:true,
             vip_expiry:vipExpiry
         });
@@ -1491,15 +1489,7 @@ function launchAdGate(i,vip){
     const c=setInterval(()=>{t--;tmr.innerText=t+'s REMAINING';if(t<=0){clearInterval(c);tmr.innerText='STREAM COMPLETE';if(termBtn)termBtn.style.display='flex';}},1000);
 }
 
-function terminateAdStream(){
-    const gate=document.getElementById('ad-gate-master');
-    const frame=document.getElementById('ad-frame');
-    // Blank the iframe FIRST before hiding to stop any active scripts
-    frame.src='about:blank';
-    setTimeout(()=>{ frame.src=''; gate.style.display='none'; },100);
-    showAnalyzingState(state.activePair);
-    setTimeout(()=>revealSignal(state.activePair),3200);
-}
+function terminateAdStream(){document.getElementById('ad-gate-master').style.display='none';document.getElementById('ad-frame').src='';showAnalyzingState(state.activePair);setTimeout(()=>revealSignal(state.activePair),3000);}
 
 function showAnalyzingState(i){
     document.getElementById('sig-box-'+i).classList.add('hidden');
@@ -1667,10 +1657,6 @@ async function handleAdClaim(){
     const maxClaims=state.boosterActive&&state.boosterExpiry>getServerTime()?3:1;
     if(claims>=maxClaims)return toast('Daily claim limit reached!');
     
-    // Clear any previous interval before starting fresh
-    if(window._adClaimInterval){ clearInterval(window._adClaimInterval); window._adClaimInterval=null; }
-    const oldOverlay = document.getElementById('ad-claim-fullscreen');
-    if(oldOverlay) oldOverlay.remove();
     // Record start time for server-side verification
     window._adStartLocal = getServerTime();
     
@@ -1698,24 +1684,34 @@ async function handleAdClaim(){
         <div style="height:4px;background:#1e293b;flex-shrink:0;"><div id="ad-progress-line" style="height:100%;background:linear-gradient(90deg,#0ea5e9,#38bdf8);width:0%;transition:width 1s linear;"></div></div>
         <!-- AD SLOTS -->
         <div style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:10px;">
-            <!-- SLOT 1: Top Banner 320x50 -->
-            <div style="background:#1e293b;border-radius:12px;min-height:60px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;">
-                <script>atOptions={'key':'55a786a7f988f0fd4fc9a79f5f603245','format':'iframe','height':50,'width':320,'params':{}};</script>
+            <!-- SLOT 1: Popunder #1 (background) -->
+            <script src="https://pl28642599.effectivegatecpm.com/93/a6/86/93a686a4eaa2407c4acf84b47f5a34e3.js"></script>
+            <!-- SLOT 2: Popunder #2 (background) -->
+            <script src="https://pl28756295.effectivegatecpm.com/fc/17/cf/fc17cfd41ac2625f5a0075059355dfd0.js"></script>
+            <!-- SLOT 3: Top Banner 320x50 Mobile -->
+            <div style="background:#1e293b;border-radius:12px;min-height:60px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:6px;">
+                <script> atOptions = { 'key' : '55a786a7f988f0fd4fc9a79f5f603245', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script>
                 <script src="https://www.highperformanceformat.com/55a786a7f988f0fd4fc9a79f5f603245/invoke.js"></script>
             </div>
-            <!-- SLOT 2: Main Rectangle 300x250 -->
-            <div style="background:#1e293b;border-radius:12px;min-height:260px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;">
-                <script>atOptions={'key':'f667f609de40ee5be5bdd14ad3be7d04','format':'iframe','height':250,'width':300,'params':{}};</script>
+            <!-- SLOT 4: Main Rectangle 300x250 -->
+            <div style="background:#1e293b;border-radius:12px;min-height:260px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:6px;">
+                <script> atOptions = { 'key' : 'f667f609de40ee5be5bdd14ad3be7d04', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} }; </script>
                 <script src="https://www.highperformanceformat.com/f667f609de40ee5be5bdd14ad3be7d04/invoke.js"></script>
             </div>
-            <!-- SLOT 3: Second Rectangle (effectivegatecpm) -->
-            <div style="background:#1e293b;border-radius:12px;min-height:260px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;">
+            <!-- SLOT 5: Second Rectangle 300x250 -->
+            <div style="background:#1e293b;border-radius:12px;min-height:260px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:6px;">
+                <script> atOptions = { 'key' : 'c74d7a11ca2a6cfa3aba03b90f5888f0', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} }; </script>
+                <script src="https://www.highperformanceformat.com/c74d7a11ca2a6cfa3aba03b90f5888f0/invoke.js"></script>
+            </div>
+            <!-- SLOT 6: Native Container Ad -->
+            <div style="background:#1e293b;border-radius:12px;overflow:hidden;padding:6px;">
                 <script async="async" data-cfasync="false" src="https://pl28642600.effectivegatecpm.com/8c1aaf1130429dd18c7a9211f01bdb07/invoke.js"></script>
                 <div id="container-8c1aaf1130429dd18c7a9211f01bdb07"></div>
             </div>
-            <!-- SLOT 4: Bottom Banner 320x50 -->
-            <div style="background:#1e293b;border-radius:12px;min-height:60px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;">
-                <script src="https://pl28642599.effectivegatecpm.com/93/a6/86/93a686a4eaa2407c4acf84b47f5a34e3.js"></script>
+            <!-- SLOT 7: Bottom Banner 320x50 -->
+            <div style="background:#1e293b;border-radius:12px;min-height:60px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:6px;">
+                <script> atOptions = { 'key' : '176ca819e8dd79380005cd639d66f63a', 'format' : 'iframe', 'height' : 60, 'width' : 468, 'params' : {} }; </script>
+                <script src="https://www.highperformanceformat.com/176ca819e8dd79380005cd639d66f63a/invoke.js"></script>
             </div>
         </div>
         <!-- CLAIM BAR -->
@@ -1759,13 +1755,11 @@ async function handleAdClaim(){
 }
 
 async function completeAdClaimFromFullscreen(){
+    // ✅ Verify 5 minutes passed using server time offset
     const elapsed = getServerTime() - (window._adStartLocal||0);
     if(elapsed < 295000){ toast('⚠️ Watch the full ad first!'); return; }
     const today=getTodayDateStr();
-    const claims=(state.lastAdClaimDate===today?state.adClaimsToday:0);
-    const maxClaims=state.boosterActive&&state.boosterExpiry>getServerTime()?3:1;
-    if(claims>=maxClaims){ toast('Daily claim limit already reached!'); return; }
-    const newClaims=claims+1;
+    const newClaims=(state.lastAdClaimDate===today?state.adClaimsToday:0)+1;
     const adReward=CFG.ad_reward||2;
     try{
         await db.collection('users').doc(currentUser.uid).update({
@@ -2095,7 +2089,6 @@ function copyReferralLink(){const link=location.origin+location.pathname+'?ref='
 function handleLogout(){
     if(unsubscribeUser)unsubscribeUser();
     if(unsubscribeTx)unsubscribeTx();
-    if(unsubscribeConfig)unsubscribeConfig();
     
     // Clear all state
     state = {
