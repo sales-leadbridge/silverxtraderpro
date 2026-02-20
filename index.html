@@ -87,8 +87,7 @@
 
         .ref-premium { background:linear-gradient(135deg,#ffffff 0%,#f0fdf4 100%); border:2px solid var(--success); border-radius:24px; padding:28px 24px; text-align:center; box-shadow:0 8px 32px rgba(16,185,129,0.2); transition:all 0.3s; }
         .ref-premium:hover { transform:translateY(-6px); box-shadow:0 16px 48px rgba(16,185,129,0.3); }
-        .milestone-premium { background:linear-gradient(135deg,#FAF5FF 0%,#F3E8FF 100%); border:2px solid var(--secondary); border-radius:24px; padding:28px 24px; box-shadow:0 8px 32px rgba(139,92,246,0.2); transition:all 0.3s; cursor:pointer; }
-        .milestone-premium:hover { transform:translateY(-6px); box-shadow:0 16px 48px rgba(139,92,246,0.35); }
+        .milestone-premium { background:linear-gradient(135deg,#FAF5FF 0%,#F3E8FF 100%); border:2px solid var(--secondary); border-radius:24px; padding:28px 24px; box-shadow:0 8px 32px rgba(139,92,246,0.2); }
 
         .divider-premium { height:2px; background:linear-gradient(90deg,transparent,var(--primary),transparent); margin:48px 0; position:relative; }
         .divider-premium::before { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:12px; height:12px; background:var(--primary); border-radius:50%; box-shadow:0 0 20px rgba(14,165,233,0.6); }
@@ -692,23 +691,15 @@ function switchToSignup() {
 async function handleForgotPassword() {
     const email = document.getElementById('login-email').value.trim();
     if (!email) return toast('Enter your email address first', 'warning');
-    // Show loading state
-    const btn = document.querySelector('button[onclick="handleForgotPassword()"]');
-    if(btn){ btn.disabled=true; btn.innerText='Sending...'; }
     try {
         await firebase.auth().sendPasswordResetEmail(email);
-        toast('✅ Reset email sent! Check your inbox & spam folder.', 'success');
+        toast('Password reset email sent! Check your inbox.', 'success');
     } catch(e) {
         const msgs = {
-            'auth/user-not-found':    'No account found with this email.',
-            'auth/invalid-email':     'Invalid email format.',
-            'auth/invalid-credential':'No account found with this email.',
-            'auth/too-many-requests': 'Too many attempts. Try again later.',
-            'auth/network-request-failed': 'Network error. Check connection.'
+            'auth/user-not-found': 'No account found with this email.',
+            'auth/invalid-email': 'Invalid email format.'
         };
-        toast(msgs[e.code] || 'Could not send reset email. Try again.', 'error');
-    } finally {
-        if(btn){ btn.disabled=false; btn.innerText='Forgot Password?'; }
+        toast(msgs[e.code] || e.message, 'error');
     }
 }
 
@@ -834,7 +825,7 @@ async function handleLogin() {
             return toast('Account suspended. Contact support.', 'error');
         }
         toast('Login successful! Redirecting...', 'success');
-        setTimeout(() => window.location.replace('app.html'), 1000);
+        setTimeout(() => window.location.replace("app.html"), 1000);
     } catch(err) {
         btn.disabled=false; txt.classList.remove('hidden'); ldr.classList.add('hidden');
         const msgs = {
