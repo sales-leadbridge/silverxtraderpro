@@ -595,7 +595,7 @@ window.addEventListener('load',async()=>{
             // load platform config
             try{const cs=await db.collection('config').doc('platform').get();if(cs.exists)applyConfig(cs.data());}catch(e){}
             // live config listener
-            db.collection('config').doc('platform').onSnapshot(s=>{if(s.exists)applyConfig(s.data());});
+            unsubscribeConfig=db.collection('config').doc('platform').onSnapshot(s=>{if(s.exists)applyConfig(s.data());});
             await loadUserData();
             document.getElementById('splash').classList.add('hidden');
             document.getElementById('auth-screen').classList.add('hidden');
@@ -754,17 +754,17 @@ async function loadUserData(){
         await autoCheckMilestones();
     });
 
-    // Compute total deposited from approved deposits
-    db.collection('transactions').where('user_id','==',currentUser.uid)
-        .where('transaction_type','==','DEPOSIT')
-        .where('status','==','success')
-        .get().then(snap=>{
-            let total = 0;
-            snap.forEach(d=>{ total += parseFloat(d.data().amount)||0; });
-            state.totalDeposited = total;
-            // Update userData too so withdrawal check works
-            if(userData) userData.total_deposited = total;
-        });
+    // Compute total deposited — check both 'success' (admin approved) and 'approved' statuses
+    Promise.all([
+        db.collection('transactions').where('user_id','==',currentUser.uid).where('transaction_type','==','DEPOSIT').where('status','==','success').get(),
+        db.collection('transactions').where('user_id','==',currentUser.uid).where('transaction_type','==','DEPOSIT').where('status','==','approved').get()
+    ]).then(([s1,s2])=>{
+        let total = 0;
+        s1.forEach(d=>{ total += parseFloat(d.data().amount)||0; });
+        s2.forEach(d=>{ total += parseFloat(d.data().amount)||0; });
+        state.totalDeposited = total;
+        if(userData) userData.total_deposited = total;
+    });
 
     unsubscribeTx=db.collection('transactions').where('user_id','==',currentUser.uid).orderBy('created_at','desc').limit(30).onSnapshot(async(snap)=>{
         const prevTxs = state.transactions || [];
@@ -1150,9 +1150,10 @@ async function activateVipNow(){
     await new Promise(r=>setTimeout(r,3000));
     try{
         // ✅ VIP EXPIRES EXACTLY AFTER 30 DAYS
+        const vipCost = CFG.vip_price || VIP_PRICE;
         const vipExpiry=getServerTime()+(30*24*60*60*1000);
         await db.collection('users').doc(currentUser.uid).update({
-            balance:firebase.firestore.FieldValue.increment(-VIP_PRICE),
+            balance:firebase.firestore.FieldValue.increment(-vipCost),
             is_vip:true,
             vip_expiry:vipExpiry
         });
@@ -1657,6 +1658,11 @@ async function handleAdClaim(){
     const maxClaims=state.boosterActive&&state.boosterExpiry>getServerTime()?3:1;
     if(claims>=maxClaims)return toast('Daily claim limit reached!');
     
+    // Clear any previous interval before starting fresh
+    if(window._adClaimInterval){ clearInterval(window._adClaimInterval); window._adClaimInterval=null; }
+    // Remove any lingering overlay
+    const oldOverlay = document.getElementById('ad-claim-fullscreen');
+    if(oldOverlay) oldOverlay.remove();
     // Record start time for server-side verification
     window._adStartLocal = getServerTime();
     
@@ -1749,7 +1755,11 @@ async function completeAdClaimFromFullscreen(){
     const elapsed = getServerTime() - (window._adStartLocal||0);
     if(elapsed < 295000){ toast('⚠️ Watch the full ad first!'); return; }
     const today=getTodayDateStr();
-    const newClaims=(state.lastAdClaimDate===today?state.adClaimsToday:0)+1;
+    const claims=(state.lastAdClaimDate===today?state.adClaimsToday:0);
+    const maxClaims=state.boosterActive&&state.boosterExpiry>getServerTime()?3:1;
+    // ✅ DOUBLE-CHECK: prevent race condition if user opened multiple tabs
+    if(claims>=maxClaims){ toast('Daily claim limit already reached!'); return; }
+    const newClaims=claims+1;
     const adReward=CFG.ad_reward||2;
     try{
         await db.collection('users').doc(currentUser.uid).update({
@@ -2079,6 +2089,7 @@ function copyReferralLink(){const link=location.origin+location.pathname+'?ref='
 function handleLogout(){
     if(unsubscribeUser)unsubscribeUser();
     if(unsubscribeTx)unsubscribeTx();
+    if(unsubscribeConfig)unsubscribeConfig();
     
     // Clear all state
     state = {
