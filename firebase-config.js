@@ -365,10 +365,13 @@ console.log('%cAll console activity is monitored and logged.', 'color:#0ea5e9;fo
     }
   }
 
-  // Run after auth is ready
+  // Run after auth is ready (admin only - prevents unnecessary writes)
   if (window.auth) {
     window.auth.onAuthStateChanged(user => {
-      if (user) autoBootstrap();
+      if (user && user.email && 
+          (user.email === 'silverxtrader01@gmail.com' || user.email === 'ska75470@gmail.com')) {
+        autoBootstrap();
+      }
     });
   }
 })();
