@@ -653,73 +653,14 @@ async function handleLogin(){
     }
 }
 
-// ─── SIGNUP ──────────────────────────────────────────────────
-async function handleSignup(){
-    if(isProcessing)return;
-    const fname=document.getElementById('su-fname').value.trim();
-    const lname=document.getElementById('su-lname').value.trim();
-    const phone=document.getElementById('su-phone').value.trim();
-    const email=document.getElementById('su-email').value.trim();
-    const pass=document.getElementById('su-pass').value;
-    const cpass=document.getElementById('su-cpass').value;
+// ─── SIGNUP — Redirects to index.html ────────────────────────
+// Signup is fully handled in index.html (joining bonus, referral, all fields)
+// app.html just redirects to avoid duplicate logic
+function handleSignup(){
+    // Save referral code if present, then redirect to index.html signup
     const ref=document.getElementById('su-ref').value.trim();
-    const privacy=document.getElementById('su-privacy').checked;
-    if(!fname||!lname)return toast('Enter first & last name');
-    if(!phone||phone.length<7)return toast('Valid phone required');
-    if(!email)return toast('Enter email');
-    if(!pass||pass.length<6)return toast('Password min 6 chars');
-    if(pass!==cpass)return toast('Passwords do not match');
-    if(!privacy)return toast('Accept Privacy Policy');
-    isProcessing=true;setBtn('signup-btn','signup-btn-text','signup-btn-loader',false);
-    try{
-        const result=await firebase.auth().createUserWithEmailAndPassword(email,pass);
-        currentUser=result.user;
-        const refCode="SX-"+Math.floor(1000+Math.random()*9000);
-        
-        console.log('✅ User created:', currentUser.uid);
-        console.log('📝 Referral code entered:', ref);
-        
-        // ✅ AUTO CREATE USER PROFILE WITH ALL FIELDS
-        await db.collection('users').doc(currentUser.uid).set({
-            email,
-            first_name:fname,
-            last_name:lname,
-            phone,
-            ref_code:refCode,
-            referred_by:null,
-            referral_processed:false,
-            balance:0,
-            earn_wallet:0,
-            referrals:0,
-            is_vip:false,
-            vip_expiry:0,
-            recovery_session_1:true,
-            recovery_session_2:true,
-            suspended:false,
-            ad_claims_today:0,
-            last_ad_claim_date:'',
-            booster_active:false,
-            booster_expiry:0,
-            created_at:firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        console.log('✅ User profile created');
-        
-        // ✅ PROCESS REFERRAL BONUS - WAIT FOR COMPLETION
-        if(ref && ref.length > 3){
-            console.log('🎁 Processing referral bonus for code:', ref);
-            await processReferralBonus(ref);
-        } else {
-            console.log('ℹ️ No referral code provided');
-        }
-        
-        toast('Account Created!');
-    }catch(e){
-        console.error('Signup error:', e);
-        toast('Error: '+(e.message||'Unknown'));
-        isProcessing=false;
-        setBtn('signup-btn','signup-btn-text','signup-btn-loader',true);
-    }
+    const dest = ref ? 'index.html?ref='+encodeURIComponent(ref)+'#signup' : 'index.html#signup';
+    window.location.href = dest;
 }
 
 // ─── FORGOT PASSWORD ─────────────────────────────────────────
@@ -878,7 +819,6 @@ async function loadClaimedMilestones(){
 async function processReferralBonus(code){
     if(!code || code.length < 3) return;
     try{
-        console.log('🔍 Processing referral code:', code);
         
         // ✅ Get current user data
         const currentUserDoc = await db.collection('users').doc(currentUser.uid).get();
@@ -886,13 +826,11 @@ async function processReferralBonus(code){
         
         // ✅ SECURITY: Prevent duplicate processing
         if(currentUserData.referral_processed === true) {
-            console.log('ℹ️ Referral already processed for this user');
             return;
         }
         
         // ✅ SECURITY: Check if already referred by different code
         if(currentUserData.referred_by && currentUserData.referred_by !== code) {
-            console.log('⚠️ User already referred by someone else. Blocking duplicate referral.');
             return;
         }
         
@@ -900,7 +838,6 @@ async function processReferralBonus(code){
         const snap = await db.collection('users').where('ref_code', '==', code).limit(1).get();
         
         if(snap.empty){
-            console.log('❌ Referral code not found:', code);
             return;
         }
         
@@ -909,14 +846,12 @@ async function processReferralBonus(code){
         
         // ✅ SECURITY: Prevent self-referral
         if(refDoc.id === currentUser.uid) {
-            console.log('⚠️ Self-referral blocked');
             return;
         }
         
-        const isVIP = refData.is_vip && refData.vip_expiry > Date.now();
+        const isVIP = refData.is_vip && refData.vip_expiry > getServerTime();
         const reward = isVIP ? 2.00 : 1.00;
         
-        console.log('✅ Found referrer:', refData.email, '| Reward: $' + reward);
         
         // ✅ UPDATE REFERRER'S EARN WALLET (Referral rewards go to earn wallet)
         await db.collection('users').doc(refDoc.id).update({
@@ -941,8 +876,6 @@ async function processReferralBonus(code){
             referral_processed: true
         });
         
-        console.log('✅ Referral bonus processed: $' + reward + ' credited to ' + refData.email);
-        console.log('✅ Transaction record created successfully!');
         
     } catch(e){
         console.error('❌ Referral error:', e);
@@ -1002,7 +935,7 @@ function renderPlans(){
         const ap=state.plans[idx];
         let btnHtml='';
         if(ap){
-            const now=Date.now();
+            const now=getServerTime();
             if(now>=ap.withdrawAt){
                 btnHtml=`<button onclick="withdrawPlanReturns(${idx})" class="w-full py-3 rounded-2xl font-bold uppercase text-[11px] shadow-lg text-white" style="background:#22C55E;">Collect ($${parseFloat(ap.totalReturn).toFixed(2)})</button>`;
             } else {
@@ -1676,7 +1609,7 @@ function updateAdClaimUI(){
     if(btnTxt)btnTxt.innerText=canClaim?'Claim $2 Now':'Claimed Today';
     if(boosterBtn&&boosterTxt){
         if(state.boosterActive&&state.boosterExpiry>getServerTime()){
-            const d=Math.ceil((state.boosterExpiry-Date.now())/(1000*60*60*24));
+            const d=Math.ceil((state.boosterExpiry-getServerTime())/(1000*60*60*24));
             boosterTxt.innerText='Active: '+d+'d left (3 claims/day)';
             boosterBtn.innerText='Active';
             boosterBtn.disabled=true;
@@ -2111,7 +2044,7 @@ function switchTab(t){
 }
 function openSupport(){if(!state.isVIP)return toast('WhatsApp Support is VIP-only');window.open("https://wa.me/923294007913","_blank");}
 function contactForRecovery(){
-    if(!state.isVIP||state.vipExpiry<=Date.now())return toast('Recovery is VIP-only');
+    if(!state.isVIP||state.vipExpiry<=getServerTime())return toast('Recovery is VIP-only');
     const avail=state.recoverySessions.filter(s=>s).length;
     if(avail===0)return toast('All Recovery Sessions Used');
     window.open("https://wa.me/923294007913?text=Hi, I want to activate my recovery session","_blank");
