@@ -160,6 +160,7 @@
         /* Confetti */
         .confetti-piece { position:absolute; width:8px; height:8px; opacity:0; animation:confDrop 2.8s ease-in forwards; z-index:0; }
         @keyframes confDrop { 0%{opacity:1;transform:translateY(0) rotate(0deg)} 100%{opacity:0;transform:translateY(300px) rotate(900deg)} }
+        @keyframes exitPulse { 0%{transform:scale(1)} 50%{transform:scale(1.04);box-shadow:0 8px 30px rgba(239,68,68,0.7)} 100%{transform:scale(1)} }
     </style>
 </head>
 <body>
@@ -1470,27 +1471,36 @@ function launchAdGate(i,vip){
     const gate = document.getElementById('ad-gate-master');
     gate.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#0f172a;display:flex;flex-direction:column;';
     gate.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#0f172a;border-bottom:1px solid #1e293b;flex-shrink:0;">
+        <!-- TOP BAR: logo + timer only -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#0f172a;border-bottom:1px solid #1e293b;flex-shrink:0;position:relative;z-index:2;">
             <div style="display:flex;align-items:center;gap:8px;">
                 <div style="width:28px;height:28px;border-radius:50%;overflow:hidden;border:1.5px solid #0ea5e9;"><img src="logo.jpg" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentNode.style.background='#0ea5e9'"></div>
                 <span style="color:#38bdf8;font-weight:900;font-size:12px;font-family:'Space Grotesk',sans-serif;text-transform:uppercase;">Silver X</span>
             </div>
-            <div style="display:flex;align-items:center;gap:10px;">
-                <div id="sig-ad-timer" style="background:#1e293b;border:1.5px solid #0ea5e9;border-radius:10px;padding:5px 14px;font-family:'Space Grotesk',sans-serif;font-weight:900;font-size:13px;color:#38bdf8;">15s</div>
-                <button id="sig-ad-exit-btn" onclick="terminateAdStream()" style="display:none;background:#EF4444;color:#fff;border:none;border-radius:10px;padding:6px 14px;font-weight:800;font-size:11px;cursor:pointer;font-family:'Space Grotesk',sans-serif;">EXIT ✕</button>
+            <div id="sig-ad-timer" style="background:#1e293b;border:1.5px solid #0ea5e9;border-radius:10px;padding:5px 14px;font-family:'Space Grotesk',sans-serif;font-weight:900;font-size:13px;color:#38bdf8;">15s</div>
+        </div>
+        <!-- PROGRESS BAR -->
+        <div style="height:3px;background:#1e293b;flex-shrink:0;position:relative;z-index:2;"><div id="sig-ad-bar" style="height:100%;background:linear-gradient(90deg,#0ea5e9,#38bdf8);width:100%;transition:width 1s linear;"></div></div>
+        <!-- AD SLOTS: scroll area, ads confined here -->
+        <div id="sig-ad-slots" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:12px;display:flex;flex-direction:column;gap:10px;align-items:center;position:relative;z-index:1;">
+            <div id="sig-slot-1" style="background:#1e293b;border-radius:12px;width:100%;max-width:340px;height:60px;overflow:hidden;padding:4px;flex-shrink:0;"></div>
+            <div id="sig-slot-2" style="background:#1e293b;border-radius:12px;width:100%;max-width:340px;height:260px;overflow:hidden;padding:4px;flex-shrink:0;"></div>
+            <div id="sig-slot-3" style="background:#1e293b;border-radius:12px;width:100%;max-width:340px;min-height:100px;overflow:hidden;padding:4px;flex-shrink:0;"></div>
+        </div>
+        <!-- BOTTOM BAR: EXIT button is HERE at bottom — always visible, always above ads -->
+        <div style="padding:12px 16px;background:#0f172a;border-top:2px solid #1e293b;flex-shrink:0;position:relative;z-index:99999;">
+            <p style="color:#475569;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;text-align:center;margin-bottom:10px;">⏳ Signal unlocks after ad — EXIT appears below</p>
+            <button id="sig-ad-exit-btn" onclick="terminateAdStream()" 
+                style="width:100%;display:none;background:#EF4444;color:#fff;border:none;border-radius:14px;padding:14px;font-weight:900;font-size:15px;cursor:pointer;font-family:'Space Grotesk',sans-serif;letter-spacing:1px;box-shadow:0 6px 20px rgba(239,68,68,0.5);">
+                ✅ AD WATCHED — GET SIGNAL
+            </button>
+            <!-- Placeholder same size so layout doesn't jump -->
+            <div id="sig-exit-placeholder" style="width:100%;height:52px;background:#1e293b;border-radius:14px;display:flex;align-items:center;justify-content:center;">
+                <span style="color:#475569;font-size:11px;font-weight:700;font-family:'Space Grotesk',sans-serif;">⏳ Please wait...</span>
             </div>
-        </div>
-        <div style="height:3px;background:#1e293b;flex-shrink:0;"><div id="sig-ad-bar" style="height:100%;background:linear-gradient(90deg,#0ea5e9,#38bdf8);width:100%;transition:width 1s linear;"></div></div>
-        <div id="sig-ad-slots" style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;align-items:center;">
-            <div id="sig-slot-1" style="background:#1e293b;border-radius:12px;width:100%;min-height:60px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;"></div>
-            <div id="sig-slot-2" style="background:#1e293b;border-radius:12px;width:100%;min-height:260px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;"></div>
-            <div id="sig-slot-3" style="background:#1e293b;border-radius:12px;width:100%;min-height:100px;overflow:hidden;padding:4px;"></div>
-        </div>
-        <div style="padding:10px 16px;background:#0f172a;border-top:1px solid #1e293b;flex-shrink:0;text-align:center;">
-            <p style="color:#475569;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Watch ad • Signal unlocks automatically</p>
         </div>`;
 
-    // ── Inject ads via createElement (iframes & scripts properly) ──
+    // ── Inject ads via createElement ──
     function _injectIframeAd(slotId, key, w, h){
         const wrap = document.getElementById(slotId);
         if(!wrap) return;
@@ -1520,26 +1530,25 @@ function launchAdGate(i,vip){
         wrap.appendChild(s);
     })();
 
-    // Popunders — only once per session
-    if(!window._popundersLoaded){
-        window._popundersLoaded = true;
-        const p1=document.createElement('script'); p1.src='https://pl28642599.effectivegatecpm.com/93/a6/86/93a686a4eaa2407c4acf84b47f5a34e3.js'; p1.async=true; document.head.appendChild(p1);
-        const p2=document.createElement('script'); p2.src='https://pl28756295.effectivegatecpm.com/fc/17/cf/fc17cfd41ac2625f5a0075059355dfd0.js'; p2.async=true; document.head.appendChild(p2);
-    }
+    // Popunders — fire after exit, not during (so they don't cover exit button)
+    // Moved to terminateAdStream()
 
     // ── 15s countdown ──
     let t = 15;
     const tmr = document.getElementById('sig-ad-timer');
     const bar = document.getElementById('sig-ad-bar');
     const exitBtn = document.getElementById('sig-ad-exit-btn');
+    const placeholder = document.getElementById('sig-exit-placeholder');
     const ticker = setInterval(()=>{
         t--;
         if(tmr) tmr.innerText = t+'s';
         if(bar) bar.style.width = ((t/15)*100)+'%';
         if(t<=0){
             clearInterval(ticker);
-            if(tmr) tmr.innerText = '✓ DONE';
+            if(tmr){ tmr.innerText = '✓'; tmr.style.background='#22c55e'; tmr.style.borderColor='#22c55e'; tmr.style.color='#fff'; }
+            // Show exit button, hide placeholder
             if(exitBtn) exitBtn.style.display = 'block';
+            if(placeholder) placeholder.style.display = 'none';
         }
     }, 1000);
     window._sigAdTicker = ticker;
@@ -1552,6 +1561,12 @@ function terminateAdStream(){
     gate.style.cssText = 'display:none;';
     showAnalyzingState(state.activePair);
     setTimeout(()=>revealSignal(state.activePair), 2500);
+    // Popunders fire AFTER exit — not during ad gate
+    if(!window._popundersLoaded){
+        window._popundersLoaded = true;
+        const p1=document.createElement('script'); p1.src='https://pl28642599.effectivegatecpm.com/93/a6/86/93a686a4eaa2407c4acf84b47f5a34e3.js'; p1.async=true; document.head.appendChild(p1);
+        const p2=document.createElement('script'); p2.src='https://pl28756295.effectivegatecpm.com/fc/17/cf/fc17cfd41ac2625f5a0075059355dfd0.js'; p2.async=true; document.head.appendChild(p2);
+    }
 }
 
 function showAnalyzingState(i){
@@ -1753,35 +1768,42 @@ async function handleAdClaim(){
     overlay.id = 'ad-claim-fullscreen';
     overlay.style.cssText = 'position:fixed;inset:0;z-index:999999;background:#0f172a;display:flex;flex-direction:column;overflow:hidden;';
     overlay.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#0f172a;border-bottom:1px solid #1e293b;flex-shrink:0;">
+        <!-- TOP BAR: timer + reward badge, always above ads -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#0f172a;border-bottom:1px solid #1e293b;flex-shrink:0;position:relative;z-index:2;">
             <div style="display:flex;align-items:center;gap:8px;">
                 <div style="width:28px;height:28px;border-radius:50%;overflow:hidden;border:1.5px solid #0ea5e9;"><img src="logo.jpg" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentNode.style.background='#0ea5e9'"></div>
                 <span style="color:#38bdf8;font-weight:900;font-size:12px;font-family:'Space Grotesk',sans-serif;text-transform:uppercase;">Silver X Ads</span>
             </div>
             <div style="display:flex;align-items:center;gap:8px;">
                 <div id="ad-claim-timer" style="background:#1e293b;border:1.5px solid #0ea5e9;border-radius:10px;padding:6px 14px;font-family:'Space Grotesk',sans-serif;font-weight:900;font-size:13px;color:#38bdf8;">${fmt(secondsLeft)}</div>
-                <div style="background:#22C55E;border-radius:10px;padding:6px 14px;font-weight:900;font-size:12px;color:#fff;">+$${adReward.toFixed(2)}</div>
+                <div style="background:#22C55E;border-radius:10px;padding:6px 14px;font-weight:900;font-size:12px;color:#fff;font-family:'Space Grotesk',sans-serif;">+$${adReward.toFixed(2)}</div>
             </div>
         </div>
-        <div style="height:4px;background:#1e293b;flex-shrink:0;"><div id="ad-progress-line" style="height:100%;background:linear-gradient(90deg,#0ea5e9,#38bdf8);width:0%;transition:width 1s linear;"></div></div>
-        <div id="ad-slots-container" style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:10px;">
-            <div id="ad-slot-banner1" style="background:#1e293b;border-radius:12px;min-height:60px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;"></div>
-            <div id="ad-slot-rect1" style="background:#1e293b;border-radius:12px;min-height:260px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;"></div>
-            <div id="ad-slot-native" style="background:#1e293b;border-radius:12px;min-height:100px;overflow:hidden;padding:4px;"></div>
-            <div id="ad-slot-rect2" style="background:#1e293b;border-radius:12px;min-height:100px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;"></div>
-            <div id="ad-slot-banner2" style="background:#1e293b;border-radius:12px;min-height:60px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;"></div>
+        <!-- PROGRESS BAR -->
+        <div style="height:4px;background:#1e293b;flex-shrink:0;position:relative;z-index:2;"><div id="ad-progress-line" style="height:100%;background:linear-gradient(90deg,#0ea5e9,#38bdf8);width:0%;transition:width 1s linear;"></div></div>
+        <!-- AD SLOTS: strictly scroll-confined, can never escape this box -->
+        <div id="ad-slots-container" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:10px;display:flex;flex-direction:column;gap:10px;position:relative;z-index:1;">
+            <div id="ad-slot-banner1" style="background:#1e293b;border-radius:12px;width:100%;max-width:340px;margin:0 auto;height:60px;overflow:hidden;padding:4px;flex-shrink:0;"></div>
+            <div id="ad-slot-rect1" style="background:#1e293b;border-radius:12px;width:100%;max-width:340px;margin:0 auto;height:260px;overflow:hidden;padding:4px;flex-shrink:0;"></div>
+            <div id="ad-slot-native" style="background:#1e293b;border-radius:12px;width:100%;max-width:340px;margin:0 auto;min-height:100px;overflow:hidden;padding:4px;flex-shrink:0;"></div>
+            <div id="ad-slot-rect2" style="background:#1e293b;border-radius:12px;width:100%;max-width:340px;margin:0 auto;height:100px;overflow:hidden;padding:4px;flex-shrink:0;"></div>
+            <div id="ad-slot-banner2" style="background:#1e293b;border-radius:12px;width:100%;max-width:340px;margin:0 auto;height:60px;overflow:hidden;padding:4px;flex-shrink:0;"></div>
         </div>
-        <div style="padding:12px 16px;background:#0f172a;border-top:1px solid #1e293b;flex-shrink:0;">
-            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-                <span style="color:#64748b;font-size:10px;font-weight:700;">Watch full ad to earn reward</span>
-                <span id="ad-claim-countdown-text" style="color:#38bdf8;font-size:11px;font-weight:900;font-family:'Space Grotesk',sans-serif;">${fmt(secondsLeft)} remaining</span>
+        <!-- BOTTOM BAR: CLAIM BUTTON is here — fixed at bottom, always visible, ads CANNOT reach here -->
+        <div style="padding:12px 16px;background:#0f172a;border-top:2px solid #1e293b;flex-shrink:0;position:relative;z-index:99999;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span style="color:#64748b;font-size:10px;font-weight:700;font-family:'Space Grotesk',sans-serif;">WATCH FULL AD • EARN REWARD</span>
+                <span id="ad-claim-countdown-text" style="color:#38bdf8;font-size:11px;font-weight:900;font-family:'Space Grotesk',sans-serif;">${fmt(secondsLeft)} left</span>
             </div>
-            <div style="background:#1e293b;border-radius:12px;height:6px;margin-bottom:10px;overflow:hidden;"><div id="ad-bar" style="height:100%;background:linear-gradient(90deg,#0ea5e9,#38bdf8);width:0%;transition:width 1s linear;border-radius:12px;"></div></div>
+            <div style="background:#1e293b;border-radius:10px;height:5px;margin-bottom:12px;overflow:hidden;">
+                <div id="ad-bar" style="height:100%;background:linear-gradient(90deg,#0ea5e9,#38bdf8);width:0%;transition:width 1s linear;border-radius:10px;"></div>
+            </div>
             <button id="ad-claim-final-btn" disabled onclick="completeAdClaimFromFullscreen()"
-                style="width:100%;background:#374151;color:#9ca3af;border:none;border-radius:14px;padding:14px;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:1px;cursor:not-allowed;font-family:'Space Grotesk',sans-serif;transition:all 0.3s;">
-                ⏳ Watch Ad — <span id="ad-btn-txt">${fmt(secondsLeft)} remaining</span>
+                style="width:100%;background:#1e293b;color:#475569;border:none;border-radius:14px;padding:16px;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:1px;cursor:not-allowed;font-family:'Space Grotesk',sans-serif;transition:all 0.3s;">
+                ⏳ <span id="ad-btn-txt">${fmt(secondsLeft)} remaining</span>
             </button>
         </div>`;
+
 
     document.body.appendChild(overlay);
     document.body.classList.add('modal-open');
