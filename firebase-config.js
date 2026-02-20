@@ -233,22 +233,46 @@ try {
     });
   }
   
-  // ── PREVENT SCRIPT INJECTION ──
-  const originalCreateElement = document.createElement;
-  document.createElement = function(tagName) {
-    const element = originalCreateElement.call(document, tagName);
-    if (tagName.toLowerCase() === 'script') {
-      logSecurityEvent('SCRIPT_INJECTION_ATTEMPT', 'External script creation blocked');
-    }
-    return element;
-  };
+  // ── SCRIPT INJECTION DETECTION (log only, don't block — Firebase SDK creates scripts internally) ──
+  // NOTE: We cannot override createElement because Firebase SDK itself creates script tags.
+  // Instead, we use MutationObserver to detect dynamically injected script tags with suspicious src.
+  const TRUSTED_SCRIPT_DOMAINS = [
+    'gstatic.com', 'googleapis.com', 'firebaseapp.com', 'firebase.com',
+    'cdn.tailwindcss.com', 'unpkg.com', 'fonts.googleapis.com',
+    'cdnjs.cloudflare.com', 'effectivegatecpm.com', 'wa.me'
+  ];
   
-  // ── MONITOR NETWORK REQUESTS ──
+  if (window.MutationObserver) {
+    const scriptObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.tagName === 'SCRIPT' && node.src) {
+            const isTrusted = TRUSTED_SCRIPT_DOMAINS.some(d => node.src.includes(d));
+            if (!isTrusted) {
+              logSecurityEvent('SUSPICIOUS_SCRIPT_INJECTION', node.src.substring(0, 100));
+            }
+          }
+        });
+      });
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+      scriptObserver.observe(document.head || document.documentElement, { childList: true, subtree: true });
+    });
+  }
+  
+  // ── MONITOR NETWORK REQUESTS (only truly external, suspicious domains) ──
+  const TRUSTED_FETCH_DOMAINS = [
+    'firebaseapp.com', 'googleapis.com', 'gstatic.com',
+    'firebase.com', 'effectivegatecpm.com'
+  ];
   const originalFetch = window.fetch;
   window.fetch = function(...args) {
-    const url = args[0];
-    if (typeof url === 'string' && !url.includes('firebaseapp.com') && !url.includes('googleapis.com')) {
-      logSecurityEvent('EXTERNAL_REQUEST', url);
+    const url = typeof args[0] === 'string' ? args[0] : (args[0] && args[0].url ? args[0].url : '');
+    if (url) {
+      const isTrusted = TRUSTED_FETCH_DOMAINS.some(d => url.includes(d));
+      if (!isTrusted && url.startsWith('http')) {
+        logSecurityEvent('EXTERNAL_FETCH_REQUEST', url.substring(0, 100));
+      }
     }
     return originalFetch.apply(this, args);
   };
