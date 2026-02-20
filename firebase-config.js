@@ -322,6 +322,58 @@ console.log('%cIf someone told you to copy/paste something here, you are being s
 console.log('%cAll console activity is monitored and logged.', 'color:#0ea5e9;font-size:14px;font-weight:bold;');
 
 // ═══════════════════════════════════════════════════════════
+// AUTO-BOOTSTRAP: On first launch, auto-create Firestore config
+// So admin never needs to manually set anything in Firebase Console
+// ═══════════════════════════════════════════════════════════
+(function() {
+  const BOOTSTRAP_VERSION = 'v2.0';
+  
+  async function autoBootstrap() {
+    try {
+      const configRef = window.db.collection('config').doc('platform');
+      const snap = await configRef.get();
+      
+      // Only write if not exists OR bootstrap_version is old
+      if (!snap.exists || snap.data().bootstrap_version !== BOOTSTRAP_VERSION) {
+        const existingData = snap.exists ? snap.data() : {};
+        await configRef.set({
+          // Defaults — only set if not already customized
+          vip_price:               existingData.vip_price               ?? 199,
+          investment_roi:          existingData.investment_roi           ?? 15,
+          ref_bonus_free:          existingData.ref_bonus_free           ?? 1.00,
+          ref_bonus_vip:           existingData.ref_bonus_vip            ?? 2.00,
+          referral_commission_rate:existingData.referral_commission_rate ?? 0.03,
+          ad_reward:               existingData.ad_reward                ?? 2.00,
+          earn_transfer_min:       existingData.earn_transfer_min        ?? 120,
+          withdrawal_min:          existingData.withdrawal_min           ?? 10,
+          deposit_min:             existingData.deposit_min              ?? 10,
+          withdrawals_frozen:      existingData.withdrawals_frozen       ?? false,
+          maintenance_mode:        existingData.maintenance_mode         ?? false,
+          // Wallet addresses (admin changes these in admin panel)
+          wallet_binance:          existingData.wallet_binance           ?? '403009858',
+          wallet_trc20:            existingData.wallet_trc20             ?? 'TGzsm8guzbaBsbNa9JLPR3WTRzFRy6B6FG',
+          // Meta
+          bootstrap_version: BOOTSTRAP_VERSION,
+          bootstrapped_at: firebase.firestore.FieldValue.serverTimestamp(),
+          platform_name: 'Silver X Trader',
+          platform_version: '2.0'
+        }, { merge: true });
+        console.log('✅ Platform config auto-bootstrapped');
+      }
+    } catch(e) {
+      // Silent fail — config will use hardcoded defaults
+    }
+  }
+
+  // Run after auth is ready
+  if (window.auth) {
+    window.auth.onAuthStateChanged(user => {
+      if (user) autoBootstrap();
+    });
+  }
+})();
+
+// ═══════════════════════════════════════════════════════════
 // PERFORMANCE MONITORING
 // ═══════════════════════════════════════════════════════════
 
