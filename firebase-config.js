@@ -240,7 +240,8 @@ try {
     'gstatic.com', 'googleapis.com', 'firebaseapp.com', 'firebase.com',
     'cdn.tailwindcss.com', 'unpkg.com', 'fonts.googleapis.com',
     'cdnjs.cloudflare.com', 'effectivegatecpm.com', 'wa.me',
-    'highperformanceformat.com'
+    'highperformanceformat.com', 'pl28642599.effectivegatecpm.com',
+    'pl28756295.effectivegatecpm.com', 'pl28642600.effectivegatecpm.com'
   ];
   
   if (window.MutationObserver) {
